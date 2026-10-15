@@ -63,36 +63,83 @@ The A2A base URL is `<STARK_PROJECT_ENDPOINT>/agents/friday-finance/endpoint/pro
 | content | text only |
 | transport | JSON-RPC, no streaming |
 | target | must speak the Responses protocol (prompt agents do) |
-| access | Entra ID only, no anonymous calls |
 
 ---
 
-## 3️⃣ Discover and call it from any client
+## 3️⃣ Authentication and authorization
+
+A2A in Foundry has **no keys** on the incoming side: every call to an agent's A2A endpoint needs an **Entra token** (audience `https://ai.azure.com`), and the identity behind it needs a role that allows calling agents.
+
+```mermaid
+flowchart LR
+  U[🧑 You<br/>Azure AI User] -->|your token| O[🧭 jarvis-orchestrator]
+  O -->|token of its own<br/>instance identity| F[🤖 friday-finance]
+  F -->|function key from<br/>connection stark-mcp| M[⚡ stark-mcp]
+  R[🛂 Foundry Agent Consumer<br/>on the project] -.->|allows| O
+```
+
+Each hop signs in **as someone else**. Your rights do not travel down the chain.
+
+### 🪪 Incoming: who may call an A2A endpoint
+
+| 🧩 | 🔎 Rule |
+|---|---|
+| Authentication | Entra ID only. Key-based and anonymous access are not supported |
+| Authorization | the *Foundry Agent Consumer* role (least privilege: call, not change) on the target **project** (every agent in it) or the target **agent** (only that one) |
+| Which identity | the one in the token: the caller agent's `instance_identity`, a service principal, a managed identity, or a user (on-behalf-of). Use its **object (principal) ID** in the role assignment |
+
+### 🔑 Outgoing: how the A2A tool signs in
+
+The `A2ATool` uses a project connection (`category: RemoteA2A`). Its auth type decides whose identity the target sees:
+
+| 🔑 Auth type (azd `--auth-type`) | 👤 Target sees | 🏗️ In this repo |
+|---|---|---|
+| `agentic-identity` (`AgenticIdentityToken`) | the calling agent | ✅ `friday-a2a`, the recommended choice for a Foundry target |
+| `project-managed-identity` | the project's shared identity | ❌ |
+| `user-entra-token` | the user who talks to the orchestrator | ❌ |
+| `oauth2` | each user, after a one-time consent (OAuth identity passthrough) | ❌ |
+| `custom-keys`, `none` | a shared key, or nobody (non-Foundry targets only) | ❌ |
+
+### 🗺️ The three calls in chapter 16
+
+| 📞 Call | 🪪 Signs in as | 🛂 Allowed by |
+|---|---|---|
+| notebook section 3: `a2a-sdk` | **you** (your `az login` token) | your *Azure AI User* role ([rbac.bicep](../infra/modules/rbac.bicep)) |
+| notebook sections 4–5: orchestrator → `friday-finance` | the orchestrator's **instance identity** | *Foundry Agent Consumer*, assigned in the notebook |
+| `friday-finance` → `stark-mcp` | the **function key** in connection `stark-mcp` | the key alone ([mcp-skills.md](mcp-skills.md)) |
+
+> ⚠️ A new role assignment can take **up to 10 minutes** to work. A `403` right after the assignment usually means: wait and retry.
+
+Details: [A2A authentication](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-to-agent-authentication) and [Enable incoming A2A](https://learn.microsoft.com/azure/foundry/agents/how-to/enable-agent-to-agent-endpoint).
+
+---
+
+## 4️⃣ Discover and call it from any client
 
 Any A2A client can use the agent, not only Foundry agents:
 
-1. **Discover.** `GET <base>/agentCard/v1.0` with an Entra token for `https://ai.azure.com/.default`.
+1. **Discover.** `GET <base>/agentCard/v1.0` with your Entra token for `https://ai.azure.com/.default`.
 2. **Call.** The open-source `a2a-sdk` (`A2ACardResolver`, `create_client`) reads `protocolVersion` from the card and sends a message.
 
 > ⚠️ A request that does not name a version gets preview **v0.3**. Use the v1.0 card or the `A2A-Version: 1.0` header.
 
 ---
 
-## 4️⃣ Let a Foundry agent call it
+## 5️⃣ Let a Foundry agent call it
 
 | 🧱 Step | 🔧 How |
 |---|---|
 | Connection | `arm("PUT", .../connections/friday-a2a, ...)` with `category: RemoteA2A`, `authType: AgenticIdentityToken`, `target: <A2A base URL>` |
 | Tool | `A2ATool(a2a_version=A2AProtocolVersion.V1_0, project_connection_id=conn.id)` on the orchestrator |
-| Role | *Foundry Agent Consumer* for the orchestrator's **instance identity** on the project |
+| Role | *Foundry Agent Consumer* for the orchestrator's **instance identity** on the project (section 3) |
 
-The connection holds no secret: with `AgenticIdentityToken` the orchestrator signs in as itself. That is why its identity needs the role. The notebook assigns it with a fixed role-assignment name (`uuid5`), so a re-run does not create a duplicate. Role assignments need a minute to work, so the first call may answer `403`.
+The connection holds no secret: the orchestrator signs in as itself. The notebook assigns the role with a fixed role-assignment name (`uuid5`), so a re-run does not create a duplicate.
 
 [`arm()`](../notebooks/stark_helpers.py) calls Azure Resource Manager with your token, for the parts the project SDK does not cover.
 
 ---
 
-## 5️⃣ Prove it
+## 6️⃣ Prove it
 
 The capstone ends like a release: an evaluation of the orchestrator on [capstone-queries.jsonl](../data/capstone-queries.jsonl), with `task_adherence` and a gate of 0.6 ([datasets-evals.md](datasets-evals.md)). Then open **Traces**: the orchestrator's A2A call and Friday's own run show up as separate agent runs ([observability.md](observability.md)).
 

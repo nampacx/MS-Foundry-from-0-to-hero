@@ -61,6 +61,7 @@ flowchart LR
 
 | 🏷️ Term | 🔎 Meaning | 📖 More |
 |---|---|---|
+| **Authentication / authorization** | *who* is calling (a key or token proves it) / *what* the caller may do (roles, allow-lists, approvals) | [mcp-skills.md](mcp-skills.md), [capstone.md](capstone.md) |
 | **A2A (Agent2Agent)** | an open protocol for agents to discover (agent card) and call each other | [capstone.md](capstone.md) |
 | **azd** | the Azure Developer CLI. Reads `azure.yaml`, deploys the Bicep, runs hooks, deploys services | [getting-started.md](getting-started.md) |
 | **Entra ID** | Microsoft's identity service. Every call here signs in with it; there are no API keys | [concepts.md](concepts.md) |
@@ -70,6 +71,7 @@ flowchart LR
 | **KQL** | Kusto Query Language, used to query Log Analytics (`kql()` in the helpers) | [observability.md](observability.md) |
 | **MCP (Model Context Protocol)** | an open standard for servers that offer tools, resources and prompts to AI clients | [mcp-skills.md](mcp-skills.md) |
 | **Microsoft Agent Framework** | Microsoft's open-source Python/.NET library for agents and workflows (`agent-framework*` packages). Used for hosted agents and workflows | [workflows.md](workflows.md) |
+| **OAuth identity passthrough** | each user signs in once through a consent link; Foundry then calls an MCP server or A2A agent with that user's token | [mcp-skills.md](mcp-skills.md) |
 | **OpenTelemetry (OTel)** | the open standard for traces and metrics. Foundry and the SDK emit OTel spans | [observability.md](observability.md) |
 | **OTLP** | the OpenTelemetry wire protocol. An optional local exporter can use it instead of Application Insights | [observability.md](observability.md) |
 | **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 15 section 5 needs a .NET runtime | [workflows.md](workflows.md) |

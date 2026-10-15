@@ -1,6 +1,6 @@
 # 🔌 8 · MCP servers and skills
 
-> 💡 **TL;DR:** **MCP** is a protocol where a server offers three kinds of things: *tools*, *resources* and *prompts*. A Foundry agent uses an MCP server for its *tools*; this repo runs its own server, `stark-mcp`. **Skills** give an agent *procedures* from a versioned `SKILL.md`, delivered by your code, a toolbox or the Copilot harness. Secrets live in **project connections**, never in the agent definition.
+> 💡 **TL;DR:** **MCP** is a protocol where a server offers three kinds of things: *tools*, *resources* and *prompts*. A Foundry agent uses an MCP server for its *tools*; this repo runs its own server, `stark-mcp`, protected by a key that Foundry reads from a project connection. **Skills** give an agent *procedures* from a versioned `SKILL.md`, delivered by your code, a toolbox or the Copilot harness. Secrets live in **project connections**, never in the agent definition.
 
 | 🔌 | 🎯 Gives the agent | 📦 Lives in | 🧪 Status |
 |---|---|---|---|
@@ -54,7 +54,7 @@ flowchart LR
 | 🔌 Primitive | 📋 Status here |
 |---|---|
 | Tools | ✅ `MCPTool` on a prompt agent: the model calls them, with `allowed_tools` and approvals ([tools.md](tools.md)) |
-| Resources | ✅ for **MCP clients** of a toolbox: skills appear in `resources/list` (section 3, Skills). ❓ Whether an agent's `MCPTool` exposes a server's resources to the model is **not documented** in the MCP tool article and was **not tested** |
+| Resources | ✅ for **MCP clients** of a toolbox: skills appear in `resources/list` (section 4, Skills). ❓ Whether an agent's `MCPTool` exposes a server's resources to the model is **not documented** in the MCP tool article and was **not tested** |
 | Prompts | ❓ same: not documented for agents, not tested, and the Learn MCP server and `stark-mcp` offer none |
 
 > ℹ️ The Microsoft Learn MCP server **declares** the resources and prompts capabilities, but its lists were empty when checked (0 resources, 0 prompts). Declaring a capability does not mean the server fills it.
@@ -69,7 +69,55 @@ flowchart LR
 
 ---
 
-## 3️⃣ Skills
+## 3️⃣ Authentication and authorization
+
+Two different questions, often mixed up:
+
+| ❓ | 🔎 Question | 🔧 Answered by |
+|---|---|---|
+| 🪪 **Authentication** | *who* is calling? | a key or an Entra token that proves the caller |
+| 🛂 **Authorization** | *what* may the caller do? | roles, allow-lists, approvals, the server's own rules |
+
+An MCP call from a Foundry agent has two hops, and each hop answers both questions on its own:
+
+```mermaid
+flowchart LR
+  U[🧑 You] -->|1 · Entra token<br/>role Azure AI User| F[☁️ Foundry agent]
+  F -->|2 · credential from the<br/>project connection| S[⚡ MCP server]
+  G[🛂 allowed_tools<br/>require_approval] -.->|limits| F
+```
+
+1. **You → Foundry.** You sign in with Entra ID (`DefaultAzureCredential`). The *Azure AI User* role from [rbac.bicep](../infra/modules/rbac.bicep) allows you to call the agent.
+2. **Foundry → MCP server.** Foundry signs in to the server with what the **project connection** holds. Your own token never reaches the server.
+
+### 🔑 How Foundry signs in to an MCP server
+
+| 🔑 Method | 🔎 How it works | 👤 Server sees each user? | 🏗️ In this repo |
+|---|---|---|---|
+| **Key-based** | a header (API key, PAT, `Bearer` token) stored in the connection | no, one shared secret | ✅ `stark-mcp`: header `x-functions-key`, connection `stark-mcp` ([connect_mcp.py](../scripts/connect_mcp.py)) |
+| **Entra: agent identity** | Foundry gets a token for the agent's own identity (connection auth type `AgenticIdentityToken`) | no, the agent | ❌ |
+| **Entra: project managed identity** | a token for the project's shared identity | no, the project | ❌ |
+| **OAuth identity passthrough** | each user signs in once through a consent link; Foundry stores that user's tokens | ✅ yes | ❌ |
+| **Unauthenticated** | no credential | no | ✅ the public Microsoft Learn server |
+
+> ⚠️ Everyone with access to the project can read a key stored in a connection. Store only **shared** secrets there; for per-user access use OAuth identity passthrough.
+
+### 🛂 Who may do what
+
+| 📍 Where | 🛂 Control | 🔎 Effect |
+|---|---|---|
+| agent definition | `allowed_tools` | the model never sees the other tools ([tools.md](tools.md)) |
+| agent definition | `require_approval` | your code approves each call before it runs ([`ask_agent()`](../notebooks/stark_helpers.py)) |
+| MCP server | its own checks | with a shared key the server cannot tell callers apart: every agent gets the same rights |
+| downstream service | roles of the identity the server uses | Entra methods need role assignments on the service behind the server |
+
+**Toolboxes** (chapter 07) move the credentials one step back: a client signs in to the toolbox with **Entra** (chapter 07 sends a bearer token for `https://ai.azure.com` plus the `Foundry-Features: Skills=V1Preview` header), and the toolbox injects the credentials of each tool.
+
+> 💡 **Harden `stark-mcp` (not implemented):** turn on the Functions built-in MCP authentication, which switches off the key, and use an Entra method. Microsoft recommends Entra whenever the server supports it: no secret to rotate. See [MCP server authentication](https://learn.microsoft.com/azure/foundry/agents/how-to/mcp-authentication) and [MCP on Azure Functions with Foundry](https://learn.microsoft.com/azure/azure-functions/functions-mcp-foundry-tools).
+
+---
+
+## 4️⃣ Skills
 
 A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Markdown). In Foundry it is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get. Three ways to deliver it:
 
@@ -104,6 +152,7 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 | 🚨 Mistake | 💥 What happens | ✅ Do this |
 |---|---|---|
 | key in the agent definition | it shows up in versions and traces | project connection |
+| a personal token in a shared connection | every project member can read it, every user acts as you | OAuth identity passthrough for per-user access |
 | expecting skills to work on a default prompt agent | no effect | use direct injection or a toolbox |
 
 ---
