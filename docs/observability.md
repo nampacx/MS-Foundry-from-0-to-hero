@@ -35,30 +35,30 @@ flowchart LR
 | to an **agent** (`agent_reference`, chapter 04 on) | Foundry, server-side. Nothing to switch on |
 | **your own code**: direct model calls, custom spans | your process, after `configure_azure_monitor` |
 
-For your own code, in [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb), before importing the SDK:
+For your own code, [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb) sets two environment variables **before** importing the SDK, then connects the exporter with the connection string the project hands out (`project().telemetry.get_application_insights_connection_string()`). No secret sits in `.env`. The exact code is in walkthrough steps 1 and 2 below.
 
-```python
-os.environ["AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING"] = "true"
-os.environ["AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED"] = "true"   # prompts/responses: workshop only
-conn = project().telemetry.get_application_insights_connection_string()
-configure_azure_monitor(connection_string=conn)
-```
-
-The project hands out its own connection string, so no secret sits in `.env`.
+---
 
 ## 2️⃣ What a span carries
 
 Spans follow the OpenTelemetry **GenAI semantic conventions**: `gen_ai.operation.name`, `gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`, `gen_ai.conversation.id`, `gen_ai.agent.name`. Add your own attributes with a span (`stark.hero`, `stark.chapter`) to slice by business context.
 
+---
+
 ## 3️⃣ Query it
 
 The notebook runs KQL on `AppDependencies`. Ingestion takes a few minutes, so `kql_wait()` retries. Table and attribute names can differ between SDK versions; if a query returns nothing, run `AppDependencies | take 5` and look at `Properties`.
+
+---
 
 ## 4️⃣ Privacy and cost
 
 - ⚠️ Content recording stores prompts and answers. Project members with *Log Analytics Reader* can read them.
 - 💰 Application Insights ingestion is billed per GB.
 - 🔒 Your own code sends nothing until `configure_azure_monitor` runs. Content recording is a separate switch: leave it off in production.
+- 📈 Quality over time (the agent's **Monitor** tab, continuous evaluation) builds on these traces: [datasets-evals.md](datasets-evals.md).
+
+---
 
 ## 🪜 Walkthrough: from a call to a number in KQL
 
@@ -126,9 +126,3 @@ In the notebook, `kql_wait(q, hours=2)` runs it and retries until rows arrive.
 | looking for chapter 03 calls in the Foundry **Traces** tab | nothing there: no agent was involved | use Application Insights. Agent traces start in chapter 04 |
 | leaving content recording on with real data | prompts and answers are stored and readable | switch it off outside the workshop |
 | forgetting `force_flush()` in a short script | the process ends before spans are sent | flush before exit |
-
----
-
-## 5️⃣ Not covered yet
-
-Continuous evaluation on live traffic, alerts and the agent Monitor tab come with agents and evaluations (chapters 04 and 11).

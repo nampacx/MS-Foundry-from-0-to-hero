@@ -45,7 +45,7 @@ flowchart TD
 | `azd up` fails on model deployment with a quota message 🔎 | not enough quota for the `capacity` in `stark.json` | lower `capacity`, free quota, or use another region |
 | `azd up` fails on a role assignment 🔎 | your account may not create role assignments | ask for Owner, or User Access Administrator on the subscription |
 | `azd` complains about extensions or `agent.yaml` | the Foundry extensions are missing or too old/new | `azd extension install microsoft.foundry`. [azure.yaml](../azure.yaml) pins the tested versions |
-| deploy fails only on `azure.ai.agent` services | hosted agents are **not verified live** here | infrastructure and `.env` are done, so chapters 00–08 work. Compare with `azd ai agent init` ([agents.md](agents.md)) |
+| deploy fails only on `azure.ai.agent` services | the extension is missing or has a different version than [azure.yaml](../azure.yaml) pins, or you lack *Foundry Project Manager* | infrastructure and `.env` are done, so every chapter except 09 and section 6 of 15 works. Run `python scripts/grant_hosted_role.py`, and compare with `azd ai agent init` ([hosted-agents.md](hosted-agents.md)) |
 | `azd up` again says the name is taken | the old Foundry account is soft-deleted | `azd down --purge`, or purge the account in the portal |
 | `.venv\Scripts\activate` is blocked on Windows 🔎 | PowerShell script policy | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, or use the VS Code kernel picker |
 
@@ -76,10 +76,10 @@ flowchart TD
 | agent answers from memory, tool not used | instructions never say *when* to use the tool, or the tool description is vague | write the description for the model, add "use tools for facts" ([tools.md](tools.md)) |
 | agent version 2 appears instead of a replacement | `create_version` with an existing name **adds** a version | expected. Delete old versions with [`delete_agent()`](../notebooks/stark_helpers.py) |
 | agents from earlier runs clutter **Build → Agents** | a notebook was stopped before its clean-up cell | run the clean-up cell, or delete the agent in the portal |
-| skills have no effect on a prompt agent | `skills=[...]` is accepted but needs the Copilot harness | see [mcp-a2a-skills.md](mcp-a2a-skills.md). The harness is a gated preview |
+| skills have no effect on a prompt agent | `skills=[...]` is accepted but needs the Copilot harness | see [mcp-skills.md](mcp-skills.md). The harness is a gated preview |
 | `not enabled for this subscription` | a gated preview feature | cannot be fixed in code. Skip that section |
 | MCP call returns an auth error | the project connection `stark-mcp` is missing | `azd deploy` runs [connect_mcp.py](../scripts/connect_mcp.py) in the *postdeploy* hook. Run it again after the function exists |
-| A2A call uses the wrong protocol version | unrequested version defaults to preview **v0.3** | use the v1.0 card or the `A2A-Version: 1.0` header ([mcp-a2a-skills.md](mcp-a2a-skills.md)) |
+| A2A call uses the wrong protocol version | unrequested version defaults to preview **v0.3** | use the v1.0 card or the `A2A-Version: 1.0` header ([capstone.md](capstone.md)) |
 | A2A call gets `403` | caller lacks *Foundry Agent Consumer* on the target | assign the role, wait a minute |
 | web search tool errors | not available in every region | the notebook catches it. Expected |
 

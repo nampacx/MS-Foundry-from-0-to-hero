@@ -7,11 +7,11 @@
 | Function | `FunctionTool` | **your code** | `function_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | Code interpreter | `CodeInterpreterTool` | Foundry sandbox | `code_interpreter_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | File search | `FileSearchTool` | Foundry (vector store) | `file_search_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
-| Web search | `WebSearchPreviewTool` | Foundry | web search call | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
+| Web search 🧪 | `WebSearchPreviewTool` | Foundry | web search call | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | MCP | `MCPTool` | remote MCP server | `mcp_list_tools`, `mcp_approval_request` | [06](../notebooks/06_mcp_tools.ipynb) |
-| A2A | `A2ATool` | remote agent | see [mcp-a2a-skills.md](mcp-a2a-skills.md) | [16](../notebooks/16_vision_a2a_capstone.ipynb) |
+| A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [16](../notebooks/16_vision_a2a_capstone.ipynb) |
 
-> ⚠️ The output items in this document were observed on a real project with throwaway agents. **Web search was not run here**, and A2A and skills are covered in [mcp-a2a-skills.md](mcp-a2a-skills.md).
+> ⚠️ The output items in this document were observed on a real project with throwaway agents. **Web search was not run here.** A2A is covered in [capstone.md](capstone.md), skills in [mcp-skills.md](mcp-skills.md).
 
 ---
 
@@ -83,7 +83,7 @@ You answer with one item per call, tied to the `call_id`:
 | return `output` as a **string** (JSON is fine) | return a Python object |
 | keep side effects behind your own checks (`transfer_funds` in [chapter 14](../notebooks/14_ultron_guardrails_redteam.ipynb)) | let the model move money |
 
-Code: [chapter 05 section 1](../notebooks/05_tools_function_and_builtin.ipynb), and the invoice agent in [chapter 13](../notebooks/13_senses_document_intelligence.ipynb).
+Code: [chapter 05 section 1](../notebooks/05_tools_function_and_builtin.ipynb) writes the loop out. From [chapter 13](../notebooks/13_senses_document_intelligence.ipynb) on, [`run_functions()`](../notebooks/stark_helpers.py) runs the same loop.
 
 ---
 
@@ -105,6 +105,8 @@ Observed: the response has a `file_search_call` item with the `queries` the mode
 The vector store is a **project resource** that outlives the agent. [Chapter 05](../notebooks/05_tools_function_and_builtin.ipynb) deletes it in its clean-up cell.
 
 ## 5️⃣ Web search
+
+> 🧪 **Preview.** The class name says so: `WebSearchPreviewTool`.
 
 `WebSearchPreviewTool()` lets the agent search the web for current facts.
 
@@ -157,16 +159,14 @@ ask_agent(agent, "question", approve=lambda item: item.server_label == "learn")
 
 > 💡 **List before you restrict.** Ask the server for its tools first (`session.list_tools()` with the `mcp` package, as in [chapter 06](../notebooks/06_mcp_tools.ipynb)), or read the `mcp_list_tools` item of the first response. Then put only the names you need into `allowed_tools`.
 
-Our own server: [src/stark-mcp](../src/stark-mcp/function_app.py), details in [mcp-a2a-skills.md](mcp-a2a-skills.md).
+What an MCP server offers besides tools, and our own server [src/stark-mcp](../src/stark-mcp/function_app.py): [mcp-skills.md](mcp-skills.md).
 
 ---
 
 ## 7️⃣ A2A and skills
 
-- **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. The calling agent in [chapter 16](../notebooks/16_vision_a2a_capstone.ipynb) combines it with an `MCPTool`.
-- **Skills** are not tools: they add procedures (a `SKILL.md`) and can be attached to a toolbox ([chapter 07](../notebooks/07_agent_skills.ipynb)) 🧪 preview.
-
-Both are explained in [mcp-a2a-skills.md](mcp-a2a-skills.md).
+- **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. See [capstone.md](capstone.md) (chapter 16).
+- **Skills** are not tools: they add procedures (a `SKILL.md`) 🧪. See [mcp-skills.md](mcp-skills.md) (chapter 07).
 
 ---
 
@@ -217,6 +217,6 @@ agent = project().agents.create_version(
 | no "use tools for facts" in the instructions | the model answers from memory | say **when** to use tools |
 | `output` as a Python object in `function_call_output` | the call fails | return a **string** (`json.dumps(...)`) |
 | trusting `arguments` | a prompt injection can choose them | `json.loads`, then validate |
-| not capping the tool loop | endless rounds and cost | cap the rounds (`max_rounds` in [`ask_agent()`](../notebooks/stark_helpers.py)) |
+| not capping the tool loop | endless rounds and cost | cap the rounds (`max_rounds` in [`run_functions()` and `ask_agent()`](../notebooks/stark_helpers.py)) |
 | leaving the vector store behind | it outlives the agent and keeps data | delete it in the clean-up cell |
 | `require_approval="never"` on a tool that writes | no human sees the call | keep approval for anything that changes state |

@@ -1,11 +1,11 @@
 # 📄 9 · Agents as files: YAML, azd and CI
 
-> 💡 **TL;DR:** Keep agent definitions in git. This repo supports two routes: [agents/*.yaml](../agents/jarvis.yaml) deployed by [deploy_agents.py](../scripts/deploy_agents.py) (prompt agents, plain SDK), and azd `azure.yaml` services (`azure.ai.agent`, `azure.ai.toolbox`, `azure.ai.skill`, `azure.ai.connection`). Re-deploying creates a **new version**.
+> 💡 **TL;DR:** Keep agent definitions in git. This repo supports two routes: [agents/*.yaml](../agents/jarvis.yaml) deployed by [deploy_agents.py](../scripts/deploy_agents.py) (prompt agents, plain SDK), and azd `azure.yaml` services (`azure.ai.agent`; azd also knows `azure.ai.toolbox`, `azure.ai.skill` and `azure.ai.connection`, which this repo does not use). Re-deploying creates a **new version**.
 
 | 📄 Route | 🧰 Command | 🤖 Agent kinds | ✅ Verified here |
 |---|---|---|---|
 | `agents/*.yaml` | `python scripts/deploy_agents.py` | prompt | YAML parsing, `${VAR}` resolution (dry run) |
-| `azure.yaml` services | `azd deploy` | prompt, hosted, voice | ❌ not run against Azure |
+| `azure.yaml` services | `azd deploy` | prompt, hosted | ✅ hosted: `invoice-workflow`, `morning-briefing` deployed live. ❌ `kind: prompt` not run |
 
 Hands-on: [notebooks/08_agents_from_yaml.ipynb](../notebooks/08_agents_from_yaml.ipynb).
 

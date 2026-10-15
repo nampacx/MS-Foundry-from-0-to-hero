@@ -1,6 +1,6 @@
-# 🚢 10 · How a hosted agent gets deployed
+# 🚢 10 · Hosted agents: your code, run by Foundry
 
-> 💡 **TL;DR:** A hosted agent is **your code** that Foundry runs for you. You describe it once in `azure.yaml`, run `azd deploy`, and Foundry packages, builds and starts it as a new **agent version**. The deploy only needs your code and the right roles. There are five ways to ship the same agent; this repo uses the first one.
+> 💡 **TL;DR:** A hosted agent is **your code** that Foundry runs for you. You describe it once in `azure.yaml`, run `azd deploy`, and Foundry packages, builds and starts it as a new **agent version**. The deploy only needs your code and the right roles. There are five ways to ship the same agent; this repo uses the first one. 🧪 Hosted agents are a newer feature.
 
 | 🛤️ Way | 📦 What you ship | 🐳 Docker? | 🎯 Best for | ✅ In this repo |
 |---|---|---|---|---|
@@ -10,7 +10,16 @@
 | 4️⃣ **CI/CD** (`azd pipeline config`) | the same as 1 or 2, run by a pipeline | no | repeatable releases | no |
 | 5️⃣ **Terraform** (agent as IaC) or **VS Code** | container image digest via AzAPI, or the editor | image: yes | IaC-managed agent definitions | no |
 
-> 🧭 New to the difference between prompt and hosted agents? Read [agents.md](agents.md) first.
+| 🧾 | 🧩 Prompt agent ([agents.md](agents.md)) | 🏗️ Hosted agent (this doc) |
+|---|---|---|
+| You provide | `PromptAgentDefinition` | code + an `azure.yaml` service |
+| Created with | `agents.create_version` / [deploy_agents.py](../scripts/deploy_agents.py) | `azd deploy` |
+| Logic | the model + tools | anything your code does (Agent Framework, LangGraph, your own) |
+| Runs | inside Foundry's agent runtime | in a managed container with its own Entra identity |
+| Called with | `agent_reference` in a Responses call | the same |
+| Chapter | [04](../notebooks/04_jarvis_prompt_agent.ipynb)–[08](../notebooks/08_agents_from_yaml.ipynb) | [09](../notebooks/09_hosted_agent.ipynb), [15](../notebooks/15_workflows.ipynb) section 6 |
+
+> ✅ **Deployed live:** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project, with the `azure.ai.agent` services in [azure.yaml](../azure.yaml) as they are. `jarvis-hosted` uses the same format. If a newer `azd` rejects a field, run `azd ai agent init --deploy-mode code` in a scratch folder and compare.
 
 ---
 
@@ -57,7 +66,7 @@ The service entry in [azure.yaml](../azure.yaml), field by field:
 | `env` | your own variables, filled from the `azd` environment |
 | `container.resources` | CPU and memory of the sandbox |
 
-> ⚠️ **Check before you rely on it:** the Microsoft Learn example writes `entryPoint` as a list (`[python, main.py]`). This repo writes it as a string (`main.py`). The repo's `azure.yaml` has not been deployed in a live subscription, so if `azd` rejects it, compare with the output of `azd ai agent init --deploy-mode code`.
+> ⚠️ **Check before you rely on it:** the Microsoft Learn example writes `entryPoint` as a list (`[python, main.py]`). This repo writes it as a string (`main.py`), and that deployed fine for `invoice-workflow` and `morning-briefing`. If a newer `azd` rejects it, compare with the output of `azd ai agent init --deploy-mode code`.
 
 ---
 
@@ -174,7 +183,7 @@ flowchart LR
 
 ---
 
-## 6️⃣ Other ways to deploy
+## 6️⃣ Other ways to deploy (reference only)
 
 Everything below ends the same way: an agent version that goes `creating` → `active`. These ways are **documented by Microsoft but not used or tested in this repo**.
 
@@ -227,7 +236,7 @@ The same choice (code ZIP or container) from the editor. It packages, uploads an
 
 ---
 
-## 7️⃣ Infrastructure as code
+## 7️⃣ Infrastructure as code (reference only)
 
 | 🛠️ Tool | 🤖 Can it deploy the hosted agent? |
 |---|---|
@@ -292,7 +301,7 @@ Things that surprise people:
 
 ## 📚 Sources
 
-Microsoft Learn, checked on the day this was written. Foundry moves fast, so recheck before you rely on a flag.
+Microsoft Learn, checked in October 2026. Foundry moves fast, so recheck before you rely on a flag.
 
 - [Deploy a hosted agent from source code](https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code)
 - [Deploy a hosted agent (container, SDK, REST)](https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent)

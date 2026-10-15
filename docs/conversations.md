@@ -35,9 +35,13 @@ sequenceDiagram
 
 A conversation is an ordered list of **items**: `message`, tool calls, tool results, reasoning. `conversations.items.list(conv_id)` shows them, and so does the portal. You can add items yourself (`conversations.items.create`) to seed context without calling the model.
 
+---
+
 ## 2️⃣ Responses
 
 Every `responses.create` stores a **response** (`store=True` by default). Its `usage` field has the token counts. `store=False` makes the call one-shot: not stored, not retrievable, and you carry context yourself.
+
+---
 
 ## 3️⃣ Agents and conversations
 
@@ -45,9 +49,13 @@ An agent is referenced per call with `extra_body={"agent_reference": {"name": ..
 
 > ℹ️ Hosted agents also have **sessions** (sandbox + files). A session is not a conversation: see [Manage hosted agent sessions](https://learn.microsoft.com/azure/foundry/agents/how-to/manage-hosted-sessions).
 
+---
+
 ## 4️⃣ Retention and deletion
 
-Conversations and responses persist until deleted (`conversations.delete`, `responses.delete`). Deleting a conversation removes its items. Where the data lives depends on the setup type: see [architecture.md](architecture.md).
+Conversations and responses persist until deleted (`conversations.delete`, `responses.delete`). Deleting a conversation removes its items. Where the data lives depends on the setup type: see [concepts.md](concepts.md).
+
+---
 
 ## 5️⃣ Finding conversations in monitoring
 

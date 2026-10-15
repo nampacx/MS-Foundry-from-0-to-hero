@@ -45,7 +45,7 @@ Think of it as a company building. The resource is the building, the project is 
 | **Project** | one office | a workspace inside the resource. Agents, conversations, datasets, evaluations and connections live here | `STARK_FOUNDRY_PROJECT` |
 | **Project endpoint** | the office address | `https://<resource>.services.ai.azure.com/api/projects/<project>`. The one URL the SDK needs | `STARK_PROJECT_ENDPOINT` |
 | **Account endpoint** | the building's loading dock | `https://<resource>.cognitiveservices.azure.com`. For Foundry Tools (OCR, Document Intelligence) | `STARK_ACCOUNT_ENDPOINT` |
-| **Model** | a machine design | `gpt-5.6-terra`, `text-embedding-3-small`, ... | `model` in [stark.json](../infra/config/stark.json) |
+| **Model** | a machine design | a chat model, an embedding model, ... (the list is in [stark.json](../infra/config/stark.json)) | `model` in [stark.json](../infra/config/stark.json) |
 | **Deployment** | a machine you switched on | a named, billable instance of a model. **You call the deployment name, not the model name** | `STARK_CHAT_MODEL`, `STARK_JUDGE_MODEL`, ... |
 | **Connection** | a key in the safe | a project-level place for credentials of an external service (MCP server, remote agent) | `stark-mcp` (chapter 06) |
 | **Application Insights** | the security camera | stores traces and metrics | `STARK_APPINSIGHTS` |
@@ -67,6 +67,8 @@ This is the part most newcomers mix up.
 | Changes without touching the caller | no | yes: publish a new version |
 | Chapters | [01](../notebooks/01_dummy_first_call.ipynb) · [02](../notebooks/02_conversations.ipynb) | [04](../notebooks/04_jarvis_prompt_agent.ipynb) on |
 
+How a model call looks in code, with streaming and structured output: [models.md](models.md).
+
 A model **forgets everything** after each call. History is something you add: either you send it again, or Foundry stores it for you ([conversations.md](conversations.md)). An agent is **not a running process** for a prompt agent: it is a stored definition. Foundry loads the definition when a request arrives ([agents.md](agents.md)).
 
 ### The words around a request
@@ -83,15 +85,16 @@ A model **forgets everything** after each call. History is something you add: ei
 
 ---
 
-## 3️⃣ Which API?
+## 3️⃣ Where your data lives
 
-Foundry speaks several shapes of OpenAI-style APIs. This repo uses the newest one.
+Foundry Agent Service is **stateful**. Conversations, responses, files, vector stores, datasets and agent versions stay until you delete them. That is why every notebook ends with a clean-up cell.
 
-| 🔌 API | 🎯 Use it for | 🧑‍💻 In this repo |
+| 🗄️ Setup | 📦 Where agent data is stored | 🏗️ Here |
 |---|---|---|
-| **Responses** | new work: stateful, tools, agents | everywhere (`responses.create`) |
-| **Chat Completions** | existing code that sends a `messages` list | shown once in [chapter 01](../notebooks/01_dummy_first_call.ipynb) |
-| **Embeddings** | turn text into vectors for search | [chapter 01](../notebooks/01_dummy_first_call.ipynb), via [`embeddings_client()`](../notebooks/stark_helpers.py) (the project route has no `/embeddings`) |
+| **Basic** | a Microsoft-managed store | ✅ used by this repo |
+| **Standard** | your own Storage, Cosmos DB and AI Search | ❌ not deployed |
+
+> ⚠️ **Demo-grade:** public endpoints, one project, no private networking, no customer-managed keys. This is a learning setup, not a landing zone.
 
 ---
 
@@ -117,7 +120,7 @@ flowchart LR
 
 > ⚠️ A role assignment can take a minute or more to work. A `403` right after `azd up` is often just that. See [troubleshooting.md](troubleshooting.md).
 
-Secrets for **other** systems (an MCP key, a remote agent) go into a **project connection**, never into an agent definition or a notebook ([mcp-a2a-skills.md](mcp-a2a-skills.md)).
+Secrets for **other** systems (an MCP key, a remote agent) go into a **project connection**, never into an agent definition or a notebook ([mcp-skills.md](mcp-skills.md)).
 
 ---
 
@@ -158,5 +161,6 @@ Foundry changes fast, so the official pages mix several generations. Four things
 |---|---|
 | deploy and run the first notebook | [getting-started.md](getting-started.md) |
 | fix an error | [troubleshooting.md](troubleshooting.md) |
-| see how the pieces fit | [architecture.md](architecture.md) |
+| make your first model call | [models.md](models.md) |
+| look up a word | [glossary.md](glossary.md) |
 | find things in the portal | [portal-tour.md](portal-tour.md) |

@@ -36,6 +36,10 @@ flowchart LR
 | [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) `>= 1.36.0` | runs the deployment ([azure.yaml](../azure.yaml) pins this) | `azd version` |
 | Python 3.11+ | notebooks and scripts | `python --version` |
 | Jupyter or VS Code | opens the notebooks | `jupyter lab` |
+| *optional:* .NET runtime | only chapter 15 section 5 (declarative YAML workflows use PowerFx) | `dotnet --list-runtimes` |
+| *optional:* quota for the Content Understanding models | only chapter 13 section 3 (`STARK_ENABLE_CU=true`) | step 2 |
+
+> 💡 **No Docker needed.** Hosted agents are built by Foundry from a code ZIP ([hosted-agents.md](hosted-agents.md)).
 
 > 💡 **What is azd?** `azd` reads [azure.yaml](../azure.yaml), deploys the Bicep in [infra/](../infra/main.bicep), then runs **hooks** (small scripts). Here one hook writes your `.env` file.
 
@@ -70,8 +74,9 @@ azd up                                        # asks for an environment name and
 
 ```mermaid
 flowchart LR
-  P[☁️ provision<br/>infra/main.bicep] --> H[🪝 postprovision<br/>write_env.py]
-  H --> D[📦 deploy<br/>stark-mcp function + hosted agents]
+  P[☁️ provision<br/>infra/azd/main.bicep] --> H[🪝 postprovision<br/>write_env.py]
+  H --> S[🪝 predeploy<br/>sync_skills.py]
+  S --> D[📦 deploy<br/>stark-mcp function + hosted agents]
   D --> H2[🪝 postdeploy<br/>connect_mcp.py]
 ```
 
@@ -84,9 +89,11 @@ flowchart LR
 | `.env` file | [write_env.py](../scripts/write_env.py), template [.env.example](../.env.example) | all |
 | Project connection `stark-mcp` | [connect_mcp.py](../scripts/connect_mcp.py) | 06 |
 
-Everything lands in the resource group `rg-stark-<env>`.
+Everything lands in the resource group `rg-stark-<env>`. [infra/azd/main.bicep](../infra/azd/main.bicep) creates that group and calls [infra/main.bicep](../infra/main.bicep), which deploys into it. You can also deploy `infra/main.bicep` alone into an existing resource group with `az deployment group create`.
 
-> ⚠️ **Hosted agents are the least tested part.** If `azd up` fails in the *deploy* phase on `azure.ai.agent` services, the infrastructure and `.env` are already done. Chapters 00 to 08 still work. See [troubleshooting.md](troubleshooting.md).
+The model list is data, not code: [stark.json](../infra/config/stark.json). Agent data lives in Foundry's **basic setup** ([concepts.md](concepts.md)).
+
+> ⚠️ **Hosted agents need the extension and the right roles.** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. If `azd up` still fails in the *deploy* phase on `azure.ai.agent` services, the infrastructure and `.env` are already done. All chapters except 09 and section 6 of 15 still work. See [troubleshooting.md](troubleshooting.md).
 
 ### 💰 What it costs
 
