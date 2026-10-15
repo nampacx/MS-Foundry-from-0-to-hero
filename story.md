@@ -24,15 +24,26 @@ Models forget. Manual history, `previous_response_id` chains (and forking), dura
 ### 📈 03 · `03_tracing_and_monitoring` – The lab instruments
 OpenTelemetry tracing into Application Insights, custom spans, finding a conversation in the portal, and KQL for tokens and latency. See [docs/observability.md](docs/observability.md).
 
-## 🧥 Act II · The Suit – J.A.R.V.I.S. *(planned)*
-| # | Chapter | What it covers |
-|---|---|---|
-| 04 | `jarvis_prompt_agent` | agents from code: `create_version`, versions, `agent_reference` |
-| 05 | `tools_function_and_builtin` | function calling, code interpreter, file search, web search |
-| 06 | `mcp_tools` | MCP servers as tools: approvals, `allowed_tools`, our own MCP Function |
-| 07 | `agent_skills` 🧪 | `SKILL.md` skills, uploaded and versioned in Foundry |
-| 08 | `agents_from_yaml` | declarative agent YAML, `azd ai agent` |
-| 09 | `hosted_agent` | your own agent container, deployed with azd |
+## 🧥 Act II · The Suit – J.A.R.V.I.S.
+Dummy answered; J.A.R.V.I.S. *acts*. Background: [docs/agents.md](docs/agents.md), [docs/agents-yaml.md](docs/agents-yaml.md), [docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md).
+
+### 🧥 04 · `04_jarvis_prompt_agent` – The first agent
+A prompt agent from code: `create_version`, talking through conversations and `agent_reference`, versions (roll out a new personality without touching clients), templated instructions with structured inputs, streaming.
+
+### 🛠️ 05 · `05_tools_function_and_builtin` – Hands
+Who runs a tool? **Function calling** (your code, in a loop), **code interpreter** (Foundry sandbox), **file search** (vector store over the workshop handbook), **web search** (with a data-boundary warning).
+
+### 🔌 06 · `06_mcp_tools` – Plug into any toolbox
+MCP servers as tools: the public Microsoft Learn server with approvals and `allowed_tools`, then our own **`stark-mcp`** Azure Function behind a project connection (the key never enters the agent). Tool output is untrusted input.
+
+### 📜 07 · `07_agent_skills` 🧪 – A procedure, not a tool
+Author a `SKILL.md`, upload versions, promote the default, attach it to a toolbox, read it as an MCP resource, and download it into a hosted agent.
+
+### 📄 08 · `08_agents_from_yaml` – Agents as files
+`agents/*.yaml` + `scripts/deploy_agents.py` (dry run, deploy, new version per run) and the azd `azure.yaml` route (`azure.ai.agent` services).
+
+### 🏗️ 09 · `09_hosted_agent` – Your code, Foundry's runtime
+A hosted agent built with Microsoft Agent Framework: run locally with `azd ai agent run`, deploy with `azd deploy`, call it like any agent, and see the escalation skill in its answers.
 
 ## 🧪 Act III · The Lab – F.R.I.D.A.Y. *(planned)*
 | # | Chapter | What it covers |

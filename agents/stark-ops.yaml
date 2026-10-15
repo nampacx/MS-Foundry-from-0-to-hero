@@ -1,0 +1,16 @@
+# Prompt agent that uses our own MCP server (chapter 06 creates the project connection `stark-mcp`).
+name: stark-ops
+kind: prompt
+description: Workshop operations agent backed by the stark-mcp tools.
+model: ${STARK_CHAT_MODEL}
+instructions: |
+  You run the Stark workshop operations desk.
+  Always use the available tools for suit and workshop facts; never guess.
+  Answer in at most three sentences.
+tools:
+  - type: mcp
+    server_label: stark
+    server_url: ${STARK_MCP_URL}
+    project_connection_id: stark-mcp
+    require_approval: never
+    allowed_tools: [list_suits, get_suit, get_workshop_status]

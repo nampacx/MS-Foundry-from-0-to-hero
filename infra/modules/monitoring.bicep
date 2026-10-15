@@ -30,3 +30,4 @@ output workspaceName string = log.name
 output workspaceCustomerId string = log.properties.customerId
 output appInsightsId string = appi.id
 output appInsightsName string = appi.name
+output appInsightsConnectionString string = appi.properties.ConnectionString

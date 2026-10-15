@@ -23,7 +23,7 @@ Infrastructure is **Bicep + azd** 🦾, custom code is **Python only** 🐍.
 | A set of notebooks that each teach one Foundry concept | Cost-optimised: models and Application Insights bill while deployed |
 | Honest about preview features (marked 🧪) | A promise that preview APIs stay the same |
 
-📚 **Docs:** [📖 story.md](story.md) – the chapters as a story · [🏗️ docs/architecture.md](docs/architecture.md) – how Foundry is put together · [💬 docs/conversations.md](docs/conversations.md) – how conversations work · [📈 docs/observability.md](docs/observability.md) – tracing and monitoring
+📚 **Docs:** [📖 story.md](story.md) – the chapters as a story · [🏗️ docs/architecture.md](docs/architecture.md) – how Foundry is put together · [💬 docs/conversations.md](docs/conversations.md) – how conversations work · [📈 docs/observability.md](docs/observability.md) – tracing and monitoring · [🤖 docs/agents.md](docs/agents.md) – prompt vs hosted agents and tools · [📄 docs/agents-yaml.md](docs/agents-yaml.md) – agents as files · [🔌 docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md) – MCP, skills, A2A
 
 ---
 
@@ -56,6 +56,7 @@ flowchart LR
 python scripts/check_models.py swedencentral   # are my models available? edit stark.json if not
 azd auth login && az login
 azd up                                         # provisions Foundry + monitoring, writes .env
+azd extension install microsoft.foundry         # azure.ai.* hosts + `azd ai agent` (chapters 08-09)
 python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 jupyter lab                                    # or open notebooks in VS Code, start with 00
@@ -77,6 +78,14 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 01 | [Dummy's first call](notebooks/01_dummy_first_call.ipynb) | ✅ |
 | 02 | [Conversations](notebooks/02_conversations.ipynb) | ✅ |
 | 03 | [Tracing and monitoring](notebooks/03_tracing_and_monitoring.ipynb) | ✅ |
-| 04–16 | Agents, tools, MCP, skills, YAML, hosted agents, evals, Foundry Tools, guardrails, workflows, A2A, capstone | 🚧 in progress, see [story.md](story.md) |
+| 04 | [J.A.R.V.I.S., the first agent](notebooks/04_jarvis_prompt_agent.ipynb) | ✅ |
+| 05 | [Tools: function, code interpreter, file search, web](notebooks/05_tools_function_and_builtin.ipynb) | ✅ |
+| 06 | [MCP tools (public + our own server)](notebooks/06_mcp_tools.ipynb) | ✅ |
+| 07 | [Skills 🧪](notebooks/07_agent_skills.ipynb) | ✅ |
+| 08 | [Agents from YAML](notebooks/08_agents_from_yaml.ipynb) | ✅ |
+| 09 | [Hosted agent](notebooks/09_hosted_agent.ipynb) | ✅ |
+| 10–16 | Datasets and evals, Foundry Tools (OCR, Document Intelligence), guardrails, workflows, A2A, capstone | 🚧 in progress, see [story.md](story.md) |
 
-> ⚠️ **Not verified against a live subscription:** the notebooks and Bicep were written against the current Microsoft Learn documentation and validated statically (Bicep build, notebook syntax). Run them in order and open an issue if an SDK call has drifted.
+> ⚠️ **Not verified against a live subscription:** hosted agents (`azure.yaml` `azure.ai.*` services) and preview features (skills, toolboxes) are the least certain parts.
+>
+> ⚠️ **General:** the notebooks and Bicep were written against the current Microsoft Learn documentation and validated statically (Bicep build, notebook syntax). Run them in order and open an issue if an SDK call has drifted.

@@ -28,7 +28,7 @@ def check_env() -> dict[str, str]:
 
 
 _credential = None
-_project = None
+_projects: dict[bool, object] = {}
 
 
 def credential():
@@ -39,13 +39,16 @@ def credential():
     return _credential
 
 
-def project():
-    """The `AIProjectClient` (agents, datasets, evaluations, connections, telemetry)."""
-    global _project
-    if _project is None:
+def project(preview: bool = False):
+    """The `AIProjectClient` (agents, datasets, evaluations, connections, telemetry).
+
+    `preview=True` opts in to preview operations such as `project.beta.skills` (chapter 07).
+    """
+    if preview not in _projects:
         from azure.ai.projects import AIProjectClient
-        _project = AIProjectClient(endpoint=cfg("STARK_PROJECT_ENDPOINT"), credential=credential())
-    return _project
+        kwargs = {"allow_preview": True} if preview else {}
+        _projects[preview] = AIProjectClient(endpoint=cfg("STARK_PROJECT_ENDPOINT"), credential=credential(), **kwargs)
+    return _projects[preview]
 
 
 def openai_client(**kwargs):
@@ -99,3 +102,63 @@ def show_output(response) -> None:
     """Print the id, model and text of a Responses API result."""
     print(f"id={response.id}  model={getattr(response, 'model', '?')}")
     print(response.output_text)
+
+
+def sh(command: str) -> str:
+    """Run a shell command (azd, az, python scripts), print and return its output."""
+    import subprocess
+    proc = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=ROOT)
+    out = (proc.stdout + proc.stderr).strip()
+    print(out)
+    if proc.returncode != 0:
+        print(f"[exit code {proc.returncode}]")
+    return out
+
+
+def agent_ref(agent) -> dict:
+    """`extra_body` that points a response at an agent (name or agent object)."""
+    name = getattr(agent, "name", agent)
+    return {"agent_reference": {"name": name, "type": "agent_reference"}}
+
+
+def ask_agent(agent, text, conversation: str | None = None, approve=None, oai=None, max_rounds: int = 5):
+    """Send one message to an agent and answer MCP approval requests.
+
+    `approve(item) -> bool` decides each `mcp_approval_request` (default: deny, which is the safe choice).
+    Returns the final response.
+    """
+    oai = oai or openai_client()
+    extra = agent_ref(agent)
+    kwargs = {"conversation": conversation} if conversation else {}
+    resp = oai.responses.create(input=text, extra_body=extra, **kwargs)
+    for _ in range(max_rounds):
+        requests_ = [i for i in resp.output if i.type == "mcp_approval_request"]
+        if not requests_:
+            break
+        decisions = []
+        for item in requests_:
+            ok = bool(approve(item)) if approve else False
+            print(f"  approval request: {item.server_label}.{getattr(item, 'name', '?')}({getattr(item, 'arguments', '')}) -> {'APPROVED' if ok else 'DENIED'}")
+            decisions.append({"type": "mcp_approval_response", "approve": ok, "approval_request_id": item.id})
+        resp = oai.responses.create(input=decisions, previous_response_id=resp.id, extra_body=extra)
+    return resp
+
+
+def tool_calls(resp) -> list[str]:
+    """Names of the tool calls in a response (function, MCP, code interpreter, search, ...)."""
+    names = []
+    for item in resp.output:
+        if item.type == "message":
+            continue
+        names.append(f"{item.type}:{getattr(item, 'name', '') or getattr(item, 'server_label', '')}".rstrip(":"))
+    return names
+
+
+def delete_agent(name: str) -> None:
+    """Delete every version of an agent (ignore errors: it may not exist)."""
+    try:
+        for v in list(project().agents.list_versions(agent_name=name)):
+            project().agents.delete_version(agent_name=name, agent_version=v.version)
+        print(f"deleted agent {name}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"skip {name}: {type(exc).__name__}")

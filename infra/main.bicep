@@ -6,6 +6,8 @@ param location string = resourceGroup().location
 param environment string
 param principalId string = ''
 param principalType string = 'User'
+@description('Deploy the stark-mcp Function (chapter 06).')
+param enableMcp bool = true
 
 var cfg = loadJsonContent('config/stark.json')
 var suffix = toLower(uniqueString(subscription().id, resourceGroup().id))
@@ -37,6 +39,18 @@ module foundry 'modules/foundry.bicep' = {
   }
 }
 
+module mcp 'modules/mcp-function.bicep' = if (enableMcp) {
+  name: 'mcp'
+  params: {
+    location: location
+    functionAppName: 'func-stark-mcp-${take(suffix, 8)}'
+    planName: 'plan-stark-mcp-${environment}'
+    storageName: 'ststark${take(suffix, 10)}'
+    appInsightsConnectionString: monitoring.outputs.appInsightsConnectionString
+    tags: tags
+  }
+}
+
 module rbac 'modules/rbac.bicep' = {
   name: 'rbac'
   params: {
@@ -57,3 +71,5 @@ output chatModel string = cfg.chatModel
 output judgeModel string = cfg.judgeModel
 output fastModel string = cfg.fastModel
 output embeddingModel string = cfg.embeddingModel
+output mcpFunctionName string = enableMcp ? mcp!.outputs.name : ''
+output mcpUrl string = enableMcp ? 'https://${mcp!.outputs.defaultHostName}/runtime/webhooks/mcp' : ''

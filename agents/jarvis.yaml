@@ -1,0 +1,9 @@
+# Declarative prompt agent, deployed by scripts/deploy_agents.py (chapter 08).
+# ${VAR} is replaced from .env. Reusing the name creates a new version.
+name: jarvis
+kind: prompt
+description: J.A.R.V.I.S., Tony Stark's workshop assistant.
+model: ${STARK_CHAT_MODEL}
+instructions_file: jarvis.instructions.md
+tools:
+  - type: code_interpreter
