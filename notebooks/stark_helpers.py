@@ -162,3 +162,66 @@ def delete_agent(name: str) -> None:
         print(f"deleted agent {name}")
     except Exception as exc:  # noqa: BLE001
         print(f"skip {name}: {type(exc).__name__}")
+
+
+# ---------------------------------------------------------------- evaluations
+def wait_eval_run(eval_id: str, run_id: str, oai=None, every: int = 5, timeout: int = 1800):
+    """Poll an evaluation run until it ends; raise unless it completed."""
+    oai = oai or openai_client()
+    t0 = time.time()
+    while True:
+        run = oai.evals.runs.retrieve(run_id=run_id, eval_id=eval_id)
+        if run.status in ("completed", "failed", "canceled"):
+            break
+        if time.time() - t0 > timeout:
+            raise TimeoutError(f"evaluation run {run_id} still {run.status} after {timeout}s")
+        print(f"  {run.status} ...")
+        time.sleep(every)
+    if run.status != "completed":
+        raise RuntimeError(f"evaluation run ended as {run.status}: {getattr(run, 'error', None)}")
+    return run
+
+
+def _d(obj):
+    """Plain dict from an SDK model, a dict or None."""
+    if obj is None:
+        return {}
+    if isinstance(obj, dict):
+        return obj
+    return obj.to_dict() if hasattr(obj, "to_dict") else dict(obj)
+
+
+def eval_scores(eval_id: str, run_id: str, oai=None):
+    """One row per (item, evaluator): criterion, passed, score, reason, query."""
+    import pandas as pd
+    oai = oai or openai_client()
+    rows = []
+    for item in oai.evals.runs.output_items.list(run_id=run_id, eval_id=eval_id):
+        item = _d(item)
+        source = _d(item.get("datasource_item"))
+        for res in item.get("results") or []:
+            res = _d(res)
+            rows.append({"query": str(source.get("query", source.get("messages", "")))[:70], "criterion": res.get("name"),
+                         "passed": res.get("passed"), "score": res.get("score"), "reason": str(res.get("reason", ""))[:110]})
+    return pd.DataFrame(rows)
+
+
+def pass_rates(run) -> dict[str, float]:
+    """Pass rate per evaluator from a completed run."""
+    out = {}
+    for entry in _d(run).get("per_testing_criteria_results") or []:
+        entry = _d(entry)
+        name = entry.get("name") or entry.get("testing_criteria")
+        total = (entry.get("passed") or 0) + (entry.get("failed") or 0)
+        out[name] = round((entry.get("passed") or 0) / total, 2) if total else float("nan")
+    return out
+
+
+def assert_pass_rate(run, minimum: float = 0.8) -> None:
+    """CI-style quality gate: raise when any evaluator's pass rate is below `minimum`."""
+    rates = pass_rates(run)
+    low = {k: v for k, v in rates.items() if not v >= minimum}
+    print("pass rates:", rates)
+    if low:
+        raise AssertionError(f"quality gate failed (< {minimum}): {low}")
+    print(f"quality gate passed (>= {minimum})")

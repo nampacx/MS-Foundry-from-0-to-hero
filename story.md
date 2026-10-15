@@ -45,11 +45,14 @@ Author a `SKILL.md`, upload versions, promote the default, attach it to a toolbo
 ### 🏗️ 09 · `09_hosted_agent` – Your code, Foundry's runtime
 A hosted agent built with Microsoft Agent Framework: run locally with `azd ai agent run`, deploy with `azd deploy`, call it like any agent, and see the escalation skill in its answers.
 
-## 🧪 Act III · The Lab – F.R.I.D.A.Y. *(planned)*
-| # | Chapter | What it covers |
-|---|---|---|
-| 10 | `datasets_and_evals` | versioned datasets, built-in evaluators, cloud evaluation runs |
-| 11 | `conversation_and_trace_evals` | conversation-level evals, evaluating live traces, continuous evaluation |
+## 🧪 Act III · The Lab – F.R.I.D.A.Y.
+*"Does it actually work?"* Background: [docs/datasets-evals.md](docs/datasets-evals.md).
+
+### 🧪 10 · `10_datasets_and_evals` – Prove it
+Upload a versioned dataset, define an evaluation (task adherence, intent resolution, coherence, violence), run it against an agent, read per-item reasons, fix the instructions, run again, compare pass rates, and add a CI-style quality gate. Also: scoring saved responses against ground truth (F1).
+
+### 💬 11 · `11_conversation_and_trace_evals` 🧪 – Judge the whole conversation
+Conversation-level evaluators on a dataset of multi-turn chats (the frustrating one fails), then evaluation of real, traced conversations from Application Insights (by id and by agent filter), and continuous evaluation.
 
 ## 🔬 Act IV · The Senses *(planned)*
 | # | Chapter | What it covers |
@@ -57,10 +60,11 @@ A hosted agent built with Microsoft Agent Framework: run locally with `azd ai ag
 | 12 | `senses_ocr_read` | OCR / Read on images and PDFs |
 | 13 | `senses_document_intelligence` | Document Intelligence and Content Understanding, as an agent tool |
 
-## ⚠️ Act V · The Warning – Ultron *(planned)*
-| # | Chapter | What it covers |
-|---|---|---|
-| 14 | `ultron_guardrails_redteam` 🧪 | guardrails, prompt injection through tools, red teaming |
+## ⚠️ Act V · The Warning – Ultron
+Background: [docs/guardrails.md](docs/guardrails.md).
+
+### ⚠️ 14 · `14_ultron_guardrails_redteam` 🧪 – What happens without guardrails
+A safe indirect prompt-injection demo (an email tells the agent to transfer money), four defences compared (naive, hardened instructions, approval gate, least privilege), a guardrail with Prompt Shields attached to an agent, and the AI Red Teaming Agent.
 
 ## 🌐 Act VI · The Avengers – Vision *(planned)*
 | # | Chapter | What it covers |
