@@ -8,8 +8,11 @@ param principalId string = ''
 param principalType string = 'User'
 @description('Deploy the stark-mcp Function (chapter 06).')
 param enableMcp bool = true
+@description('Also deploy the models Content Understanding needs (chapter 13). Off by default: they need extra quota.')
+param enableContentUnderstanding bool = false
 
 var cfg = loadJsonContent('config/stark.json')
+var deployedModels = enableContentUnderstanding ? concat(cfg.models, cfg.contentUnderstandingModels) : cfg.models
 var suffix = toLower(uniqueString(subscription().id, resourceGroup().id))
 var tags = { project: 'stark', 'azd-env-name': environment }
 
@@ -34,7 +37,7 @@ module foundry 'modules/foundry.bicep' = {
     projectName: projectName
     workspaceId: monitoring.outputs.workspaceId
     appInsightsName: monitoring.outputs.appInsightsName
-    models: cfg.models
+    models: deployedModels
     tags: tags
   }
 }
@@ -73,3 +76,4 @@ output fastModel string = cfg.fastModel
 output embeddingModel string = cfg.embeddingModel
 output mcpFunctionName string = enableMcp ? mcp!.outputs.name : ''
 output mcpUrl string = enableMcp ? 'https://${mcp!.outputs.defaultHostName}/runtime/webhooks/mcp' : ''
+output contentUnderstandingEnabled bool = enableContentUnderstanding

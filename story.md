@@ -54,11 +54,14 @@ Upload a versioned dataset, define an evaluation (task adherence, intent resolut
 ### 💬 11 · `11_conversation_and_trace_evals` 🧪 – Judge the whole conversation
 Conversation-level evaluators on a dataset of multi-turn chats (the frustrating one fails), then evaluation of real, traced conversations from Application Insights (by id and by agent filter), and continuous evaluation.
 
-## 🔬 Act IV · The Senses *(planned)*
-| # | Chapter | What it covers |
-|---|---|---|
-| 12 | `senses_ocr_read` | OCR / Read on images and PDFs |
-| 13 | `senses_document_intelligence` | Document Intelligence and Content Understanding, as an agent tool |
+## 🔬 Act IV · The Senses
+Not everything is a language model. Background: [docs/foundry-tools.md](docs/foundry-tools.md).
+
+### 👁️ 12 · `12_senses_ocr_read` – Reading the world
+Text from a photographed whiteboard (Vision Read, with drawn bounding boxes) and from PDFs (Document Intelligence `prebuilt-read` and `prebuilt-layout` with tables and Markdown), plus a tiny OCR check you can assert.
+
+### 🧾 13 · `13_senses_document_intelligence` – From pixels to data
+`prebuilt-invoice` and `prebuilt-receipt` with confidence thresholds and arithmetic checks, Content Understanding analyzers (prebuilt and a custom schema with extract/generate/classify fields), and the whole thing as an **agent tool**.
 
 ## ⚠️ Act V · The Warning – Ultron
 Background: [docs/guardrails.md](docs/guardrails.md).
@@ -66,14 +69,17 @@ Background: [docs/guardrails.md](docs/guardrails.md).
 ### ⚠️ 14 · `14_ultron_guardrails_redteam` 🧪 – What happens without guardrails
 A safe indirect prompt-injection demo (an email tells the agent to transfer money), four defences compared (naive, hardened instructions, approval gate, least privilege), a guardrail with Prompt Shields attached to an agent, and the AI Red Teaming Agent.
 
-## 🌐 Act VI · The Avengers – Vision *(planned)*
-| # | Chapter | What it covers |
-|---|---|---|
-| 15 | `workflows` | sample workflows: sequential pipeline, handoff, group chat |
-| 16 | `vision_a2a_capstone` 🧪 | agents calling agents over A2A, final orchestrator, teardown |
+## 🌐 Act VI · The Avengers – Vision
+Background: [docs/workflows.md](docs/workflows.md), [docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md).
+
+### 🔀 15 · `15_workflows` – A plan, not a prompt
+Agent Framework workflows: a **sequential** invoice pipeline (Document Intelligence tool → reviewer with the invoice-review skill → reporter), a **group chat** review board, a **handoff** topology, the pipeline as **declarative YAML**, and how to run a workflow in Foundry.
+
+### 🌐 16 · `16_vision_a2a_capstone` 🧪 – The Avengers assemble
+`friday-finance` exposed over **A2A v1.0** (agent card, A2A SDK client), `jarvis-orchestrator` calling her with the A2A tool and our MCP server, role assignment, an evaluation gate on the whole system, and teardown.
 
 ## 🧰 Helper
-[`notebooks/stark_helpers.py`](notebooks/stark_helpers.py) holds the shared code: `project()`, `openai_client()`, `model()`, and `kql_wait()` (KQL with retry).
+[`notebooks/stark_helpers.py`](notebooks/stark_helpers.py) holds the shared code: `project()`, `openai_client()`, `model()`, `ask_agent()` (with MCP approvals), `kql_wait()`, and the evaluation helpers. [`notebooks/stark_docs.py`](notebooks/stark_docs.py) wraps the document services.
 
 ## 🏁 The moral
 Models answer, **agents act**, **evaluations prove**, **monitoring watches**, **guardrails protect** and **protocols (MCP, A2A)** connect. You need all of them to go from Dummy to Vision.

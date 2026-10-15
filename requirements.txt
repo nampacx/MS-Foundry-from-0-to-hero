@@ -11,3 +11,12 @@ opentelemetry-sdk>=1.27
 requests>=2.32
 ipykernel>=6.29
 mcp>=1.12
+azure-ai-documentintelligence>=1.0.0
+azure-ai-contentunderstanding>=1.0.0
+azure-ai-vision-imageanalysis>=1.0.0
+pillow>=10.1
+agent-framework
+agent-framework-foundry
+agent-framework-declarative
+a2a-sdk>=1.0.2
+httpx>=0.28

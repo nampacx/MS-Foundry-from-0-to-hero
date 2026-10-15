@@ -1,0 +1,30 @@
+# Declarative Agent Framework workflow (chapter 15): the same invoice pipeline as the Python version, as YAML.
+# Agents are registered by name in Python (WorkflowFactory.register_agent); the YAML only describes the flow.
+name: invoice-pipeline
+description: Extract, review and report on a supplier invoice
+
+kind: Workflow
+trigger:
+  kind: OnConversationStart
+  id: invoice_workflow
+  actions:
+    - kind: InvokeAzureAgent
+      id: invoke_extractor
+      displayName: Extract invoice fields
+      conversationId: =System.ConversationId
+      agent:
+        name: ExtractorAgent
+
+    - kind: InvokeAzureAgent
+      id: invoke_reviewer
+      displayName: Review against the checklist
+      conversationId: =System.ConversationId
+      agent:
+        name: ReviewerAgent
+
+    - kind: InvokeAzureAgent
+      id: invoke_reporter
+      displayName: Write the report for Pepper
+      conversationId: =System.ConversationId
+      agent:
+        name: ReporterAgent

@@ -1,15 +1,15 @@
-# 🔌 MCP, skills and (soon) A2A on Foundry agents
+# 🔌 MCP, skills and A2A on Foundry agents
 
-> 💡 **TL;DR:** **MCP** gives an agent *tools* from a remote server. **Skills** give an agent *procedures* from a versioned `SKILL.md`. **A2A** lets an agent call *another agent* (chapter 16, planned). Secrets live in **project connections**, never in the agent definition.
+> 💡 **TL;DR:** **MCP** gives an agent *tools* from a remote server. **Skills** give an agent *procedures* from a versioned `SKILL.md`. **A2A** lets an agent call *another agent* (chapter 16). Secrets live in **project connections**, never in the agent definition.
 
 | 🔌 | 🎯 Gives the agent | 📦 Lives in | 🧪 Status |
 |---|---|---|---|
 | MCP | tools (functions with schemas) | remote MCP server + optional project connection | GA tool; toolboxes preview |
 | Skills | instructions / know-how | Foundry Skills API (versioned) | 🧪 preview |
 | Toolbox | one MCP endpoint for tools **and** skills | Foundry toolbox (versioned) | 🧪 preview |
-| A2A | another agent as a tool | project connection to the remote agent | planned (chapter 16) |
+| A2A | another agent as a tool | project connection to the remote agent | A2A v1.0 GA; SDK surface newer |
 
-Hands-on: [06 MCP](../notebooks/06_mcp_tools.ipynb) · [07 skills](../notebooks/07_agent_skills.ipynb).
+Hands-on: [06 MCP](../notebooks/06_mcp_tools.ipynb) · [07 skills](../notebooks/07_agent_skills.ipynb) · [16 A2A](../notebooks/16_vision_a2a_capstone.ipynb).
 
 ---
 
@@ -57,4 +57,28 @@ A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Ma
 
 ## 4️⃣ A2A
 
-Planned for [chapter 16](../story.md): expose an agent over the A2A protocol (v1.0, JSON-RPC, text only) and call it from another agent with the `a2a` tool.
+The **Agent2Agent** protocol lets agents discover and call each other. Foundry supports **v1.0 (GA)** and v0.3 (preview). Limits: **text only**, **JSON-RPC** transport, **no streaming**, and the target must use the **Responses protocol** (prompt agents do).
+
+| 🧱 Step | 🔧 How (chapter 16) |
+|---|---|
+| Expose | `project.agents.update_details(agent_endpoint=... a2a, agent_card=...)` |
+| Discover | `GET .../agents/<name>/endpoint/protocols/a2a/agentCard/v1.0` with an Entra token |
+| Call from any client | `a2a-sdk` (`A2ACardResolver`, `create_client`) |
+| Call from a Foundry agent | project connection (`RemoteA2A`) + `A2ATool(a2a_version=V1_0, project_connection_id=...)` |
+| Authorize | role **Foundry Agent Consumer** for the caller's identity on the target project or agent |
+
+```mermaid
+sequenceDiagram
+    participant U as 🧑 User
+    participant O as 🤖 jarvis-orchestrator
+    participant F as 🤖 friday-finance
+    participant M as ⚡ stark-mcp
+    U->>O: invoice question
+    O->>F: A2A message (Entra token, v1.0)
+    F->>M: check_invoice_approval (MCP)
+    M-->>F: within_limit
+    F-->>O: review + decision
+    O-->>U: answer
+```
+
+> ⚠️ Unrequested version selection defaults to preview v0.3: always use the v1.0 card or the `A2A-Version: 1.0` header. Role assignments need a minute to propagate. Not verified against a live subscription.

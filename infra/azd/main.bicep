@@ -18,6 +18,9 @@ param principalType string = 'User'
 @description('"true" to deploy the stark-mcp Function (chapter 06).')
 param enableMcp string = 'true'
 
+@description('"true" to also deploy the models Content Understanding needs (chapter 13).')
+param enableContentUnderstanding string = 'false'
+
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: 'rg-stark-${environmentName}'
   location: location
@@ -36,6 +39,7 @@ module stark '../main.bicep' = {
     principalId: principalId
     principalType: principalType
     enableMcp: toLower(enableMcp) == 'true'
+    enableContentUnderstanding: toLower(enableContentUnderstanding) == 'true'
   }
 }
 
@@ -52,3 +56,4 @@ output STARK_FAST_MODEL string = stark.outputs.fastModel
 output STARK_EMBEDDING_MODEL string = stark.outputs.embeddingModel
 output STARK_MCP_FUNCTION string = stark.outputs.mcpFunctionName
 output STARK_MCP_URL string = stark.outputs.mcpUrl
+output STARK_ENABLE_CU bool = stark.outputs.contentUnderstandingEnabled

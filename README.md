@@ -23,7 +23,7 @@ Infrastructure is **Bicep + azd** 🦾, custom code is **Python only** 🐍.
 | A set of notebooks that each teach one Foundry concept | Cost-optimised: models and Application Insights bill while deployed |
 | Honest about preview features (marked 🧪) | A promise that preview APIs stay the same |
 
-📚 **Docs:** [📖 story.md](story.md) – the chapters as a story · [🏗️ docs/architecture.md](docs/architecture.md) – how Foundry is put together · [💬 docs/conversations.md](docs/conversations.md) – how conversations work · [📈 docs/observability.md](docs/observability.md) – tracing and monitoring · [🤖 docs/agents.md](docs/agents.md) – prompt vs hosted agents and tools · [📄 docs/agents-yaml.md](docs/agents-yaml.md) – agents as files · [🔌 docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md) – MCP, skills, A2A · [🧪 docs/datasets-evals.md](docs/datasets-evals.md) – datasets and evaluations · [🛡️ docs/guardrails.md](docs/guardrails.md) – guardrails and red teaming
+📚 **Docs:** [📖 story.md](story.md) – the chapters as a story · [🏗️ docs/architecture.md](docs/architecture.md) – how Foundry is put together · [💬 docs/conversations.md](docs/conversations.md) – how conversations work · [📈 docs/observability.md](docs/observability.md) – tracing and monitoring · [🤖 docs/agents.md](docs/agents.md) – prompt vs hosted agents and tools · [📄 docs/agents-yaml.md](docs/agents-yaml.md) – agents as files · [🔌 docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md) – MCP, skills, A2A · [🧪 docs/datasets-evals.md](docs/datasets-evals.md) – datasets and evaluations · [🛡️ docs/guardrails.md](docs/guardrails.md) – guardrails and red teaming · [🔬 docs/foundry-tools.md](docs/foundry-tools.md) – OCR, Document Intelligence, Content Understanding · [🔀 docs/workflows.md](docs/workflows.md) – workflows
 
 ---
 
@@ -86,9 +86,11 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 09 | [Hosted agent](notebooks/09_hosted_agent.ipynb) | ✅ |
 | 10 | [Datasets and evaluations](notebooks/10_datasets_and_evals.ipynb) | ✅ |
 | 11 | [Conversation and trace evaluations 🧪](notebooks/11_conversation_and_trace_evals.ipynb) | ✅ |
-| 12–13 | Foundry Tools: OCR, Document Intelligence, Content Understanding | 🚧 planned |
+| 12 | [OCR and Read (Vision, Document Intelligence)](notebooks/12_senses_ocr_read.ipynb) | ✅ |
+| 13 | [Invoices, receipts and Content Understanding](notebooks/13_senses_document_intelligence.ipynb) | ✅ |
 | 14 | [Ultron: guardrails and red teaming 🧪](notebooks/14_ultron_guardrails_redteam.ipynb) | ✅ |
-| 15–16 | Workflows, A2A, capstone | 🚧 planned, see [story.md](story.md) |
+| 15 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/15_workflows.ipynb) | ✅ |
+| 16 | [Vision: A2A capstone 🧪](notebooks/16_vision_a2a_capstone.ipynb) | ✅ |
 
 > ⚠️ **Not verified against a live subscription:** hosted agents (`azure.yaml` `azure.ai.*` services) and preview features (skills, toolboxes) are the least certain parts.
 >
