@@ -1,6 +1,6 @@
 # 🔀 14 · Workflows: from one agent to a plan
 
-> 💡 **TL;DR:** A workflow splits a job into steps and defines who acts next. Foundry's recommended way is **Microsoft Agent Framework**: **sequential**, **concurrent**, **handoff**, **group chat** and **magentic** orchestrations, in code or **declarative YAML**. They run in your process; wrap one with `workflow.as_agent(...)` and host it (chapter 09) to run it in Foundry. The visual workflow designer in the portal is being retired (support ends after 2026-12-01); YAML workflows keep running as hosted agents.
+> 💡 **TL;DR:** A workflow splits a job into steps and defines who acts next. Foundry's recommended way is **Microsoft Agent Framework**: **sequential**, **concurrent**, **handoff**, **group chat** and **magentic** orchestrations, in code or **declarative YAML**. They run in your process; host one natively with `ResponsesHostServer(workflow=...)` as a hosted agent (chapter 09) to run it in Foundry. The visual workflow designer in the portal is being retired (support ends after 2026-12-01); YAML workflows keep running as hosted agents.
 
 | 🔀 Pattern | 🧩 Shape | 🧰 Builder | 🎯 Example in chapter 15 |
 |---|---|---|---|
@@ -42,7 +42,7 @@ A workflow is a **graph**: boxes (agents or plain code) joined by **edges**. `ad
 In the hosted invoice pipeline the order is written out in [main.py](../src/invoice-workflow/main.py):
 
 ```python
-WorkflowBuilder(start_executor=extractor, output_executors=[final_message])
+WorkflowBuilder(start_executor=extractor, output_from=[final_message])
     .add_edge(extractor, reviewer)        # always after the extractor
     .add_edge(reviewer, reporter)
     .add_edge(reporter, final_message)
@@ -145,7 +145,7 @@ Code in [chapter 15](../notebooks/15_workflows.ipynb).
 
 **Step 5. Pick another shape when needed.** Several opinions: group chat. Routing to specialists with a user in the loop: handoff. A flow in a reviewable file: declarative YAML.
 
-**Step 6. Host it.** `workflow.as_agent(...)` plus `ResponsesHostServer`, deployed with `azd deploy` ([src/invoice-workflow](../src/invoice-workflow)).
+**Step 6. Host it.** `ResponsesHostServer(workflow=build_workflow, parse_response=...)`, deployed with `azd deploy` ([src/invoice-workflow](../src/invoice-workflow)).
 
 ---
 

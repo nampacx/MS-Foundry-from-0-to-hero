@@ -1,6 +1,6 @@
 # 📈 5 · How Foundry traces and monitors your AI app
 
-> 💡 **TL;DR:** Foundry writes **OpenTelemetry** traces to the **Application Insights** connected to your project. You see them in **Application Insights** (all calls) and on an **agent's** Traces and Monitor tabs in the Foundry portal, and you can query everything with **KQL**. Tracing is **off by default** and content recording can contain personal data.
+> 💡 **TL;DR:** Foundry writes **OpenTelemetry** traces to the **Application Insights** connected to your project. You see them in **Application Insights** (all calls) and on an **agent's** Traces and Monitor tabs in the Foundry portal, and you can query everything with **KQL**. **Agent calls are traced by Foundry itself** (server-side, chapter 04). **Your own code** (direct model calls, custom spans) sends traces only after `configure_azure_monitor` (chapter 03). Content recording can contain personal data.
 
 | 👀 Where | 🔎 What you see | 🛠️ How |
 |---|---|---|
@@ -30,7 +30,12 @@ flowchart LR
 
 ## 1️⃣ Switch it on
 
-In [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb), before importing the SDK:
+| 📡 Calls | 🔧 Who sends the traces |
+|---|---|
+| to an **agent** (`agent_reference`, chapter 04 on) | Foundry, server-side. Nothing to switch on |
+| **your own code**: direct model calls, custom spans | your process, after `configure_azure_monitor` |
+
+For your own code, in [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb), before importing the SDK:
 
 ```python
 os.environ["AZURE_EXPERIMENTAL_ENABLE_GENAI_TRACING"] = "true"
@@ -53,7 +58,7 @@ The notebook runs KQL on `AppDependencies`. Ingestion takes a few minutes, so `k
 
 - ⚠️ Content recording stores prompts and answers. Project members with *Log Analytics Reader* can read them.
 - 💰 Application Insights ingestion is billed per GB.
-- 🔒 Tracing is off until a Foundry owner enables it.
+- 🔒 Your own code sends nothing until `configure_azure_monitor` runs. Content recording is a separate switch: leave it off in production.
 
 ## 🪜 Walkthrough: from a call to a number in KQL
 

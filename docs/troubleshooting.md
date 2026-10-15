@@ -89,7 +89,7 @@ flowchart TD
 
 | 🚨 Symptom | 🔎 Why | 🔧 Fix |
 |---|---|---|
-| no traces anywhere | tracing is **off** until `configure_azure_monitor` runs | run the setup cell in [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb) **before** the SDK calls |
+| no traces for direct model calls | your process sends traces only after `configure_azure_monitor` (agent calls are traced server-side) | run the setup cell in [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb) **before** the SDK calls, and wait 2–5 minutes |
 | traces are empty just after a call | ingestion takes **2–5 minutes** | wait. [`kql_wait()`](../notebooks/stark_helpers.py) retries for you |
 | KQL returns no rows | table or attribute names differ between SDK versions | run `AppDependencies \| take 5` and read `Properties` ([observability.md](observability.md)) |
 | chapter 03 calls are missing in the Foundry **Traces** tab | they are model calls, **no agent** | look in Application Insights → Transaction search. Foundry shows traces per agent from chapter 04 on ([portal-tour.md](portal-tour.md)) |

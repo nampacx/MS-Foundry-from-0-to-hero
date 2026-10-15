@@ -1,7 +1,9 @@
 """Shared helpers for the STARK notebooks: config, Foundry clients, KQL with retry, small printers."""
 from __future__ import annotations
 
+import json
 import os
+import re
 import time
 from datetime import timedelta
 from pathlib import Path
@@ -117,7 +119,7 @@ def sh(command: str) -> str:
 
     A leading `python` / `python3` runs with the notebook's own interpreter (the .venv), not whatever is first on PATH.
     """
-    import re, subprocess, sys
+    import subprocess, sys
     command = re.sub(r"^python3?(?=\s)", lambda _: f'"{sys.executable}"', command)
     proc = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=ROOT)
     out = (proc.stdout + proc.stderr).strip()
@@ -134,7 +136,7 @@ def fix_dotnet_for_powerfx() -> None:
     agent-framework-declarative then reports "dotnet runtime not installed". Point DOTNET_ROOT at the x64 .NET.
     Call this before the first workflow is created in the kernel.
     """
-    import os, sys
+    import sys
     x64_dotnet = os.path.normpath("C:/Program Files/dotnet/x64")
     if sys.platform == "win32" and "AMD64" in sys.version and "DOTNET_ROOT" not in os.environ and os.path.isdir(x64_dotnet):
         os.environ["DOTNET_ROOT"] = x64_dotnet
@@ -180,6 +182,41 @@ def tool_calls(resp) -> list[str]:
     return names
 
 
+def run_functions(agent, text, impl: dict, conversation: str | None = None, oai=None, max_rounds: int = 6, verbose: bool = True):
+    """Send one message to an agent with function tools and run the function-call loop.
+
+    The model answers with `function_call` items; `impl[name](**arguments)` runs each one here, in your process, and the
+    results go back as `function_call_output` items. Loop until no call is left (at most `max_rounds`).
+    Returns the final response.
+    """
+    oai = oai or openai_client()
+    extra = agent_ref(agent)
+    kwargs = {"conversation": conversation} if conversation else {}
+    resp = oai.responses.create(input=text, extra_body=extra, **kwargs)
+    for _ in range(max_rounds):
+        calls = [i for i in resp.output if i.type == "function_call"]
+        if not calls:
+            break
+        outputs = []
+        for call in calls:
+            args = json.loads(call.arguments)
+            result = impl[call.name](**args)
+            if verbose:
+                print(f"  tool call: {call.name}({args}) -> {str(result)[:100]}")
+            outputs.append({"type": "function_call_output", "call_id": call.call_id, "output": json.dumps(result, default=str)})
+        # with a conversation the history is stored there; without one, chain to the previous response
+        link = kwargs or {"previous_response_id": resp.id}
+        resp = oai.responses.create(input=outputs, extra_body=extra, **link)
+    return resp
+
+
+def skill_body(name: str) -> str:
+    """The instructions of `skills/<name>/SKILL.md` without the YAML front matter (direct skill injection, chapter 07)."""
+    text = (ROOT / "skills" / name / "SKILL.md").read_text(encoding="utf-8")
+    # \s* also eats the \r of a CRLF checkout (Windows), so the front matter never leaks into the instructions
+    return re.sub(r"^---\s*\n.*?\n---\s*\n", "", text, count=1, flags=re.S).strip()
+
+
 def delete_agent(name: str) -> None:
     """Delete every version of an agent (ignore errors: it may not exist)."""
     try:
@@ -190,7 +227,67 @@ def delete_agent(name: str) -> None:
         print(f"skip {name}: {type(exc).__name__}")
 
 
+def delete_dataset(name: str, version: str = "1") -> None:
+    """Delete one dataset version (ignore errors: it may not exist). A re-run of the notebook then creates it again."""
+    try:
+        project().datasets.delete(name=name, version=version)
+        print(f"deleted dataset {name} v{version}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"skip dataset {name}: {type(exc).__name__}")
+
+
+# ---------------------------------------------------------------- Azure Resource Manager (control plane)
+def arm(method: str, path: str, api_version: str, body: dict | None = None):
+    """Call Azure Resource Manager with your Entra token, for settings the project SDK does not cover.
+
+    `path` starts with `/subscriptions/...`. Returns the `requests.Response`.
+    """
+    import requests
+    token = credential().get_token("https://management.azure.com/.default").token
+    return requests.request(method, f"https://management.azure.com{path}?api-version={api_version}",
+                            json=body, headers={"Authorization": f"Bearer {token}"})
+
+
+def account_path() -> str:
+    """ARM path of the Foundry resource (`Microsoft.CognitiveServices/accounts/<STARK_FOUNDRY_ACCOUNT>`)."""
+    return (f"/subscriptions/{cfg('AZURE_SUBSCRIPTION_ID')}/resourceGroups/{cfg('AZURE_RESOURCE_GROUP')}"
+            f"/providers/Microsoft.CognitiveServices/accounts/{cfg('STARK_FOUNDRY_ACCOUNT')}")
+
+
 # ---------------------------------------------------------------- evaluations
+def criterion(name: str, builtin: str, mapping: dict, judge: bool = True):
+    """A testing criterion that uses the built-in evaluator `builtin.<builtin>`.
+
+    `mapping` feeds the evaluator: `{{item.<field>}}` is a dataset field, `{{sample.output_text}}` (text) and
+    `{{sample.output_items}}` (text and tool calls) are the target's answer. `judge=True` lets STARK_JUDGE_MODEL score it.
+    """
+    from azure.ai.projects.models import TestingCriterionAzureAIEvaluator
+    kwargs = {"initialization_parameters": {"model": model("judge")}} if judge else {}
+    return TestingCriterionAzureAIEvaluator(type="azure_ai_evaluator", name=name, evaluator_name=f"builtin.{builtin}",
+                                            data_mapping=mapping, **kwargs)
+
+
+def item_schema(properties: dict, required: list[str], sample: bool = True):
+    """Data source config: what one dataset row looks like. `sample=True` also offers the target's answer as `{{sample.*}}`."""
+    from openai.types.eval_create_params import DataSourceConfigCustom
+    return DataSourceConfigCustom(type="custom", include_sample_schema=sample,
+                                  item_schema={"type": "object", "properties": properties, "required": required})
+
+
+def agent_target(dataset_id: str, agent_name: str, agent_version: str | None = None) -> dict:
+    """Run data source that sends every dataset row (`{{item.query}}`) to an agent, then scores its answers."""
+    target = {"type": "azure_ai_agent", "name": agent_name}
+    if agent_version is not None:
+        target["version"] = str(agent_version)
+    return {
+        "type": "azure_ai_target_completions",
+        "source": {"type": "file_id", "id": dataset_id},
+        "input_messages": {"type": "template", "template": [
+            {"type": "message", "role": "user", "content": {"type": "input_text", "text": "{{item.query}}"}}]},
+        "target": target,
+    }
+
+
 def wait_eval_run(eval_id: str, run_id: str, oai=None, every: int = 5, timeout: int = 1800):
     """Poll an evaluation run until it ends; raise unless it completed."""
     oai = oai or openai_client()

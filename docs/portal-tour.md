@@ -38,7 +38,7 @@ flowchart LR
 
 ## 2️⃣ Traces and Monitor (chapter 03)
 
-- Telemetry needs **2–5 minutes** to show up. Tracing is off until the notebook calls `configure_azure_monitor`.
+- Telemetry needs **2–5 minutes** to show up. Agent calls are traced server-side; direct model calls only after the notebook calls `configure_azure_monitor` (chapter 03).
 - Chapter 03 calls the model directly, so its traces show in **Application Insights** (Transaction search, or KQL), not in Foundry. The Foundry **Traces** view belongs to an agent and fills from chapter 04 on.
 - A trace shows the spans, durations, token counts and, with content recording on, the messages. Details: [observability.md](observability.md).
 
@@ -47,7 +47,7 @@ flowchart LR
 - Every `agents.create_version` adds a **version** to the agent's page. Re-creating an agent with the same name adds version 2, it does not replace version 1.
 - Calls to an agent are traced **server-side**, with no code in the notebook. [Notebook 04](../notebooks/04_jarvis_prompt_agent.ipynb) section 6 finds one conversation by id in KQL (`invoke_agent` span with a nested `chat` span). Section 7 shows where the same trace is in Foundry and Application Insights.
 - The agent page has the **Playground** (chat with it), the version list, its tools and its **Traces** and **Monitor** tabs.
-- Names to look for: `jarvis-nb04`, `stark-handbook-nb05`, `jarvis-nb06-learn`, `stark-toolbox` (chapter 07), `friday-docs-nb13` (chapter 13), `invoice-workflow` and `morning-briefing` (hosted, chapter 15), `jarvis-orchestrator` and `friday-finance` (chapter 16).
+- Names to look for: `jarvis-nb04`, `jarvis-nb05-fs` (vector store `stark-handbook-nb05`), `jarvis-nb06-learn`, `stark-toolbox` (chapter 07), `friday-docs-nb13` (chapter 13), `invoice-workflow` and `morning-briefing` (hosted, chapter 15), `jarvis-orchestrator` and `friday-finance` (chapter 16).
 - Chapter 06 also creates the project connection `stark-mcp` (the `azd` hook [connect_mcp.py](../scripts/connect_mcp.py) writes it). Chapter 16 creates `friday-a2a` itself. ❓ Connections and toolboxes sit under the project's tool and connection settings. The exact menu name was not checked.
 - 🧪 Chapter 07 skills and toolboxes are preview. ❓ Where the portal lists a skill was not checked.
 - Hosted agents (chapter 09) show up under **Agents** like prompt agents. Their container logs stay in `azd ai agent monitor`, not in the portal.

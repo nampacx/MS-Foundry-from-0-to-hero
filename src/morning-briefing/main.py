@@ -6,7 +6,7 @@ Three specialists look at the workshop IN PARALLEL (suits, workshop systems, pen
 The MCP server runs on Foundry's side and authenticates with the project connection `stark-mcp` (chapter 06), so this
 container never sees the function key.
 
-Run locally:  python main.py   (port 8088)      Deploy:  azd deploy morning-briefing
+Run locally:  python main.py   (port 8088, reads the repo .env)      Deploy:  azd deploy morning-briefing
 Call:         azd ai agent invoke morning-briefing "Good morning, J.A.R.V.I.S. Brief me."
 """
 import os
@@ -22,11 +22,16 @@ NO_STORE = {"store": False}  # the host keeps the history; native workflows cann
 MCP_CONNECTION = "stark-mcp"  # project connection that holds the function key (created by scripts/connect_mcp.py)
 
 
+def env(name: str, local_fallback: str) -> str:
+    """Hosted: the platform (or azure.yaml `env:`) sets `name`. Local run: fall back to the STARK_* key in the repo's .env."""
+    return os.environ.get(name) or os.environ[local_fallback]
+
+
 def build_workflow(request=None):
     """A fresh workflow for every request (the host passes the request): a workflow keeps state, so it must never be shared."""
     client = FoundryChatClient(
-        project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],  # injected by the platform
-        model=os.environ["MODEL_DEPLOYMENT_NAME"],
+        project_endpoint=env("FOUNDRY_PROJECT_ENDPOINT", "STARK_PROJECT_ENDPOINT"),
+        model=env("MODEL_DEPLOYMENT_NAME", "STARK_CHAT_MODEL"),
         credential=DefaultAzureCredential(),
     )
 

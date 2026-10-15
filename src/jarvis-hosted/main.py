@@ -6,6 +6,7 @@ container: you decide the logic, tools and libraries. Foundry gives it an endpoi
 Run locally:  azd ai agent run      Deploy:  azd deploy      Call:  azd ai agent invoke "hello"
 """
 import os
+import re
 from pathlib import Path
 from typing import Annotated
 
@@ -24,11 +25,17 @@ BASE_INSTRUCTIONS = (
 )
 
 
+def env(name: str, local_fallback: str) -> str:
+    """Hosted: the platform (or azure.yaml `env:`) sets `name`. Local run: fall back to the STARK_* key in the repo's .env."""
+    return os.environ.get(name) or os.environ[local_fallback]
+
+
 def load_skills(directory: Path) -> str:
     """Direct skill injection: every skills/<name>/SKILL.md becomes extra instructions (see chapter 07)."""
     parts = []
     for skill_md in sorted(directory.glob("*/SKILL.md")):
-        parts.append(f"\n\n## Skill: {skill_md.parent.name}\n{skill_md.read_text(encoding='utf-8')}")
+        body = re.sub(r"^---\s*\n.*?\n---\s*\n", "", skill_md.read_text(encoding="utf-8"), count=1, flags=re.S)  # drop front matter
+        parts.append(f"\n\n## Skill: {skill_md.parent.name}\n{body.strip()}")
     return "".join(parts)
 
 
@@ -47,9 +54,8 @@ def workshop_status(system: Annotated[str, Field(description="One of: arc reacto
 
 def main() -> None:
     client = FoundryChatClient(
-        # FOUNDRY_PROJECT_ENDPOINT is injected by the platform (and by `azd ai agent run` locally).
-        project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],
-        model=os.environ["MODEL_DEPLOYMENT_NAME"],
+        project_endpoint=env("FOUNDRY_PROJECT_ENDPOINT", "STARK_PROJECT_ENDPOINT"),
+        model=env("MODEL_DEPLOYMENT_NAME", "STARK_CHAT_MODEL"),
         credential=DefaultAzureCredential(),
     )
     agent = Agent(

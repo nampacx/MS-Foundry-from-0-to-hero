@@ -62,8 +62,8 @@ python scripts/check_models.py swedencentral
 
 ```bash
 azd auth login
+azd extension install microsoft.foundry       # first: azure.yaml uses its azure.ai.* hosts (and chapters 08-09 use `azd ai agent`)
 azd up                                        # asks for an environment name and region
-azd extension install microsoft.foundry       # needed from chapter 08 (hosted agents)
 ```
 
 `azd up` does three things in order:

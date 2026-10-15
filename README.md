@@ -79,8 +79,8 @@ flowchart LR
 ```bash
 python scripts/check_models.py swedencentral   # are my models available? edit stark.json if not
 azd auth login && az login
+azd extension install microsoft.foundry         # first: azure.yaml uses its azure.ai.* hosts (+ `azd ai agent`, chapters 08-09)
 azd up                                         # provisions Foundry + monitoring, writes .env
-azd extension install microsoft.foundry         # azure.ai.* hosts + `azd ai agent` (chapters 08-09)
 python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 jupyter lab                                    # or open notebooks in VS Code, start with 00

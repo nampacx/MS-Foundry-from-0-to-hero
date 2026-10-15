@@ -4,8 +4,8 @@ Three agents run in order: extractor -> reviewer -> reporter. The workflow is ho
 `ResponsesHostServer(workflow=..., parse_response=...)`. Hosting `workflow.as_agent()` is deprecated, because a
 WorkflowAgent keeps state in memory and must not serve different users or conversations.
 
-Run locally:  python main.py   (port 8088)      Deploy:  azd deploy invoice-workflow
-Call:         azd ai agent invoke "Process the invoice at data/docs/invoice-pym-4471.pdf"
+Run locally:  python main.py   (port 8088, reads the repo .env)      Deploy:  azd deploy invoice-workflow
+Call:         azd ai agent invoke invoice-workflow "Process the invoice at data/docs/invoice-pym-4471.pdf"
 """
 import json
 import os
@@ -29,6 +29,11 @@ NO_STORE = {"store": False}  # the host keeps the history; native workflows cann
 LIMITS = {"default": 5000, "pepper potts": 250000, "tony stark": 1000000}
 
 
+def env(name: str, local_fallback: str) -> str:
+    """Hosted: the platform (or azure.yaml `env:`) sets `name`. Local run: fall back to the STARK_* key in the repo's .env."""
+    return os.environ.get(name) or os.environ[local_fallback]
+
+
 def field_value(field):
     """The typed value of a Document Intelligence field, or its raw content."""
     if field is None:
@@ -48,7 +53,7 @@ def extract_invoice_fields(path: Annotated[str, Field(description="Invoice file,
         shipped = sorted(str(p.relative_to(HERE)) for p in (HERE / "data").rglob("*") if p.is_file()) if (HERE / "data").is_dir() else []
         return json.dumps({"error": f"unknown invoice file '{path}'", "shipped_files": shipped})
     try:
-        client = DocumentIntelligenceClient(endpoint=os.environ["DOCUMENT_INTELLIGENCE_ENDPOINT"], credential=DefaultAzureCredential())
+        client = DocumentIntelligenceClient(endpoint=env("DOCUMENT_INTELLIGENCE_ENDPOINT", "STARK_ACCOUNT_ENDPOINT"), credential=DefaultAzureCredential())
         result = client.begin_analyze_document("prebuilt-invoice", AnalyzeDocumentRequest(bytes_source=target.read_bytes())).result()
     except Exception as exc:  # noqa: BLE001 - tell the model (and the logs) what went wrong instead of a bare failure
         return json.dumps({"error": f"{type(exc).__name__}: {str(exc)[:300]}"})
@@ -59,7 +64,7 @@ def extract_invoice_fields(path: Annotated[str, Field(description="Invoice file,
     for item in (f.get("Items") or {}).get("valueArray") or []:
         obj = item.get("valueObject") or {}
         items.append({k.lower(): field_value(obj.get(k)) for k in ("Description", "Quantity", "UnitPrice", "Amount")})
-    keys = ["VendorName", "InvoiceId", "InvoiceDate", "PurchaseOrder", "SubTotal", "TotalTax", "InvoiceTotal", "CustomerName"]
+    keys = ["VendorName", "InvoiceId", "InvoiceDate", "DueDate", "PurchaseOrder", "SubTotal", "TotalTax", "InvoiceTotal", "CustomerName"]
     return json.dumps({
         "fields": {k: field_value(f.get(k)) for k in keys},
         "confidence": {k: round(f[k].get("confidence") or 0, 2) for k in keys if f.get(k)},
@@ -90,8 +95,8 @@ async def final_message(response: AgentExecutorResponse, ctx: WorkflowContext[Ne
 def build_workflow(request=None):
     """A fresh workflow for every request (the host passes the request): a workflow keeps state, so it must never be shared."""
     client = FoundryChatClient(
-        project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],  # injected by the platform
-        model=os.environ["MODEL_DEPLOYMENT_NAME"],
+        project_endpoint=env("FOUNDRY_PROJECT_ENDPOINT", "STARK_PROJECT_ENDPOINT"),
+        model=env("MODEL_DEPLOYMENT_NAME", "STARK_CHAT_MODEL"),
         credential=DefaultAzureCredential(),
     )
     extractor = client.as_agent(name="extractor", tools=[extract_invoice_fields], default_options=NO_STORE, instructions=(
@@ -104,7 +109,7 @@ def build_workflow(request=None):
         "Write a three-bullet message for Pepper Potts: what was reviewed, the decision, what she must do next."))
     steps = [AgentExecutor(a) for a in (extractor, reviewer, reporter)]
     return (
-        WorkflowBuilder(name="invoice_workflow", start_executor=steps[0], output_executors=[final_message])
+        WorkflowBuilder(name="invoice_workflow", start_executor=steps[0], output_from=[final_message])
         .add_edge(steps[0], steps[1])
         .add_edge(steps[1], steps[2])
         .add_edge(steps[2], final_message)
