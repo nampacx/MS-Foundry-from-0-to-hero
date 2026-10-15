@@ -1,4 +1,4 @@
-# 🏗️ How Microsoft Foundry is put together
+# 🏗️ 3 · How Microsoft Foundry is put together
 
 > 💡 **TL;DR:** One **Foundry resource** holds your models and the Foundry Tools. Inside it, a **project** holds your agents, conversations, datasets and evaluations. The SDK needs one thing: the **project endpoint**. Everything else (models, agents, tools) is reached through it with your Entra identity, no keys.
 

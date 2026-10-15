@@ -1,4 +1,4 @@
-# 📈 How Foundry traces and monitors your AI app
+# 📈 5 · How Foundry traces and monitors your AI app
 
 > 💡 **TL;DR:** Foundry writes **OpenTelemetry** traces to the **Application Insights** connected to your project. You see them in **Application Insights** (all calls) and on an **agent's** Traces and Monitor tabs in the Foundry portal, and you can query everything with **KQL**. Tracing is **off by default** and content recording can contain personal data.
 

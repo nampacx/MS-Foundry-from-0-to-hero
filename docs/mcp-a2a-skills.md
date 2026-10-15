@@ -1,4 +1,4 @@
-# 🔌 MCP, skills and A2A on Foundry agents
+# 🔌 8 · MCP, skills and A2A on Foundry agents
 
 > 💡 **TL;DR:** **MCP** is a protocol where a server offers three kinds of things: *tools*, *resources* and *prompts*. A Foundry agent uses an MCP server for its *tools*. **Skills** give an agent *procedures* from a versioned `SKILL.md`. **A2A** lets an agent call *another agent* (chapter 16). Secrets live in **project connections**, never in the agent definition.
 

@@ -1,4 +1,4 @@
-# 🧪 How datasets and evaluations work in Foundry
+# 🧪 11 · How datasets and evaluations work in Foundry
 
 > 💡 **TL;DR:** A **dataset** is a versioned file of test inputs. An **evaluation** defines *what to score* (data schema + evaluators). A **run** executes it against a **target** (model or agent), saved responses, or live **traces**, and returns per-item scores with reasons plus a pass rate per evaluator. Use the pass rate as a **quality gate** before you ship a new agent version.
 

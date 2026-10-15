@@ -1,4 +1,4 @@
-# 🧭 Foundry in plain words: the concepts you need first
+# 🧭 1 · Foundry in plain words: the concepts you need first
 
 > 💡 **TL;DR:** Foundry is **one Azure resource** that hosts **models**, with a **project** inside it that stores your **agents, conversations, datasets and evaluations**. You call it with **one URL** (the project endpoint) and your **Entra identity**. A **model** answers one request and forgets. An **agent** is a saved, versioned setup (model + instructions + tools) that Foundry runs for you. Read this page once, then the notebooks use no word you have not seen.
 

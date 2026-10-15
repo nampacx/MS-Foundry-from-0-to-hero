@@ -1,4 +1,4 @@
-# 🛡️ Guardrails, Prompt Shields and red teaming
+# 🛡️ 13 · Guardrails, Prompt Shields and red teaming
 
 > 💡 **TL;DR:** Agents that read untrusted text (emails, web pages, tool output) can be hijacked by **indirect prompt injection**. Defend in layers: **least privilege** and **approval gates** (deterministic), **instructions** that treat tool output as data (probabilistic), **guardrails** with **Prompt Shields** (platform), and **red teaming** to measure what is left. Chapter 14 demonstrates each layer safely.
 

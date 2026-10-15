@@ -1,4 +1,4 @@
-# 🔬 Foundry Tools: OCR, Document Intelligence and Content Understanding
+# 🔬 12 · Foundry Tools: OCR, Document Intelligence and Content Understanding
 
 > 💡 **TL;DR:** The Foundry **resource** that hosts your models also hosts **Foundry Tools**: services that are not LLM chat. For text in images use **Vision Read**; for documents use **Document Intelligence** (read, layout, prebuilt models like invoice and receipt); for your **own schema** or messy documents use **Content Understanding** (LLM-powered, needs model deployments). All share one endpoint and Entra ID auth. Wrap them as **agent tools** so a model decides *when* to read a document.
 

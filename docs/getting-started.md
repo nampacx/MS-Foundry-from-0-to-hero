@@ -1,4 +1,4 @@
-# 🚀 Getting started: from zero to your first Foundry call
+# 🚀 2 · Getting started: from zero to your first Foundry call
 
 > 💡 **TL;DR:** Check your tools, check that your region has the models, run `azd up` (about 10 minutes), install the Python packages, then open notebook `00`. If the smoke test in `00` prints `Workshop online`, your endpoint, identity and model all work. Everything after that is one concept per notebook.
 

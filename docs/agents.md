@@ -1,4 +1,4 @@
-# 🤖 Prompt agents, hosted agents and their tools
+# 🤖 6 · Prompt agents, hosted agents and their tools
 
 > 💡 **TL;DR:** A Foundry **agent** has a name and numbered **versions**. A **prompt agent** is configuration (model, instructions, tools) that Foundry runs. A **hosted agent** is your own code that Foundry runs in a managed container. Both are called the same way: a Responses API call with an `agent_reference`, usually inside a **conversation**.
 
@@ -106,6 +106,8 @@ Checked against a real project (all answer `400 invalid_payload`):
 MCP tools default to `require_approval="always"`: the response contains `mcp_approval_request` items and the run only continues after your `mcp_approval_response`. [ask_agent()](../notebooks/stark_helpers.py) in the helpers shows the loop. Deny by default; approve only server and tool names you expect.
 
 ## 5️⃣ Hosted agents in short
+
+> 🚢 Full deploy walkthrough and the other ways to ship (container, SDK, REST, CI/CD): [hosted-agents.md](hosted-agents.md).
 
 `azd deploy` zips [src/jarvis-hosted](../src/jarvis-hosted/main.py) and Foundry builds it remotely (code mode, no Docker). The container gets its own Entra identity and `FOUNDRY_PROJECT_ENDPOINT` from the platform. The `ResponsesHostServer` speaks the Responses protocol, so conversations, streaming and tracing work like for prompt agents.
 

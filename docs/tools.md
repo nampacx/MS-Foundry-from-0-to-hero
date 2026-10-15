@@ -1,4 +1,4 @@
-# 🛠️ How agents use tools
+# 🛠️ 7 · How agents use tools
 
 > 💡 **TL;DR:** A tool is a capability listed in the agent **version**. The model sees each tool's name, description and schema and decides **when** to call it. Who **runs** the call depends on the tool: Foundry (code interpreter, file search, web search), your code (function), or a remote server (MCP, A2A). Pick the tool by who should run it, and treat every tool result as untrusted input.
 

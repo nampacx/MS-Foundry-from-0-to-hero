@@ -12,6 +12,7 @@ Reference example: [docs/architecture.md](docs/architecture.md). Match its style
 
 ### Where
 - Topic docs go in `docs/`, named in lowercase (`architecture.md`, `conversations.md`).
+- Topic docs are numbered by reading order in the title (`# 🧭 1 · Title`) and in the `README.md` docs table. `troubleshooting.md` and `portal-tour.md` are reference docs and stay unnumbered. File names stay unnumbered.
 - Link to the code instead of copying it. Use relative links, for example `[foundry.bicep](../infra/modules/foundry.bicep)`.
 - Quote only the short snippet the reader needs (a policy line, a JSON block).
 

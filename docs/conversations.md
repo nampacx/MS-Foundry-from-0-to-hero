@@ -1,4 +1,4 @@
-# 💬 How conversations work in Foundry
+# 💬 4 · How conversations work in Foundry
 
 > 💡 **TL;DR:** Models are **stateless**. Foundry keeps history for you in **stored responses** and **conversations**. Pass `previous_response_id` to chain responses, or `conversation=<id>` to use a durable list of items. Agents always use conversations. Data stays until you delete it.
 
