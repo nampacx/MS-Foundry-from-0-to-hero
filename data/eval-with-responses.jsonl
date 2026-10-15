@@ -1,0 +1,4 @@
+{"query": "Who approves purchases above 5,000 USD?", "response": "Pepper Potts approves all purchases above 5,000 USD.", "ground_truth": "Pepper Potts approves purchases above 5,000 USD."}
+{"query": "Can I service the arc reactor alone?", "response": "Yes, it is fine to service it by yourself.", "ground_truth": "No. The arc reactor must never be serviced alone."}
+{"query": "What does Happy Hogan do?", "response": "Happy Hogan drives.", "ground_truth": "Happy Hogan drives."}
+{"query": "How long until the fabrication bay doors close?", "response": "The doors close after about half a minute.", "ground_truth": "The fabrication bay doors close automatically after 30 seconds."}

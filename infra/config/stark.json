@@ -1,0 +1,58 @@
+{
+  "models": [
+    {
+      "name": "gpt-5-6-terra",
+      "model": "gpt-5.6-terra",
+      "version": "2026-07-09",
+      "format": "OpenAI",
+      "sku": "GlobalStandard",
+      "capacity": 50
+    },
+    {
+      "name": "gpt-6-luna",
+      "model": "gpt-6-luna",
+      "version": "2026-09-22",
+      "format": "OpenAI",
+      "sku": "GlobalStandard",
+      "capacity": 50
+    },
+    {
+      "name": "text-embedding-3-small",
+      "model": "text-embedding-3-small",
+      "version": "1",
+      "format": "OpenAI",
+      "sku": "GlobalStandard",
+      "capacity": 50
+    }
+  ],
+  "chatModel": "gpt-5-6-terra",
+  "judgeModel": "gpt-5-6-terra",
+  "fastModel": "gpt-6-luna",
+  "embeddingModel": "text-embedding-3-small",
+  "contentUnderstandingModels": [
+    {
+      "name": "gpt-4-1",
+      "model": "gpt-4.1",
+      "version": "2025-04-14",
+      "format": "OpenAI",
+      "sku": "GlobalStandard",
+      "capacity": 50
+    },
+    {
+      "name": "gpt-4-1-mini",
+      "model": "gpt-4.1-mini",
+      "version": "2025-04-14",
+      "format": "OpenAI",
+      "sku": "GlobalStandard",
+      "capacity": 50
+    },
+    {
+      "name": "text-embedding-3-large",
+      "model": "text-embedding-3-large",
+      "version": "1",
+      "format": "OpenAI",
+      "sku": "GlobalStandard",
+      "capacity": 50
+    }
+  ]
+}
