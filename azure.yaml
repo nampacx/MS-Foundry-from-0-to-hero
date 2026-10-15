@@ -71,6 +71,29 @@ services:
         cpu: "0.5"
         memory: 1Gi
 
+  morning-briefing:      # J.A.R.V.I.S.'s morning briefing: a concurrent Agent Framework workflow as a hosted agent, chapter 15
+    host: azure.ai.agent
+    project: src/morning-briefing
+    uses:
+      - ai-project
+    kind: hosted
+    name: morning-briefing
+    description: Concurrent workflow (suits, workshop, finance in parallel) merged into a morning briefing by J.A.R.V.I.S.
+    protocols:
+      - protocol: responses
+        version: 2.0.0
+    codeConfiguration:
+      runtime: python_3_13
+      entryPoint: main.py
+      dependencyResolution: remote_build
+    env:
+      MODEL_DEPLOYMENT_NAME: ${STARK_CHAT_MODEL}
+      STARK_MCP_URL: ${STARK_MCP_URL}
+    container:
+      resources:
+        cpu: "0.5"
+        memory: 1Gi
+
 hooks:
   postprovision:         # write .env for the notebooks from the azd environment values
     posix: { shell: sh, run: 'python3 scripts/write_env.py' }
