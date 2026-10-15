@@ -71,7 +71,7 @@ resource appInsightsConnection 'Microsoft.CognitiveServices/accounts/projects/co
     authType: 'ApiKey'
     isSharedToAll: true
     credentials: {
-      key: appi.properties.InstrumentationKey
+      key: appi.properties.ConnectionString
     }
     metadata: {
       ApiType: 'Azure'
@@ -98,5 +98,6 @@ resource diag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
 output accountName string = account.name
 output accountId string = account.id
 output projectName string = project.name
+output projectId string = project.id
 output projectEndpoint string = 'https://${account.name}.services.ai.azure.com/api/projects/${project.name}'
 output accountEndpoint string = 'https://${account.name}.cognitiveservices.azure.com'

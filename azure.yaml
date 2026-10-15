@@ -4,6 +4,13 @@ metadata:
   template: foundry-from-0-to-hero
 
 # Needs the Foundry azd extensions for the azure.ai.* hosts:  azd extension install microsoft.foundry
+# Pin the azd and extension versions this tutorial was tested with (old agents extensions still demand agent.yaml).
+requiredVersions:
+  azd: ">= 1.36.0"
+  extensions:
+    azure.ai.agents: "=1.0.0-beta.20"
+    azure.ai.projects: "=1.0.0-beta.14"
+
 infra:
   provider: bicep
   path: infra/azd
@@ -40,6 +47,52 @@ services:
       resources:
         cpu: "0.25"
         memory: 0.5Gi
+
+  invoice-workflow:      # the chapter 15 invoice pipeline as a hosted agent (native Agent Framework workflow), chapter 15
+    host: azure.ai.agent
+    project: src/invoice-workflow
+    uses:
+      - ai-project
+    kind: hosted
+    name: invoice-workflow
+    description: Invoice pipeline (extractor, reviewer, reporter) as an Agent Framework workflow.
+    protocols:
+      - protocol: responses
+        version: 2.0.0
+    codeConfiguration:
+      runtime: python_3_13
+      entryPoint: main.py
+      dependencyResolution: remote_build
+    env:
+      MODEL_DEPLOYMENT_NAME: ${STARK_CHAT_MODEL}
+      DOCUMENT_INTELLIGENCE_ENDPOINT: ${STARK_ACCOUNT_ENDPOINT}
+    container:
+      resources:
+        cpu: "0.5"
+        memory: 1Gi
+
+  morning-briefing:      # J.A.R.V.I.S.'s morning briefing: a concurrent Agent Framework workflow as a hosted agent, chapter 15
+    host: azure.ai.agent
+    project: src/morning-briefing
+    uses:
+      - ai-project
+    kind: hosted
+    name: morning-briefing
+    description: Concurrent workflow (suits, workshop, finance in parallel) merged into a morning briefing by J.A.R.V.I.S.
+    protocols:
+      - protocol: responses
+        version: 2.0.0
+    codeConfiguration:
+      runtime: python_3_13
+      entryPoint: main.py
+      dependencyResolution: remote_build
+    env:
+      MODEL_DEPLOYMENT_NAME: ${STARK_CHAT_MODEL}
+      STARK_MCP_URL: ${STARK_MCP_URL}
+    container:
+      resources:
+        cpu: "0.5"
+        memory: 1Gi
 
 hooks:
   postprovision:         # write .env for the notebooks from the azd environment values

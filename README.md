@@ -2,7 +2,11 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
+> 🚧 **Version 0.1: a first release that still needs improvement.** Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example the GitHub Copilot harness and web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly.
+
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
+
+> 📖 **Prefer a story?** Read [The Story of STARK](story.md) first: all 17 chapters as one build log, from Dummy to Vision, with a link to the matching doc in each act.
 
 What you learn, chapter by chapter:
 
@@ -23,7 +27,29 @@ Infrastructure is **Bicep + azd** 🦾, custom code is **Python only** 🐍.
 | A set of notebooks that each teach one Foundry concept | Cost-optimised: models and Application Insights bill while deployed |
 | Honest about preview features (marked 🧪) | A promise that preview APIs stay the same |
 
-📚 **Docs:** [📖 story.md](story.md) – the chapters as a story · [🏗️ docs/architecture.md](docs/architecture.md) – how Foundry is put together · [💬 docs/conversations.md](docs/conversations.md) – how conversations work · [📈 docs/observability.md](docs/observability.md) – tracing and monitoring · [🤖 docs/agents.md](docs/agents.md) – prompt vs hosted agents and tools · [📄 docs/agents-yaml.md](docs/agents-yaml.md) – agents as files · [🔌 docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md) – MCP, skills, A2A · [🧪 docs/datasets-evals.md](docs/datasets-evals.md) – datasets and evaluations · [🛡️ docs/guardrails.md](docs/guardrails.md) – guardrails and red teaming · [🔬 docs/foundry-tools.md](docs/foundry-tools.md) – OCR, Document Intelligence, Content Understanding · [🔀 docs/workflows.md](docs/workflows.md) – workflows
+📚 **Docs, in reading order.** Start at 1 and read each doc next to its chapter:
+
+| # | 📖 Doc | 🎯 Read it | 📓 Chapters |
+|---|---|---|---|
+| 1 | [🧭 Foundry in plain words](docs/concepts.md) | before anything else | all |
+| 2 | [🚀 Getting started](docs/getting-started.md) | deploy, run chapter 00 | 00 |
+| 3 | [🧠 How you call a model](docs/models.md) | with chapter 01 | 01 |
+| 4 | [💬 How conversations work](docs/conversations.md) | with chapter 02 | 02 |
+| 5 | [📈 How Foundry traces and monitors](docs/observability.md) | with chapter 03 | 03 |
+| 6 | [🤖 Prompt agents](docs/agents.md) | with chapter 04 | 04 |
+| 7 | [🛠️ How agents use tools](docs/tools.md) | with chapter 05 | 05, 06 |
+| 8 | [🔌 MCP servers and skills](docs/mcp-skills.md) | with chapters 06, 07 | 06, 07 |
+| 9 | [📄 Agents as files](docs/agents-yaml.md) | with chapter 08 | 08 |
+| 10 | [🚢 Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 15 |
+| 11 | [🧪 Datasets and evaluations](docs/datasets-evals.md) | with chapters 10, 11 | 10, 11 |
+| 12 | [🔬 Foundry Tools](docs/foundry-tools.md) | with chapters 12, 13 | 12, 13 |
+| 13 | [🛡️ Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 14 | 14 |
+| 14 | [🔀 Workflows](docs/workflows.md) | with chapter 15 | 15 |
+| 15 | [🦾 Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 16 | 16 |
+| – | [📖 Glossary](docs/glossary.md) | when a word is new | any |
+| – | [🩺 Troubleshooting](docs/troubleshooting.md) | when something fails | any |
+| – | [👀 Portal tour](docs/portal-tour.md) | to find your work in the portal | any |
+| – | [📖 story.md](story.md) | the chapters as a story | all |
 
 ---
 
@@ -55,8 +81,8 @@ flowchart LR
 ```bash
 python scripts/check_models.py swedencentral   # are my models available? edit stark.json if not
 azd auth login && az login
+azd extension install microsoft.foundry         # first: azure.yaml uses its azure.ai.* hosts (+ `azd ai agent`, chapters 08-09)
 azd up                                         # provisions Foundry + monitoring, writes .env
-azd extension install microsoft.foundry         # azure.ai.* hosts + `azd ai agent` (chapters 08-09)
 python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 jupyter lab                                    # or open notebooks in VS Code, start with 00
@@ -71,6 +97,8 @@ jupyter lab                                    # or open notebooks in VS Code, s
 ---
 
 ## 📓 The chapters
+
+> 📖 Each chapter is also told as part of a story in [story.md](story.md).
 
 | # | 🎬 Chapter | Status |
 |---|---|---|
@@ -92,6 +120,6 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 15 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/15_workflows.ipynb) | ✅ |
 | 16 | [Vision: A2A capstone 🧪](notebooks/16_vision_a2a_capstone.ipynb) | ✅ |
 
-> ⚠️ **Not verified against a live subscription:** hosted agents (`azure.yaml` `azure.ai.*` services) and preview features (skills, toolboxes) are the least certain parts.
+> ⚠️ **Not verified against a live subscription:** preview features (skills, toolboxes, trace evaluation, guardrail APIs) are the least certain parts. Hosted agents work: `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. `jarvis-hosted` uses the same `azure.yaml` format.
 >
 > ⚠️ **General:** the notebooks and Bicep were written against the current Microsoft Learn documentation and validated statically (Bicep build, notebook syntax). Run them in order and open an issue if an SDK call has drifted.

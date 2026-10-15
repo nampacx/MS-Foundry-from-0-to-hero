@@ -8,10 +8,11 @@ Single source of truth for AI coding agents (Claude Code, GitHub Copilot, others
 Read this section before you create or change any `.md` file (docs, README, guides).
 If your tool supports skills, use the `write-docs` skill ([.claude/skills/write-docs/SKILL.md](.claude/skills/write-docs/SKILL.md)); it runs these rules as a checklist.
 
-Reference example: [docs/architecture.md](docs/architecture.md). Match its style.
+Reference example: [docs/conversations.md](docs/conversations.md). Match its style.
 
 ### Where
-- Topic docs go in `docs/`, named in lowercase (`architecture.md`, `conversations.md`).
+- Topic docs go in `docs/`, named in lowercase (`concepts.md`, `conversations.md`).
+- Topic docs are numbered by reading order in the title (`# 🧭 1 · Title`) and in the `README.md` docs table. `troubleshooting.md`, `portal-tour.md` and `glossary.md` are reference docs and stay unnumbered. File names stay unnumbered.
 - Link to the code instead of copying it. Use relative links, for example `[foundry.bicep](../infra/modules/foundry.bicep)`.
 - Quote only the short snippet the reader needs (a policy line, a JSON block).
 
@@ -43,3 +44,5 @@ Reference example: [docs/architecture.md](docs/architecture.md). Match its style
 - Every Foundry SDK call must match the current Microsoft Learn docs. Foundry moves fast: mark preview features as preview in notebook, doc and story.
 - Config comes from `.env` (written by the azd `postprovision` hook, template in `.env.example`). Never hard-code endpoints or keys.
 - Notebooks clean up what they create (agent versions, conversations, datasets) unless the next chapter needs it.
+- Every chapter follows one template: `# NN · Title` with the story hook, a concept table and a "Deep dive" doc link; a setup cell (`import sys; sys.path.insert(0, '.')` + `from stark_helpers import *`); numbered sections `## 1 · …`; then, in this order, `## 👀 In the portal` (skip when there is nothing to see), `## 🧹 Clean up` (say so when there is nothing to delete), `## 🎯 Recap` ending with `> 💡 Next: …`.
+- Shared logic lives in `stark_helpers.py` / `stark_docs.py`, not copied between notebooks: `run_functions` (function-call loop), `ask_agent` (MCP approvals), `skill_body`, `criterion` / `item_schema` / `agent_target` (evaluations), `arm` / `account_path` (ARM calls), `delete_agent` / `delete_dataset`. Show a mechanism inline once, in the chapter that teaches it (the loop in 05), then use the helper.

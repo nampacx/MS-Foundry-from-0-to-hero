@@ -82,6 +82,17 @@ def extract_invoice(path: str | Path) -> dict:
     }
 
 
+# ---------------------------------------------------------------- the business rule the invoice agents check
+# src/stark-mcp and src/invoice-workflow keep their own copy: each deployed project must be self-contained.
+LIMITS = {"default": 5000, "pepper potts": 250000, "tony stark": 1000000}
+
+
+def check_approval_limit(amount: float, approver: str) -> dict:
+    """Is an amount in USD within an approver's limit? (chapters 13 and 15)"""
+    limit = LIMITS.get(approver.strip().lower(), LIMITS["default"])
+    return {"approver": approver, "limit_usd": limit, "within_limit": amount <= limit}
+
+
 # ---------------------------------------------------------------- Azure Content Understanding
 def cu_client():
     from azure.ai.contentunderstanding import ContentUnderstandingClient

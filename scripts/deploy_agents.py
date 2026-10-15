@@ -99,10 +99,8 @@ def main() -> None:
 
     if args.delete:
         sys.path.insert(0, str(ROOT / "notebooks"))
-        from stark_helpers import project
-        for v in list(project().agents.list_versions(agent_name=args.delete)):
-            project().agents.delete_version(agent_name=args.delete, agent_version=v.version)
-            print(f"  deleted {args.delete} version {v.version}")
+        from stark_helpers import delete_agent
+        delete_agent(args.delete)
         return
 
     files = [Path(f) for f in args.files] or sorted((ROOT / "agents").glob("*.yaml"))

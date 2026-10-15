@@ -9,7 +9,7 @@ The rules live in the "Writing documentation" section of [AGENTS.md](../../../AG
 
 ## Steps
 
-1. Read "Writing documentation" in `AGENTS.md` and the reference example `docs/architecture.md`.
+1. Read "Writing documentation" in `AGENTS.md` and the reference example `docs/conversations.md`.
 2. Read the code, policies and config the document is about. Take names, values and behaviour from there, not from memory.
 3. Outline first: TL;DR, big-picture diagram, numbered sections in the order things happen, optional topics last.
 4. Write the document in `docs/` (or edit the existing file). Link to the code instead of copying it.

@@ -11,6 +11,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 
 AZ = shutil.which("az") or "az"
 AZD = shutil.which("azd") or "azd"
@@ -34,11 +35,14 @@ def main() -> int:
             key = (json.loads(proc.stdout or "{}").get("systemKeys") or {}).get("mcp_extension", "")
         if key:
             break
-        run([sys.executable, "-c", "import time; time.sleep(10)"])
+        time.sleep(10)
     if not key:
         print("Could not read the mcp_extension key yet; re-run: python scripts/connect_mcp.py")
         return 0
-    run([AZD, "ai", "project", "set", endpoint])
+    proc = run([AZD, "ai", "project", "set", endpoint])
+    if proc.returncode != 0:
+        print("Could not select the project (is the azd Foundry extension installed?):", (proc.stderr or proc.stdout).strip())
+        return 0
     proc = run([AZD, "ai", "connection", "create", CONNECTION, "--kind", "remote-tool", "--target", url,
                 "--auth-type", "custom-keys", "--custom-key", f"x-functions-key={key}"])
     if proc.returncode != 0:

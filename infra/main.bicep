@@ -66,6 +66,7 @@ module rbac 'modules/rbac.bicep' = {
 
 output foundryAccountName string = foundry.outputs.accountName
 output foundryProjectName string = foundry.outputs.projectName
+output foundryProjectId string = foundry.outputs.projectId
 output foundryProjectEndpoint string = foundry.outputs.projectEndpoint
 output foundryAccountEndpoint string = foundry.outputs.accountEndpoint
 output appInsightsName string = monitoring.outputs.appInsightsName

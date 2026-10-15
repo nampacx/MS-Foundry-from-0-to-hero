@@ -1,11 +1,11 @@
-# 📄 Agents as files: YAML, azd and CI
+# 📄 9 · Agents as files: YAML, azd and CI
 
-> 💡 **TL;DR:** Keep agent definitions in git. This repo supports two routes: [agents/*.yaml](../agents/jarvis.yaml) deployed by [deploy_agents.py](../scripts/deploy_agents.py) (prompt agents, plain SDK), and azd `azure.yaml` services (`azure.ai.agent`, `azure.ai.toolbox`, `azure.ai.skill`, `azure.ai.connection`). Re-deploying creates a **new version**.
+> 💡 **TL;DR:** Keep agent definitions in git. This repo supports two routes: [agents/*.yaml](../agents/jarvis.yaml) deployed by [deploy_agents.py](../scripts/deploy_agents.py) (prompt agents, plain SDK), and azd `azure.yaml` services (`azure.ai.agent`; azd also knows `azure.ai.toolbox`, `azure.ai.skill` and `azure.ai.connection`, which this repo does not use). Re-deploying creates a **new version**.
 
 | 📄 Route | 🧰 Command | 🤖 Agent kinds | ✅ Verified here |
 |---|---|---|---|
 | `agents/*.yaml` | `python scripts/deploy_agents.py` | prompt | YAML parsing, `${VAR}` resolution (dry run) |
-| `azure.yaml` services | `azd deploy` | prompt, hosted, voice | ❌ not run against Azure |
+| `azure.yaml` services | `azd deploy` | prompt, hosted | ✅ hosted: `invoice-workflow`, `morning-briefing` deployed live. ❌ `kind: prompt` not run |
 
 Hands-on: [notebooks/08_agents_from_yaml.ipynb](../notebooks/08_agents_from_yaml.ipynb).
 
@@ -45,3 +45,31 @@ The old `agent.yaml` / `agent.manifest.yaml` files are deprecated. See the [azur
 ## 3️⃣ In CI
 
 A minimal pipeline: `deploy_agents.py --dry-run` on pull requests, `deploy_agents.py` on merge, then run an evaluation (chapter 10) against the new version before routing traffic to it.
+
+---
+
+## 🪜 Walkthrough: deploy an agent from a file
+
+Code in [chapter 08](../notebooks/08_agents_from_yaml.ipynb).
+
+**Step 1. Open [agents/jarvis.yaml](../agents/jarvis.yaml)** and read the fields from section 1.
+
+**Step 2. Dry run.** `python scripts/deploy_agents.py --dry-run` prints the resolved definitions. An unset `${VAR}` stops here, before anything ships.
+
+**Step 3. Deploy.** `python scripts/deploy_agents.py` creates a new **version** for each file.
+
+**Step 4. Check the portal.** **Build → Agents** shows the new version.
+
+**Step 5. Evaluate** the new version ([datasets-evals.md](datasets-evals.md)) before you route traffic to it.
+
+---
+
+## 🙈 Common mistakes
+
+| 🚨 Mistake | 💥 What happens | ✅ Do this |
+|---|---|---|
+| a `${VAR}` that is not in `.env` | the script stops | add it, or use `--dry-run` to find it |
+| `kind: hosted` in `agents/*.yaml` | the script deploys prompt agents only | use the `azure.yaml` route |
+| using the old `agent.yaml` / manifest | deprecated | follow the `azure.yaml` reference |
+| secrets in the YAML | they land in git | use `${VAR}` and the azd environment |
+| expecting a re-deploy to overwrite | it adds a version | clean up old versions |
