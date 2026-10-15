@@ -7,3 +7,5 @@ local.settings.json
 *.zip
 .azure/
 src/jarvis-hosted/skills/
+src/invoice-workflow/skills/
+src/invoice-workflow/data/

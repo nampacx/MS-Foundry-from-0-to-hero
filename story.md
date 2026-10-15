@@ -8,7 +8,7 @@ Tony Stark did not build J.A.R.V.I.S. in one night. He started with a clumsy rob
 🔧 00 setup → 🤖 01 Dummy → 💬 02 memory → 📈 03 instruments → 🧥 04–09 J.A.R.V.I.S. → 🧪 10–11 F.R.I.D.A.Y. → 🔬 12–13 senses → ⚠️ 14 Ultron → 🌐 15–16 Vision
 ```
 
-Technical background lives in [docs/](docs/): [architecture](docs/architecture.md), [conversations](docs/conversations.md), [observability](docs/observability.md).
+New to Foundry? Read [concepts](docs/concepts.md) and [getting started](docs/getting-started.md) first; if something breaks, see [troubleshooting](docs/troubleshooting.md). Technical background lives in [docs/](docs/): [architecture](docs/architecture.md), [conversations](docs/conversations.md), [observability](docs/observability.md).
 
 ## 🎬 Act I · The Workshop – Dummy and U
 

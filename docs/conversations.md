@@ -52,3 +52,50 @@ Conversations and responses persist until deleted (`conversations.delete`, `resp
 ## 5️⃣ Finding conversations in monitoring
 
 Each conversation id also appears on traces (`gen_ai.conversation.id`). See [observability.md](observability.md).
+
+---
+
+## 🪜 Walkthrough: give a model a memory
+
+Code from [chapter 02](../notebooks/02_conversations.ipynb). `oai = openai_client()` and `MODEL = model("chat")` come from [stark_helpers.py](../notebooks/stark_helpers.py).
+
+**Step 1. See the problem.** Two separate calls share nothing:
+
+```python
+a = oai.responses.create(model=MODEL, input="My suit is the Mark 7. Remember that.")
+b = oai.responses.create(model=MODEL, input="Which suit did I just mention?")   # the model has no idea
+```
+
+**Step 2. Chain the calls.** Point the second call at the first response:
+
+```python
+b = oai.responses.create(model=MODEL, input="Which suit did I just mention?", previous_response_id=a.id)
+```
+
+Use the **same** `a.id` twice and you get a fork: two answers that both start from `a`.
+
+**Step 3. Use a conversation for anything longer.** Create it once, pass its id every time:
+
+```python
+conv = oai.conversations.create(items=[{"type": "message", "role": "user", "content": "I am Tony Stark."}])
+r = oai.responses.create(model=MODEL, conversation=conv.id, input="Which suit is best underwater?")
+```
+
+**Step 4. Look inside.** `oai.conversations.items.list(conv.id)` prints every item. Add your own with `oai.conversations.items.create(conv.id, items=[...])`.
+
+**Step 5. Clean up.** `oai.responses.delete(id)` and `oai.conversations.delete(id)`. The chapter keeps a `created` dict so the last cell can delete everything.
+
+> 💡 **Which one do I pick?** Two or three quick follow-ups in a script: `previous_response_id`. A chat, an agent or anything you want to look at later in the portal: a conversation. Nothing stored at all: `store=False`.
+
+---
+
+## 🙈 Common mistakes
+
+| 🚨 Mistake | 💥 What happens | ✅ Do this |
+|---|---|---|
+| expecting the model to remember the last call | it answers "I don't know" | pass `previous_response_id` or `conversation` |
+| passing **both** `previous_response_id` and `conversation` | one history wins or the call is rejected 🔎 | choose one |
+| using `store=False` and then calling `responses.retrieve` | it fails: nothing was stored | expected. Keep `store=True` when you need to look it up |
+| trying to fork a conversation | a conversation is append only | fork with response chains instead |
+| forgetting to delete | conversations and responses stay in the project | keep ids and delete them in a clean-up cell |
+| mixing a bound client with a plain client | the bound client has its **own** conversations | create the conversation with the client you will use ([chapter 04](../notebooks/04_jarvis_prompt_agent.ipynb)) |

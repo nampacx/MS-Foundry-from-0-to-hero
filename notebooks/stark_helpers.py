@@ -127,6 +127,20 @@ def sh(command: str) -> str:
     return out
 
 
+def fix_dotnet_for_powerfx() -> None:
+    """Let PowerFx (declarative workflows, chapter 15) find a .NET runtime that matches this Python.
+
+    An x64 Python on Windows-on-ARM cannot load the ARM64 .NET that `dotnet` finds first (error 0xc1), and
+    agent-framework-declarative then reports "dotnet runtime not installed". Point DOTNET_ROOT at the x64 .NET.
+    Call this before the first workflow is created in the kernel.
+    """
+    import os, sys
+    x64_dotnet = os.path.normpath("C:/Program Files/dotnet/x64")
+    if sys.platform == "win32" and "AMD64" in sys.version and "DOTNET_ROOT" not in os.environ and os.path.isdir(x64_dotnet):
+        os.environ["DOTNET_ROOT"] = x64_dotnet
+        print("DOTNET_ROOT ->", x64_dotnet)
+
+
 def agent_ref(agent) -> dict:
     """`extra_body` that points a response at an agent (name or agent object)."""
     name = getattr(agent, "name", agent)

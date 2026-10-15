@@ -45,3 +45,31 @@ The old `agent.yaml` / `agent.manifest.yaml` files are deprecated. See the [azur
 ## 3️⃣ In CI
 
 A minimal pipeline: `deploy_agents.py --dry-run` on pull requests, `deploy_agents.py` on merge, then run an evaluation (chapter 10) against the new version before routing traffic to it.
+
+---
+
+## 🪜 Walkthrough: deploy an agent from a file
+
+Code in [chapter 08](../notebooks/08_agents_from_yaml.ipynb).
+
+**Step 1. Open [agents/jarvis.yaml](../agents/jarvis.yaml)** and read the fields from section 1.
+
+**Step 2. Dry run.** `python scripts/deploy_agents.py --dry-run` prints the resolved definitions. An unset `${VAR}` stops here, before anything ships.
+
+**Step 3. Deploy.** `python scripts/deploy_agents.py` creates a new **version** for each file.
+
+**Step 4. Check the portal.** **Build → Agents** shows the new version.
+
+**Step 5. Evaluate** the new version ([datasets-evals.md](datasets-evals.md)) before you route traffic to it.
+
+---
+
+## 🙈 Common mistakes
+
+| 🚨 Mistake | 💥 What happens | ✅ Do this |
+|---|---|---|
+| a `${VAR}` that is not in `.env` | the script stops | add it, or use `--dry-run` to find it |
+| `kind: hosted` in `agents/*.yaml` | the script deploys prompt agents only | use the `azure.yaml` route |
+| using the old `agent.yaml` / manifest | deprecated | follow the `azure.yaml` reference |
+| secrets in the YAML | they land in git | use `${VAR}` and the azd environment |
+| expecting a re-deploy to overwrite | it adds a version | clean up old versions |

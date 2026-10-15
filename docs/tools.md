@@ -182,3 +182,41 @@ Both are explained in [mcp-a2a-skills.md](mcp-a2a-skills.md).
 | another team's agent | A2A | identity and role assignment |
 
 > 🚫 **Tool output is untrusted input.** Text from a file, a web page or an MCP server flows into the model's context, so it can carry instructions (indirect prompt injection). Give each agent the **fewest tools** it needs, approve risky calls, and test the attack on purpose in [chapter 14](../notebooks/14_ultron_guardrails_redteam.ipynb). Background: [guardrails.md](guardrails.md).
+
+---
+
+## 🪜 Walkthrough: add one tool to an agent
+
+Pick the simplest tool, **code interpreter**, then see where a function differs. Code: [chapter 05](../notebooks/05_tools_function_and_builtin.ipynb).
+
+**Step 1. Declare the tool in the version.**
+
+```python
+from azure.ai.projects.models import PromptAgentDefinition, CodeInterpreterTool
+agent = project().agents.create_version(
+    agent_name="tools-demo",
+    definition=PromptAgentDefinition(model=model("chat"),
+        instructions="Use the code interpreter for any calculation.", tools=[CodeInterpreterTool()]))
+```
+
+**Step 2. Ask something that needs it.** `oai.responses.create(input="What is 17 factorial?", extra_body=agent_ref(agent))`.
+
+**Step 3. Prove the tool ran.** [`tool_calls(resp)`](../notebooks/stark_helpers.py) lists the items used. Look for `code_interpreter_call` and read its `code`.
+
+**Step 4. For a function tool, add your half.** The response contains a `function_call`. You run it and send back `function_call_output` (section 2 shows the item).
+
+**Step 5. Clean up** what the tool created (vector stores, agents).
+
+---
+
+## 🙈 Common mistakes
+
+| 🚨 Mistake | 💥 What happens | ✅ Do this |
+|---|---|---|
+| vague tool description | the model picks the wrong tool or none | write the description for the model |
+| no "use tools for facts" in the instructions | the model answers from memory | say **when** to use tools |
+| `output` as a Python object in `function_call_output` | the call fails | return a **string** (`json.dumps(...)`) |
+| trusting `arguments` | a prompt injection can choose them | `json.loads`, then validate |
+| not capping the tool loop | endless rounds and cost | cap the rounds (`max_rounds` in [`ask_agent()`](../notebooks/stark_helpers.py)) |
+| leaving the vector store behind | it outlives the agent and keeps data | delete it in the clean-up cell |
+| `require_approval="never"` on a tool that writes | no human sees the call | keep approval for anything that changes state |

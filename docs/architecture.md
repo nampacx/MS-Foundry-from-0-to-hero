@@ -9,6 +9,8 @@
 | 🤖 Agent (versioned) | model + instructions + tools, or your own container | `agent_reference` in a response |
 | 📈 Application Insights | traces and agent metrics | connection on the project |
 
+> 🧭 New to these terms? [concepts.md](concepts.md) explains them in plain words.
+
 ---
 
 ## 🗺️ The big picture

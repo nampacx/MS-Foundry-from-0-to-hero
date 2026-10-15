@@ -110,3 +110,50 @@ MCP tools default to `require_approval="always"`: the response contains `mcp_app
 `azd deploy` zips [src/jarvis-hosted](../src/jarvis-hosted/main.py) and Foundry builds it remotely (code mode, no Docker). The container gets its own Entra identity and `FOUNDRY_PROJECT_ENDPOINT` from the platform. The `ResponsesHostServer` speaks the Responses protocol, so conversations, streaming and tracing work like for prompt agents.
 
 > ⚠️ **Demo-grade / unverified:** the hosted-agent `azure.yaml` service in this repo was written from the Microsoft Learn reference and has not been deployed in a live subscription. If `azd` rejects a field, run `azd ai agent init -m <sample azure.yaml> --deploy-mode code` in a scratch folder and compare.
+
+---
+
+## 🪜 Walkthrough: your first agent
+
+Code from [chapter 04](../notebooks/04_jarvis_prompt_agent.ipynb).
+
+**Step 1. Create version 1.** An agent is a name plus a definition:
+
+```python
+from azure.ai.projects.models import PromptAgentDefinition
+agent = project().agents.create_version(
+    agent_name="jarvis-nb04",
+    definition=PromptAgentDefinition(model=model("chat"), instructions="You are J.A.R.V.I.S. Be concise. Address the user as 'sir'."),
+)
+print(agent.name, agent.version)       # jarvis-nb04 1
+```
+
+**Step 2. Talk to it inside a conversation.**
+
+```python
+oai = openai_client()
+conv = oai.conversations.create()
+r = oai.responses.create(conversation=conv.id, input="Who are you?", extra_body=agent_ref(agent))
+```
+
+Note there is **no `model=`**: the agent version supplies it.
+
+**Step 3. Ship a new personality.** Call `create_version` again with the same name. Callers that use `agent_ref("jarvis-nb04")` get the latest version without a code change. `project().agents.list_versions(agent_name=...)` shows both.
+
+**Step 4. Look at it in the portal.** **Build → Agents → jarvis-nb04**: versions, playground, **Traces** ([portal-tour.md](portal-tour.md)).
+
+**Step 5. Clean up.** `delete_agent("jarvis-nb04")` and `oai.conversations.delete(conv.id)`.
+
+> 💡 Two ways to address an agent: `extra_body=agent_ref(...)` on a plain client, or `openai_client(agent_name=...)`, a client **bound** to one agent. Pick one per script and create conversations with the same client.
+
+---
+
+## 🙈 Common mistakes
+
+| 🚨 Mistake | 💥 What happens | ✅ Do this |
+|---|---|---|
+| expecting `create_version` to replace the old one | a new version is added, old ones stay | delete versions you do not need |
+| putting user text into `structured_inputs` | it is pasted into the instructions and can hijack them | user text goes in `input` |
+| a conversation from a plain client used with a bound client | not found or empty history 🔎 | create and use the conversation with the same client |
+| ignoring the tool loop for function tools | the run ends at a `function_call` with no answer | loop until no `function_call` is left ([tools.md](tools.md)) |
+| calling an agent that no longer exists | `404` 🔎 | keep names in one constant and delete only in clean-up |

@@ -121,6 +121,37 @@ sequenceDiagram
 
 ---
 
+## 🪜 Walkthrough: connect an MCP server safely
+
+Code in [chapter 06](../notebooks/06_mcp_tools.ipynb).
+
+**Step 1. List before you restrict.** Connect with the `mcp` package and call `session.list_tools()`, or read `mcp_list_tools` from a first response.
+
+**Step 2. Allow only what you need.** Put the names in `allowed_tools`.
+
+**Step 3. Keep approvals on.** Leave `require_approval="always"` until you know the tool only reads.
+
+**Step 4. Store credentials in a connection.** For `stark-mcp`, `azd deploy` runs [connect_mcp.py](../scripts/connect_mcp.py). The agent references `project_connection_id`.
+
+**Step 5. Run with a policy.** `ask_agent(agent, question, approve=lambda item: item.server_label == "learn")`.
+
+**Step 6. Read the result as untrusted text** ([guardrails.md](guardrails.md)).
+
+---
+
+## 🙈 Common mistakes
+
+| 🚨 Mistake | 💥 What happens | ✅ Do this |
+|---|---|---|
+| exposing every tool of a server | more wrong picks, more attack surface | `allowed_tools` |
+| `require_approval="never"` by default | no human sees writes | only for read-only tools you trust |
+| key in the agent definition | it shows up in versions and traces | project connection |
+| expecting skills to work on a default prompt agent | no effect | use direct injection or a toolbox |
+| calling A2A without version 1.0 | falls back to preview v0.3 | use the v1.0 card or `A2A-Version: 1.0` |
+| forgetting the role on the target | `403` | assign *Foundry Agent Consumer*, wait a minute |
+
+---
+
 ## 📚 Learn more
 
 | 🏷️ Source | 📖 What you get |
