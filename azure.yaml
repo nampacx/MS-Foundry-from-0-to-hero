@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: stark
+metadata:
+  template: foundry-from-0-to-hero
+
+infra:
+  provider: bicep
+  path: infra/azd
+  module: main
+
+# Later chapters add services here, e.g. the MCP Function (stark-mcp) and the hosted agent (jarvis-hosted, host: azure.ai.agent).
+services: {}
+
+hooks:
+  postprovision:         # write .env for the notebooks from the azd environment values
+    posix: { shell: sh, run: 'python3 scripts/write_env.py' }
+    windows: { shell: pwsh, run: 'python scripts/write_env.py; exit $LASTEXITCODE' }

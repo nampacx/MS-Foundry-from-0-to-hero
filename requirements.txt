@@ -1,0 +1,12 @@
+azure-ai-projects>=2.3.0
+azure-identity>=1.19
+openai>=1.99
+python-dotenv>=1.0
+pyyaml>=6.0
+pandas>=2.2
+matplotlib>=3.9
+azure-monitor-opentelemetry>=1.6
+azure-monitor-query>=1.4
+opentelemetry-sdk>=1.27
+requests>=2.32
+ipykernel>=6.29
