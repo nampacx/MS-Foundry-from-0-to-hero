@@ -4,6 +4,13 @@ metadata:
   template: foundry-from-0-to-hero
 
 # Needs the Foundry azd extensions for the azure.ai.* hosts:  azd extension install microsoft.foundry
+# Pin the azd and extension versions this tutorial was tested with (old agents extensions still demand agent.yaml).
+requiredVersions:
+  azd: ">= 1.36.0"
+  extensions:
+    azure.ai.agents: "=1.0.0-beta.20"
+    azure.ai.projects: "=1.0.0-beta.14"
+
 infra:
   provider: bicep
   path: infra/azd

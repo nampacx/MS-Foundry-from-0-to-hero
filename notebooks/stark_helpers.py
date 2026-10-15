@@ -59,6 +59,14 @@ def openai_client(**kwargs):
     return project().get_openai_client(**kwargs)
 
 
+def embeddings_client():
+    """OpenAI client on the *account* endpoint. The project route has no `/embeddings`, so use this for embeddings."""
+    from openai import OpenAI
+    from azure.identity import get_bearer_token_provider
+    base = cfg("STARK_ACCOUNT_ENDPOINT").replace(".cognitiveservices.", ".openai.").rstrip("/") + "/openai/v1/"
+    return OpenAI(base_url=base, api_key=get_bearer_token_provider(credential(), "https://ai.azure.com/.default"))
+
+
 def model(kind: str = "chat") -> str:
     """Deployment name for 'chat' | 'judge' | 'fast' | 'embedding'."""
     return cfg({"chat": "STARK_CHAT_MODEL", "judge": "STARK_JUDGE_MODEL",
@@ -105,8 +113,12 @@ def show_output(response) -> None:
 
 
 def sh(command: str) -> str:
-    """Run a shell command (azd, az, python scripts), print and return its output."""
-    import subprocess
+    """Run a shell command (azd, az, python scripts), print and return its output.
+
+    A leading `python` / `python3` runs with the notebook's own interpreter (the .venv), not whatever is first on PATH.
+    """
+    import re, subprocess, sys
+    command = re.sub(r"^python3?(?=\s)", lambda _: f'"{sys.executable}"', command)
     proc = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=ROOT)
     out = (proc.stdout + proc.stderr).strip()
     print(out)

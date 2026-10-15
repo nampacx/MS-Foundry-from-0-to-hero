@@ -41,7 +41,7 @@ Every `responses.create` stores a **response** (`store=True` by default). Its `u
 
 ## 3️⃣ Agents and conversations
 
-An agent is referenced per call with `extra_body={"agent_reference": {"name": ..., "type": "agent_reference"}}`, or by binding the client with `get_openai_client(agent_name=...)`. The conversation holds the history; the agent version supplies model, instructions and tools. Chapter 04 shows this.
+An agent is referenced per call with `extra_body={"agent_reference": {"name": ..., "type": "agent_reference"}}`, or by binding the client with `get_openai_client(agent_name=...)`. A bound client uses the agent's own endpoint and its own conversations, so create the conversation with the bound client too. The conversation holds the history; the agent version supplies model, instructions and tools. Chapter 04 shows this.
 
 > ℹ️ Hosted agents also have **sessions** (sandbox + files). A session is not a conversation: see [Manage hosted agent sessions](https://learn.microsoft.com/azure/foundry/agents/how-to/manage-hosted-sessions).
 

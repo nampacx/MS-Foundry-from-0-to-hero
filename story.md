@@ -22,7 +22,7 @@ The Responses API and Chat Completions, instructions, streaming, structured outp
 Models forget. Manual history, `previous_response_id` chains (and forking), durable **conversations** with items, `store=False`, and cleanup. See [docs/conversations.md](docs/conversations.md).
 
 ### 📈 03 · `03_tracing_and_monitoring` – The lab instruments
-OpenTelemetry tracing into Application Insights, custom spans, finding a conversation in the portal, and KQL for tokens and latency. See [docs/observability.md](docs/observability.md).
+OpenTelemetry tracing into Application Insights, custom spans, finding the traces in Application Insights, and KQL for tokens and latency (Foundry shows traces per agent from chapter 04). See [docs/observability.md](docs/observability.md).
 
 ## 🧥 Act II · The Suit – J.A.R.V.I.S.
 Dummy answered; J.A.R.V.I.S. *acts*. Background: [docs/agents.md](docs/agents.md), [docs/agents-yaml.md](docs/agents-yaml.md), [docs/mcp-a2a-skills.md](docs/mcp-a2a-skills.md).

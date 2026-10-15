@@ -1,10 +1,11 @@
 # 📈 How Foundry traces and monitors your AI app
 
-> 💡 **TL;DR:** Foundry writes **OpenTelemetry** traces to the **Application Insights** connected to your project. You see them in the portal (Traces, conversations, agent Monitor tab) and can query them with **KQL**. Tracing is **off by default** and content recording can contain personal data.
+> 💡 **TL;DR:** Foundry writes **OpenTelemetry** traces to the **Application Insights** connected to your project. You see them in **Application Insights** (all calls) and on an **agent's** Traces and Monitor tabs in the Foundry portal, and you can query everything with **KQL**. Tracing is **off by default** and content recording can contain personal data.
 
 | 👀 Where | 🔎 What you see | 🛠️ How |
 |---|---|---|
-| Portal → Traces | spans, durations, tokens, messages | connect Application Insights (Bicep does it) |
+| Application Insights → Transaction search | every traced call, also calls without an agent (chapter 03) | the same Application Insights, no setup |
+| Foundry portal → agent → Traces (server-side, no code needed) | spans, durations, tokens, messages, conversation id | needs an agent (chapter 04) and Application Insights (Bicep connects it) |
 | Portal → agent → Monitor | runs, success rate, latency, tokens, eval scores | needs an agent (chapter 04) |
 | Log Analytics | everything, queryable | `kql()` in [stark_helpers.py](../notebooks/stark_helpers.py) |
 | Local console | spans while developing | OTLP/console exporter (optional) |
