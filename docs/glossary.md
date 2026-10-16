@@ -2,10 +2,10 @@
 
 > 💡 **TL;DR:** One line per term, A to Z, with the doc that explains it in depth. Each term is used in the notebooks or docs. The first group is the Foundry core, the second is everything around it.
 
-| 🔤 Group | 🎯 Read it when |
+| Group | Read it when |
 |---|---|
-| 🧱 Foundry core | a notebook or doc uses a Foundry word you do not know |
-| 🧰 Around Foundry | a protocol, a standard or an Azure term comes up |
+| Foundry core | a notebook or doc uses a Foundry word you do not know |
+| Around Foundry | a protocol, a standard or an Azure term comes up |
 
 ---
 
@@ -13,21 +13,21 @@
 
 ```mermaid
 flowchart LR
-  R[☁️ Foundry resource] --> P[📁 Project]
-  R --> D[🧠 Deployments]
-  P --> A[🤖 Agents]
-  P --> C[💬 Conversations]
-  P --> E[🧪 Evaluations]
-  P --> K[🔑 Connections]
-  A -->|tools| T[🛠️ function · MCP · A2A]
-  A -->|know-how| S[📜 Skills]
+  R[Foundry resource] --> P[Project]
+  R --> D[Deployments]
+  P --> A[Agents]
+  P --> C[Conversations]
+  P --> E[Evaluations]
+  P --> K[Connections]
+  A -->|tools| T[function · MCP · A2A]
+  A -->|know-how| S[Skills]
 ```
 
 ---
 
-## 1️⃣ Foundry core
+## 1 · Foundry core
 
-| 🏷️ Term | 🔎 Meaning | 📖 More |
+| Term | Meaning | More |
 |---|---|---|
 | **Account endpoint** | `https://<resource>.cognitiveservices.azure.com`. For Foundry Tools and embeddings (`STARK_ACCOUNT_ENDPOINT`) | [concepts.md](concepts.md) |
 | **Agent** | a named, versioned definition (model + instructions + tools) that Foundry runs, or your code that Foundry hosts | [agents.md](agents.md) |
@@ -57,9 +57,9 @@ flowchart LR
 
 ---
 
-## 2️⃣ Around Foundry
+## 2 · Around Foundry
 
-| 🏷️ Term | 🔎 Meaning | 📖 More |
+| Term | Meaning | More |
 |---|---|---|
 | **Authentication / authorization** | *who* is calling (a key or token proves it) / *what* the caller may do (roles, allow-lists, approvals) | [mcp-skills.md](mcp-skills.md), [capstone.md](capstone.md) |
 | **A2A (Agent2Agent)** | an open protocol for agents to discover (agent card) and call each other | [capstone.md](capstone.md) |

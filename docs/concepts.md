@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** Foundry is **one Azure resource** that hosts **models**, with a **project** inside it that stores your **agents, conversations, datasets and evaluations**. You call it with **one URL** (the project endpoint) and your **Entra identity**. A **model** answers one request and forgets. An **agent** is a saved, versioned setup (model + instructions + tools) that Foundry runs for you. Read this page once, then the notebooks use no word you have not seen.
 
-| ❓ Question | ✅ Short answer |
+| Question | Short answer |
 |---|---|
 | What do I deploy? | One Foundry resource, one project, a few model deployments (`azd up`) |
 | What do I call from code? | The **project endpoint** (`STARK_PROJECT_ENDPOINT`) |
@@ -17,29 +17,29 @@
 
 ```mermaid
 flowchart TD
-  YOU[🧑‍💻 You<br/>Python + Entra login] -->|project endpoint| PRJ
-  subgraph RES[☁️ Foundry resource]
-    DEP[🧠 Model deployments<br/>named, billable]
-    TOOLS[🔬 Foundry Tools<br/>Document Intelligence · Vision · Content Understanding]
-    subgraph PRJ[📁 Project]
-      AG[🤖 Agents + versions]
-      CV[💬 Conversations + responses]
-      DS[🗂️ Datasets + 🧪 evaluations]
-      CN[🔑 Connections]
+  YOU[You<br/>Python + Entra login] -->|project endpoint| PRJ
+  subgraph RES[Foundry resource]
+    DEP[Model deployments<br/>named, billable]
+    TOOLS[Foundry Tools<br/>Document Intelligence · Vision · Content Understanding]
+    subgraph PRJ[Project]
+      AG[Agents + versions]
+      CV[Conversations + responses]
+      DS[Datasets + evaluations]
+      CN[Connections]
     end
   end
   AG -->|uses| DEP
-  AG -.->|tools| EXT[🛠️ your functions · MCP servers · other agents]
-  PRJ -->|telemetry| AI[(📈 Application Insights)]
+  AG -.->|tools| EXT[your functions · MCP servers · other agents]
+  PRJ -->|telemetry| AI[(Application Insights)]
 ```
 
 ---
 
-## 1️⃣ The building blocks
+## 1 · The building blocks
 
 Think of it as a company building. The resource is the building, the project is one office, the deployment is the machine you call.
 
-| 🧱 Block | 🏢 Analogy | 🔎 What it is | 🏷️ Name here |
+| Block | Analogy | What it is | Name here |
 |---|---|---|---|
 | **Foundry resource** | the building | Azure resource `Microsoft.CognitiveServices/accounts`, kind `AIServices`. Owns billing, networking, model deployments, Foundry Tools | `STARK_FOUNDRY_ACCOUNT` |
 | **Project** | one office | a workspace inside the resource. Agents, conversations, datasets, evaluations and connections live here | `STARK_FOUNDRY_PROJECT` |
@@ -54,11 +54,11 @@ Think of it as a company building. The resource is the building, the project is 
 
 ---
 
-## 2️⃣ Model, response, agent
+## 2 · Model, response, agent
 
 This is the part most newcomers mix up.
 
-| 🧩 | 🧠 Model call | 🤖 Agent call |
+| | Model call | Agent call |
 |---|---|---|
 | You send | `model="<deployment>"` + `input` | `agent_reference` + `input` |
 | Instructions come from | your request (`instructions=...`) | the **agent version** |
@@ -73,7 +73,7 @@ A model **forgets everything** after each call. History is something you add: ei
 
 ### The words around a request
 
-| 🏷️ Word | 🔎 Meaning |
+| Word | Meaning |
 |---|---|
 | **Response** | what one `responses.create` call returns: `output_text`, a list of **output items**, and `usage` (token counts) |
 | **Output item** | one piece of the answer: a `message`, a `function_call`, an `mcp_approval_request`, `reasoning`, ... |
@@ -85,11 +85,11 @@ A model **forgets everything** after each call. History is something you add: ei
 
 ---
 
-## 3️⃣ Where your data lives
+## 3 · Where your data lives
 
 Foundry Agent Service is **stateful**. Conversations, responses, files, vector stores, datasets and agent versions stay until you delete them. That is why every notebook ends with a clean-up cell.
 
-| 🗄️ Setup | 📦 Where agent data is stored | 🏗️ Here |
+| Setup | Where agent data is stored | Here |
 |---|---|---|
 | **Basic** | a Microsoft-managed store | ✅ used by this repo |
 | **Standard** | your own Storage, Cosmos DB and AI Search | ❌ not deployed |
@@ -98,21 +98,21 @@ Foundry Agent Service is **stateful**. Conversations, responses, files, vector s
 
 ---
 
-## 4️⃣ Identity, roles and secrets
+## 4 · Identity, roles and secrets
 
 There are **no API keys** in this repo. The resource is created with `disableLocalAuth: true` ([foundry.bicep](../infra/modules/foundry.bicep)), so only Entra ID works.
 
 ```mermaid
 flowchart LR
-  L[🔐 az login] --> C[DefaultAzureCredential]
-  C -->|token| F[☁️ Foundry]
-  F --> R{🛂 role check}
-  R -->|Azure AI User| OK1[✅ agents · evals · responses]
-  R -->|Cognitive Services User| OK2[✅ Document Intelligence · Vision]
-  R -->|Log Analytics Reader| OK3[✅ KQL queries]
+  L[az login] --> C[DefaultAzureCredential]
+  C -->|token| F[Foundry]
+  F --> R{role check}
+  R -->|Azure AI User| OK1[agents · evals · responses]
+  R -->|Cognitive Services User| OK2[Document Intelligence · Vision]
+  R -->|Log Analytics Reader| OK3[KQL queries]
 ```
 
-| 🛂 Role | 🎯 Lets you | 📄 Assigned in |
+| Role | Lets you | Assigned in |
 |---|---|---|
 | Azure AI User | use projects, agents, evaluations | [rbac.bicep](../infra/modules/rbac.bicep) |
 | Cognitive Services User | call Foundry Tools | [rbac.bicep](../infra/modules/rbac.bicep) |
@@ -124,9 +124,9 @@ Secrets for **other** systems (an MCP key, a remote agent) go into a **project c
 
 ---
 
-## 5️⃣ The Python packages
+## 5 · The Python packages
 
-| 📦 Package | 🎯 Gives you |
+| Package | Gives you |
 |---|---|
 | `azure-ai-projects` | `AIProjectClient`: agents, datasets, connections, telemetry |
 | `openai` | the client you get from `project.get_openai_client()`: responses, conversations, evals, vector stores |
@@ -140,11 +140,11 @@ The full list is [requirements.txt](../requirements.txt). The notebooks reach ev
 
 ---
 
-## 6️⃣ Preview, GA and why the official docs feel confusing
+## 6 · Preview, GA and why the official docs feel confusing
 
 Foundry changes fast, so the official pages mix several generations. Four things help:
 
-| 🧭 You see | 💡 What it means |
+| You see | What it means |
 |---|---|
 | "New Foundry" toggle in the portal | the current experience. This repo uses it. The older "classic" pages describe other APIs |
 | "Assistants" / `threads` / `runs` | the **old** agent API. This repo uses Responses + conversations instead |
@@ -157,7 +157,7 @@ Foundry changes fast, so the official pages mix several generations. Four things
 
 ## 📚 Where to go next
 
-| 🎯 You want to | 📖 Read |
+| You want to | Read |
 |---|---|
 | deploy and run the first notebook | [getting-started.md](getting-started.md) |
 | fix an error | [troubleshooting.md](troubleshooting.md) |

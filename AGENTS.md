@@ -26,7 +26,11 @@ Reference example: [docs/conversations.md](docs/conversations.md). Match its sty
 - Put each fact in the section where the reader needs it. Don't explain the same thing twice.
 
 ### Style
-- 🎨 Use colour and emojis: one emoji per heading, emoji columns in tables, and callouts (`> 💡`, `> ⚠️`, `> 🚫`).
+- Use emojis sparingly, as signposts, not decoration:
+  - One emoji in the `#` title and in `##` headings such as `## 🗺️ The big picture`. Numbered sections use plain numbers (`## 1 · What you provide`), not keycap emojis. No emojis in `###` headings.
+  - Callouts start with one emoji (`> 💡`, `> ⚠️`, `> 🚫`).
+  - Status markers carry meaning and may appear anywhere: ✅ / ❌ (yes / no), ⚠️ (caution), 🧪 (preview), ❓ (not checked), 🔎 (likely cause, not reproduced).
+  - No other emojis: none in table headers or cells, bullets, link text, mermaid nodes or running text.
 - Prefer tables for comparisons and lookups, bullets for short lists, code blocks for config, XML and commands.
 - Short sentences. Say what the thing does, then why.
 - Use exact names from the repo (`STARK_PROJECT_ENDPOINT`, `stark.json`, `agent_reference`). Check them in the code before you write them down.

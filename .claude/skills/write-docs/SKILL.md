@@ -13,7 +13,7 @@ The rules live in the "Writing documentation" section of [AGENTS.md](../../../AG
 2. Read the code, policies and config the document is about. Take names, values and behaviour from there, not from memory.
 3. Outline first: TL;DR, big-picture diagram, numbered sections in the order things happen, optional topics last.
 4. Write the document in `docs/` (or edit the existing file). Link to the code instead of copying it.
-   Make it colourful, not boring: use fitting emojis in headings, table columns, bullets and callouts (🔑 keys, 👤 users, ⚡ limits, 🔒 security, 📈 metrics, ⚠️ warnings, 💡 tips). Pick emojis that match the meaning, use them consistently, and don't put one on every sentence.
+   Keep emojis sparse: follow the emoji rules in `AGENTS.md` (titles, `##` headings, callouts and status markers only).
 5. Mark anything that is demo-grade, not deployed or not planned.
 6. Re-read top to bottom for information flow. Check that every link and file name exists.
 7. Add the new document to the docs line in `README.md`.

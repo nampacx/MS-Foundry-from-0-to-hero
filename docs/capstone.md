@@ -2,13 +2,13 @@
 
 > 💡 **TL;DR:** **A2A** (*Agent2Agent*) is an open protocol for agents to discover and call each other. In chapter 16 a specialist agent, `friday-finance`, is exposed over A2A. An orchestrator, `jarvis-orchestrator`, calls it with an `A2ATool` through a project connection and its own identity. The system then has to pass an evaluation before you trust it.
 
-| 🧱 Piece | 🔎 What it is | 🏷️ Name here |
+| Piece | What it is | Name here |
 |---|---|---|
-| 🤖 Specialist | a prompt agent with the invoice-review skill and one MCP tool | `friday-finance` |
-| 🪪 Agent card | the A2A discovery document: description and skills | `agentCard/v1.0` |
-| 🔑 A2A connection | a project connection that points at the specialist | `friday-a2a` |
-| 🛂 Role | lets the caller's identity call the target | *Foundry Agent Consumer* |
-| 🧭 Orchestrator | a prompt agent with an `A2ATool` and an `MCPTool` | `jarvis-orchestrator` |
+| Specialist | a prompt agent with the invoice-review skill and one MCP tool | `friday-finance` |
+| Agent card | the A2A discovery document: description and skills | `agentCard/v1.0` |
+| A2A connection | a project connection that points at the specialist | `friday-a2a` |
+| Role | lets the caller's identity call the target | *Foundry Agent Consumer* |
+| Orchestrator | a prompt agent with an `A2ATool` and an `MCPTool` | `jarvis-orchestrator` |
 | 🧪 Quality gate | an evaluation of the orchestrator | `capstone` |
 
 Hands-on: [notebooks/16_vision_a2a_capstone.ipynb](../notebooks/16_vision_a2a_capstone.ipynb).
@@ -21,10 +21,10 @@ Hands-on: [notebooks/16_vision_a2a_capstone.ipynb](../notebooks/16_vision_a2a_ca
 
 ```mermaid
 sequenceDiagram
-    participant U as 🧑 User
-    participant O as 🧭 jarvis-orchestrator
-    participant F as 🤖 friday-finance
-    participant M as ⚡ stark-mcp
+    participant U as User
+    participant O as jarvis-orchestrator
+    participant F as friday-finance
+    participant M as stark-mcp
     U->>O: invoice question
     O->>F: A2A message (Entra token, v1.0, via friday-a2a)
     F->>M: check_invoice_approval (MCP)
@@ -37,13 +37,13 @@ The orchestrator also calls `stark-mcp` directly for suit and workshop facts. Tw
 
 ---
 
-## 1️⃣ The specialist
+## 1 · The specialist
 
 `friday-finance` is a normal prompt agent ([agents.md](agents.md)). Its instructions embed the invoice-review checklist with `skill_body("invoice-review")` (direct skill injection, [mcp-skills.md](mcp-skills.md)). Its only tool is `check_invoice_approval` on `stark-mcp`, through the `stark-mcp` connection.
 
 ---
 
-## 2️⃣ Expose it over A2A
+## 2 · Expose it over A2A
 
 One call turns on the A2A protocol next to Responses and sets the agent card:
 
@@ -58,7 +58,7 @@ project().agents.update_details(
 
 The A2A base URL is `<STARK_PROJECT_ENDPOINT>/agents/friday-finance/endpoint/protocols/a2a`.
 
-| ⚡ Limit | 🔎 |
+| Limit | |
 |---|---|
 | content | text only |
 | transport | JSON-RPC, no streaming |
@@ -66,33 +66,33 @@ The A2A base URL is `<STARK_PROJECT_ENDPOINT>/agents/friday-finance/endpoint/pro
 
 ---
 
-## 3️⃣ Authentication and authorization
+## 3 · Authentication and authorization
 
 A2A in Foundry has **no keys** on the incoming side: every call to an agent's A2A endpoint needs an **Entra token** (audience `https://ai.azure.com`), and the identity behind it needs a role that allows calling agents.
 
 ```mermaid
 flowchart LR
-  U[🧑 You<br/>Azure AI User] -->|your token| O[🧭 jarvis-orchestrator]
-  O -->|token of its own<br/>instance identity| F[🤖 friday-finance]
-  F -->|function key from<br/>connection stark-mcp| M[⚡ stark-mcp]
-  R[🛂 Foundry Agent Consumer<br/>on the project] -.->|allows| O
+  U[You<br/>Azure AI User] -->|your token| O[jarvis-orchestrator]
+  O -->|token of its own<br/>instance identity| F[friday-finance]
+  F -->|function key from<br/>connection stark-mcp| M[stark-mcp]
+  R[Foundry Agent Consumer<br/>on the project] -.->|allows| O
 ```
 
 Each hop signs in **as someone else**. Your rights do not travel down the chain.
 
-### 🪪 Incoming: who may call an A2A endpoint
+### Incoming: who may call an A2A endpoint
 
-| 🧩 | 🔎 Rule |
+| | Rule |
 |---|---|
 | Authentication | Entra ID only. Key-based and anonymous access are not supported |
 | Authorization | the *Foundry Agent Consumer* role (least privilege: call, not change) on the target **project** (every agent in it) or the target **agent** (only that one) |
 | Which identity | the one in the token: the caller agent's `instance_identity`, a service principal, a managed identity, or a user (on-behalf-of). Use its **object (principal) ID** in the role assignment |
 
-### 🔑 Outgoing: how the A2A tool signs in
+### Outgoing: how the A2A tool signs in
 
 The `A2ATool` uses a project connection (`category: RemoteA2A`). Its auth type decides whose identity the target sees:
 
-| 🔑 Auth type (azd `--auth-type`) | 👤 Target sees | 🏗️ In this repo |
+| Auth type (azd `--auth-type`) | Target sees | In this repo |
 |---|---|---|
 | `agentic-identity` (`AgenticIdentityToken`) | the calling agent | ✅ `friday-a2a`, the recommended choice for a Foundry target |
 | `project-managed-identity` | the project's shared identity | ❌ |
@@ -100,9 +100,9 @@ The `A2ATool` uses a project connection (`category: RemoteA2A`). Its auth type d
 | `oauth2` | each user, after a one-time consent (OAuth identity passthrough) | ❌ |
 | `custom-keys`, `none` | a shared key, or nobody (non-Foundry targets only) | ❌ |
 
-### 🗺️ The three calls in chapter 16
+### The three calls in chapter 16
 
-| 📞 Call | 🪪 Signs in as | 🛂 Allowed by |
+| Call | Signs in as | Allowed by |
 |---|---|---|
 | notebook section 3: `a2a-sdk` | **you** (your `az login` token) | your *Azure AI User* role ([rbac.bicep](../infra/modules/rbac.bicep)) |
 | notebook sections 4–5: orchestrator → `friday-finance` | the orchestrator's **instance identity** | *Foundry Agent Consumer*, assigned in the notebook |
@@ -114,7 +114,7 @@ Details: [A2A authentication](https://learn.microsoft.com/azure/foundry/agents/c
 
 ---
 
-## 4️⃣ Discover and call it from any client
+## 4 · Discover and call it from any client
 
 Any A2A client can use the agent, not only Foundry agents:
 
@@ -125,9 +125,9 @@ Any A2A client can use the agent, not only Foundry agents:
 
 ---
 
-## 5️⃣ Let a Foundry agent call it
+## 5 · Let a Foundry agent call it
 
-| 🧱 Step | 🔧 How |
+| Step | How |
 |---|---|
 | Connection | `arm("PUT", .../connections/friday-a2a, ...)` with `category: RemoteA2A`, `authType: AgenticIdentityToken`, `target: <A2A base URL>` |
 | Tool | `A2ATool(a2a_version=A2AProtocolVersion.V1_0, project_connection_id=conn.id)` on the orchestrator |
@@ -139,7 +139,7 @@ The connection holds no secret: the orchestrator signs in as itself. The noteboo
 
 ---
 
-## 6️⃣ Prove it
+## 6 · Prove it
 
 The capstone ends like a release: an evaluation of the orchestrator on [capstone-queries.jsonl](../data/capstone-queries.jsonl), with `task_adherence` and a gate of 0.6 ([datasets-evals.md](datasets-evals.md)). Then open **Traces**: the orchestrator's A2A call and Friday's own run show up as separate agent runs ([observability.md](observability.md)).
 
@@ -153,7 +153,7 @@ The notebook deletes the conversation, the evaluation, both agents, the `friday-
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | calling A2A without version 1.0 | falls back to preview v0.3 | use the v1.0 card or `A2A-Version: 1.0` |
 | forgetting the role on the target | `403` | assign *Foundry Agent Consumer* to the caller's identity, wait a minute |

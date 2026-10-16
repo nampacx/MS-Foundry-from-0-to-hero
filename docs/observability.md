@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** Foundry writes **OpenTelemetry** traces to the **Application Insights** connected to your project. You see them in **Application Insights** (all calls) and on an **agent's** Traces and Monitor tabs in the Foundry portal, and you can query everything with **KQL**. **Agent calls are traced by Foundry itself** (server-side, chapter 04). **Your own code** (direct model calls, custom spans) sends traces only after `configure_azure_monitor` (chapter 03). Content recording can contain personal data.
 
-| 👀 Where | 🔎 What you see | 🛠️ How |
+| Where | What you see | How |
 |---|---|---|
 | Application Insights → Transaction search | every traced call, also calls without an agent (chapter 03) | the same Application Insights, no setup |
 | Foundry portal → agent → Traces (server-side, no code needed) | spans, durations, tokens, messages, conversation id | needs an agent (chapter 04) and Application Insights (Bicep connects it) |
@@ -18,19 +18,19 @@ Hands-on: [notebooks/03_tracing_and_monitoring.ipynb](../notebooks/03_tracing_an
 
 ```mermaid
 flowchart LR
-  A[🐍 Your code<br/>azure-ai-projects] -->|OpenTelemetry spans<br/>gen_ai.*| E[azure-monitor-opentelemetry<br/>exporter]
-  H[🤖 Hosted agent<br/>platform-injected] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI
-  E --> AI[(📈 Application Insights)]
-  AI --> LA[(🗃️ Log Analytics<br/>AppDependencies · AppRequests)]
-  AI --> PT[🖥️ Foundry portal<br/>Traces · Monitor]
-  LA --> K[🔍 KQL in notebooks]
+  A[Your code<br/>azure-ai-projects] -->|OpenTelemetry spans<br/>gen_ai.*| E[azure-monitor-opentelemetry<br/>exporter]
+  H[Hosted agent<br/>platform-injected] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI
+  E --> AI[(Application Insights)]
+  AI --> LA[(Log Analytics<br/>AppDependencies · AppRequests)]
+  AI --> PT[Foundry portal<br/>Traces · Monitor]
+  LA --> K[KQL in notebooks]
 ```
 
 ---
 
-## 1️⃣ Switch it on
+## 1 · Switch it on
 
-| 📡 Calls | 🔧 Who sends the traces |
+| Calls | Who sends the traces |
 |---|---|
 | to an **agent** (`agent_reference`, chapter 04 on) | Foundry, server-side. Nothing to switch on |
 | **your own code**: direct model calls, custom spans | your process, after `configure_azure_monitor` |
@@ -39,24 +39,24 @@ For your own code, [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb) s
 
 ---
 
-## 2️⃣ What a span carries
+## 2 · What a span carries
 
 Spans follow the OpenTelemetry **GenAI semantic conventions**: `gen_ai.operation.name`, `gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`, `gen_ai.conversation.id`, `gen_ai.agent.name`. Add your own attributes with a span (`stark.hero`, `stark.chapter`) to slice by business context.
 
 ---
 
-## 3️⃣ Query it
+## 3 · Query it
 
 The notebook runs KQL on `AppDependencies`. Ingestion takes a few minutes, so `kql_wait()` retries. Table and attribute names can differ between SDK versions; if a query returns nothing, run `AppDependencies | take 5` and look at `Properties`.
 
 ---
 
-## 4️⃣ Privacy and cost
+## 4 · Privacy and cost
 
-- ⚠️ Content recording stores prompts and answers. Project members with *Log Analytics Reader* can read them.
-- 💰 Application Insights ingestion is billed per GB.
-- 🔒 Your own code sends nothing until `configure_azure_monitor` runs. Content recording is a separate switch: leave it off in production.
-- 📈 Quality over time (the agent's **Monitor** tab, continuous evaluation) builds on these traces: [datasets-evals.md](datasets-evals.md).
+- Content recording stores prompts and answers. Project members with *Log Analytics Reader* can read them.
+- Application Insights ingestion is billed per GB.
+- Your own code sends nothing until `configure_azure_monitor` runs. Content recording is a separate switch: leave it off in production.
+- Quality over time (the agent's **Monitor** tab, continuous evaluation) builds on these traces: [datasets-evals.md](datasets-evals.md).
 
 ---
 
@@ -106,9 +106,9 @@ In the notebook, `kql_wait(q, hours=2)` runs it and retries until rows arrive.
 
 **Step 6. Find one conversation.** Filter on its id: `where tostring(Properties) has "<conv.id>"` ([chapter 04](../notebooks/04_jarvis_prompt_agent.ipynb), section 6). An agent call shows an `invoke_agent` span with a nested `chat` span.
 
-### 📖 Reading a trace
+### Reading a trace
 
-| 🧱 Field | 🔎 Meaning |
+| Field | Meaning |
 |---|---|
 | `Name` | the span name, for example your `workshop-scenario` |
 | `DurationMs` | how long the step took |
@@ -119,7 +119,7 @@ In the notebook, `kql_wait(q, hours=2)` runs it and retries until rows arrive.
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | setting the environment variables **after** importing the SDK | no GenAI spans | set them in the first cell, restart the kernel if needed |
 | querying right after the call | empty result | wait 2–5 minutes, use `kql_wait()` |

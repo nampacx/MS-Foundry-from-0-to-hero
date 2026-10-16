@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** You call a **deployment** by name with `responses.create(model=..., input=...)`. The answer is a **response**: the text in `output_text`, the pieces in `output`, the token count in `usage`. Add `stream=True` to get the text as it is written, and a JSON schema to get output your code can parse. Embeddings are a separate call that turns text into vectors.
 
-| 🎯 You want | 🔧 Call | 📓 Chapter 01 section |
+| You want | Call | Chapter 01 section |
 |---|---|---|
 | one answer | `responses.create(model=MODEL, input="...")` | 1 |
 | fixed behaviour for this call | `instructions="..."`, `max_output_tokens=...` | 1 |
@@ -19,16 +19,16 @@ Hands-on: [notebooks/01_dummy_first_call.ipynb](../notebooks/01_dummy_first_call
 
 ```mermaid
 flowchart LR
-  C[🧑‍💻 openai_client] -->|model = deployment name<br/>input · instructions| D[🧠 Deployment<br/>STARK_CHAT_MODEL]
-  D --> R[📦 Response]
-  R --> T[💬 output_text]
-  R --> O[🧱 output items<br/>message · reasoning · tool calls]
-  R --> U[💸 usage<br/>input + output tokens]
+  C[openai_client] -->|model = deployment name<br/>input · instructions| D[Deployment<br/>STARK_CHAT_MODEL]
+  D --> R[Response]
+  R --> T[output_text]
+  R --> O[output items<br/>message · reasoning · tool calls]
+  R --> U[usage<br/>input + output tokens]
 ```
 
 ---
 
-## 1️⃣ One call, one answer
+## 1 · One call, one answer
 
 [`openai_client()`](../notebooks/stark_helpers.py) returns an OpenAI client that talks to your project with your Entra login. `model` is the **deployment name** from `.env`, read with `model("chat")`.
 
@@ -38,7 +38,7 @@ r = oai.responses.create(model=model("chat"), input="In one sentence: what is Du
 print(r.output_text)
 ```
 
-| ⚙️ Parameter | 🎯 What it does |
+| Parameter | What it does |
 |---|---|
 | `input` | a string, or a list of messages |
 | `instructions` | the system prompt, for this call only |
@@ -49,9 +49,9 @@ print(r.output_text)
 
 ---
 
-## 2️⃣ What a response contains
+## 2 · What a response contains
 
-| 🧱 Field | 🔎 Holds |
+| Field | Holds |
 |---|---|
 | `id` | the response id, used for chaining and deleting |
 | `status` | `completed`, or why it stopped |
@@ -63,7 +63,7 @@ Reasoning models add a `reasoning` item before the `message`. You can ignore it.
 
 ---
 
-## 3️⃣ Streaming
+## 3 · Streaming
 
 With `stream=True` the call returns **events** instead of one response. Print the text pieces as they arrive:
 
@@ -75,7 +75,7 @@ for event in oai.responses.create(model=MODEL, input="...", stream=True):
         print(event.response.usage.total_tokens)
 ```
 
-| 📡 Event | 🔎 Meaning |
+| Event | Meaning |
 |---|---|
 | `response.output_text.delta` | the next piece of text |
 | `response.completed` | the end. `event.response` is the full response with `usage` |
@@ -84,7 +84,7 @@ Streaming does not make the model faster. It shows the first words sooner, which
 
 ---
 
-## 4️⃣ Structured output
+## 4 · Structured output
 
 Give the model a **JSON schema** and `strict: True`. The answer then matches the schema, so `json.loads(r.output_text)` works without guessing.
 
@@ -92,18 +92,18 @@ Give the model a **JSON schema** and `strict: True`. The answer then matches the
 text={"format": {"type": "json_schema", "name": "suit_card", "schema": schema, "strict": True}}
 ```
 
-| ✅ Rule for a strict schema | 💡 Why |
+| Rule for a strict schema | Why |
 |---|---|
 | every property is listed in `required` | strict mode has no optional fields |
 | `"additionalProperties": False` | no extra keys appear |
 
 ---
 
-## 5️⃣ Chat Completions: the older shape
+## 5 · Chat Completions: the older shape
 
 The same deployment also answers `chat.completions.create(messages=[...])`. It returns `choices[0].message.content`.
 
-| 🔌 API | 🎯 Use it for |
+| API | Use it for |
 |---|---|
 | **Responses** | new work. Agents, tools and conversations are built on it |
 | **Chat Completions** | existing code that already sends a `messages` list |
@@ -112,7 +112,7 @@ This repo uses Responses everywhere after chapter 01.
 
 ---
 
-## 6️⃣ Embeddings
+## 6 · Embeddings
 
 An embedding turns text into a list of numbers (a **vector**). Texts with a similar meaning get vectors that point in a similar direction, so you can search by meaning. Chapter 01 compares `arc reactor` with `repulsor` and `smoothie` using cosine similarity.
 
@@ -128,7 +128,7 @@ You rarely call embeddings yourself in Foundry: **file search** (chapter 05) emb
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | `model="gpt-…"` (the model name) | an error: no deployment has that name | use the deployment name: `model("chat")` |
 | reading `r.output[0].content` | breaks when a `reasoning` item comes first | use `r.output_text` |

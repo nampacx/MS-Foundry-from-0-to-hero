@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** A workflow splits a job into steps and defines who acts next. Foundry's recommended way is **Microsoft Agent Framework**: **sequential**, **concurrent**, **handoff**, **group chat** and **magentic** orchestrations, in code or **declarative YAML**. They run in your process; host one natively with `ResponsesHostServer(workflow=...)` as a hosted agent (chapter 09) to run it in Foundry. The visual workflow designer in the portal is being retired (support ends after 2026-12-01); YAML workflows keep running as hosted agents.
 
-| 🔀 Pattern | 🧩 Shape | 🧰 Builder | 🎯 Example in chapter 15 |
+| Pattern | Shape | Builder | Example in chapter 15 |
 |---|---|---|---|
 | Sequential | A → B → C | `SequentialBuilder`, or `WorkflowBuilder` with `add_edge` (the notebook shows both, the hosted agent uses the second) | invoice pipeline |
 | Concurrent | same input to all at once, then merge | `ConcurrentBuilder` | morning briefing |
@@ -18,11 +18,11 @@ Hands-on: [notebooks/15_workflows.ipynb](../notebooks/15_workflows.ipynb).
 
 ```mermaid
 flowchart LR
-  U[🧑 Task] --> E[🧾 extractor<br/>tool: Document Intelligence]
-  E --> R[🔎 reviewer<br/>skill: invoice-review<br/>tool: approval limit]
-  R --> P[✍️ reporter]
-  P --> O[📤 final output]
-  E -. intermediate .-> S[👀 progress stream]
+  U[Task] --> E[extractor<br/>tool: Document Intelligence]
+  E --> R[reviewer<br/>skill: invoice-review<br/>tool: approval limit]
+  R --> P[reporter]
+  P --> O[final output]
+  E -. intermediate .-> S[progress stream]
   R -. intermediate .-> S
 ```
 
@@ -32,7 +32,7 @@ flowchart LR
 
 A workflow is a **graph**: boxes (agents or plain code) joined by **edges**. `add_edge(A, B)` means "when A finishes, B runs". The important question for each pattern is **who picks the path**:
 
-| 🔀 Pattern | 🧭 Who picks what runs next | 🎯 So the path is |
+| Pattern | Who picks what runs next | So the path is |
 |---|---|---|
 | Sequential | **your code**: fixed edges, in the order you wrote them | the same every time |
 | Concurrent | **your code**: fan out to all, then the aggregator | the same every time |
@@ -56,11 +56,11 @@ To make the path depend on the data, **your code** adds a condition to an edge, 
 
 ---
 
-## 1️⃣ Sequential
+## 1 · Sequential
 
 There are **two ways to build the same chain**. Both give a fixed order, and in a test both produced the same answer:
 
-| 🧰 Builder | 🧩 How the order is written | 📍 Used in |
+| Builder | How the order is written | Used in |
 |---|---|---|
 | `SequentialBuilder(participants=[a, b, c])` | the **list order** is the run order (a shortcut) | notebook section 1, first runs |
 | `WorkflowBuilder(...).add_edge(a, b).add_edge(b, c)` | every **edge written out** (the order is hard-wired); the general builder that also does conditions, fan-out and custom code steps, and lets you set what each step sees (`AgentExecutor(..., context_mode=...)`) | notebook section 1 ("wired by hand"), and the hosted [invoice-workflow](../src/invoice-workflow/main.py) |
@@ -69,22 +69,22 @@ Each agent consumes the previous agent's conversation (or only its response with
 
 > ℹ️ A custom last step that returns plain text, needed for hosting (section 6), can be added to either: a `SequentialBuilder` chain whose last participant is such a step also hosted fine in a local test. The hosted project uses `WorkflowBuilder` to show the explicit wiring, not because `SequentialBuilder` cannot do it.
 
-## 2️⃣ Concurrent
+## 2 · Concurrent
 
 All participants get the **same input at the same time**, and an **aggregator** merges what they return. In [chapter 15](../notebooks/15_workflows.ipynb) three specialists (`suits`, `workshop`, `finance`) check the workshop in parallel, each through the `stark-mcp` tools, and J.A.R.V.I.S. writes the morning briefing.
 
 ```mermaid
 flowchart LR
-  T[🧑 Good morning, brief me] --> A[🦾 suits<br/>list_suits · get_suit]
-  T --> B[⚙️ workshop<br/>get_workshop_status]
-  T --> C[🧾 finance<br/>check_invoice_approval]
-  A --> M{🧠 aggregator<br/>J.A.R.V.I.S.}
+  T[Good morning, brief me] --> A[suits<br/>list_suits · get_suit]
+  T --> B[workshop<br/>get_workshop_status]
+  T --> C[finance<br/>check_invoice_approval]
+  A --> M{aggregator<br/>J.A.R.V.I.S.}
   B --> M
   C --> M
-  M --> O[📣 morning briefing]
+  M --> O[morning briefing]
 ```
 
-| 🔧 Detail | 💡 Why |
+| Detail | Why |
 |---|---|
 | `ConcurrentBuilder(participants=[...]).with_aggregator(brief)` | the callback gets every specialist's `AgentExecutorResponse` once all are done; its return value is the output |
 | `client.get_mcp_tool(..., project_connection_id="stark-mcp", allowed_tools=[...])` | a **hosted** MCP tool: Foundry calls the server with the connection's key, and each specialist sees only its own tools |
@@ -93,31 +93,31 @@ flowchart LR
 
 The `stark-mcp` data is static, so the briefing facts are the same every morning, apart from J.A.R.V.I.S.'s wording.
 
-## 3️⃣ Group chat
+## 3 · Group chat
 
 All agents see one shared conversation. A `selection_func` (or an `orchestrator_agent`) picks the next speaker; `termination_condition` stops it. Good for review boards; costs grow with every turn.
 
-## 4️⃣ Handoff
+## 4 · Handoff
 
 Agents declare who they may hand over to (`add_handoff`). When an agent answers without handing off, control returns to the user, so a handoff run is interactive: the workflow emits a `request_info` event (`HandoffAgentUserRequest`) and waits for `create_response(text)` or `terminate()`. [Chapter 15](../notebooks/15_workflows.ipynb) plays a list of user messages through it. Use autonomous mode only with turn limits.
 
-| ⚙️ Setting | 🎯 Why |
+| Setting | Why |
 |---|---|
 | `require_per_service_call_history_persistence=True` on **every** agent | `build()` refuses participants without it |
 | `enable_return_to_previous(False)` | the start agent routes every user message, not only the first |
 | a fresh workflow per run | a workflow keeps its conversation between runs |
 
-## 5️⃣ Declarative YAML
+## 5 · Declarative YAML
 
 `kind: Workflow`, a trigger, and `InvokeAzureAgent` actions that name agents. Python registers the agents (`factory.register_agent`), the YAML only holds the flow, so reviews and diffs are easy.
 
 > ⚠️ **Needs .NET.** Expressions such as `=System.ConversationId` are evaluated by PowerFx, which runs on .NET through `pythonnet`. The error `PowerFx is not available (dotnet runtime not installed)` also appears when `dotnet` **is** installed but its CPU architecture differs from Python's. Seen here: an **x64 Python on Windows-on-ARM** cannot load the **ARM64** .NET in `C:\Program Files\dotnet` (`error 0xc1`). Setting `DOTNET_ROOT` to the x64 install (`C:\Program Files\dotnet\x64`) fixes it. [`fix_dotnet_for_powerfx()`](../notebooks/stark_helpers.py) does that, and chapter 15 calls it before anything else. Restart the kernel after changing the environment.
 
-## 6️⃣ Running in Foundry
+## 6 · Running in Foundry
 
 Foundry's own workflow designer and in-portal workflow execution end on **2026-12-01**, and its YAML (a different dialect from Agent Framework's) is rejected as an Agent Framework workflow. The replacement is to host an Agent Framework workflow as a **hosted agent**. Two projects do that for chapter 15: [src/invoice-workflow](../src/invoice-workflow/main.py) (sequential) and [src/morning-briefing](../src/morning-briefing/main.py) (concurrent).
 
-| 🔧 Detail | 💡 Why |
+| Detail | Why |
 |---|---|
 | `ResponsesHostServer(workflow=factory, parse_response=...)` | native workflow hosting. `workflow.as_agent()` through `agent=` is deprecated, because a `WorkflowAgent` keeps state between runs |
 | the factory returns a fresh workflow per request | workflows keep their conversation, so one instance must not serve several users |
@@ -151,7 +151,7 @@ Code in [chapter 15](../notebooks/15_workflows.ipynb).
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | a workflow for a one-step job | extra cost and latency | use a single agent |
 | letting the model decide an approval | a guess decides money | use a tool with a hard limit |

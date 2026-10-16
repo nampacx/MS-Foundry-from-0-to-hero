@@ -10,46 +10,46 @@
 
 What you learn, chapter by chapter:
 
-- 💬 **Models and conversations**: Responses API, streaming, structured output, stored responses and conversations
-- 📈 **Monitoring**: OpenTelemetry traces, KQL, the Foundry portal
-- 🤖 **Agents**: from code, from YAML, hosted agents, with built-in tools
-- 🔌 **MCP, A2A and skills** attached to agents
-- 🧪 **Datasets and evaluations**: batch, conversation-level and on live traces
-- 🔬 **Beyond LLMs**: OCR, Document Intelligence and Content Understanding through the Foundry resource
-- 🔀 **Workflows** and multi-agent patterns
-- 🛡️ **Guardrails and red teaming**
+- **Models and conversations**: Responses API, streaming, structured output, stored responses and conversations
+- **Monitoring**: OpenTelemetry traces, KQL, the Foundry portal
+- **Agents**: from code, from YAML, hosted agents, with built-in tools
+- **MCP, A2A and skills** attached to agents
+- **Datasets and evaluations**: batch, conversation-level and on live traces
+- **Beyond LLMs**: OCR, Document Intelligence and Content Understanding through the Foundry resource
+- **Workflows** and multi-agent patterns
+- **Guardrails and red teaming**
 
-Infrastructure is **Bicep + azd** 🦾, custom code is **Python only** 🐍.
+Infrastructure is **Bicep + azd**, custom code is **Python only**.
 
-| 🧪 This repo is | 🚫 This repo is not |
+| This repo is | This repo is not |
 |---|---|
 | A working end-to-end tutorial you deploy in one command | A hardened landing zone or production template |
 | A set of notebooks that each teach one Foundry concept | Cost-optimised: models and Application Insights bill while deployed |
 | Honest about preview features (marked 🧪) | A promise that preview APIs stay the same |
 
-📚 **Docs, in reading order.** Start at 1 and read each doc next to its chapter:
+**Docs, in reading order.** Start at 1 and read each doc next to its chapter:
 
-| # | 📖 Doc | 🎯 Read it | 📓 Chapters |
+| # | Doc | Read it | Chapters |
 |---|---|---|---|
-| 1 | [🧭 Foundry in plain words](docs/concepts.md) | before anything else | all |
-| 2 | [🚀 Getting started](docs/getting-started.md) | deploy, run chapter 00 | 00 |
-| 3 | [🧠 How you call a model](docs/models.md) | with chapter 01 | 01 |
-| 4 | [💬 How conversations work](docs/conversations.md) | with chapter 02 | 02 |
-| 5 | [📈 How Foundry traces and monitors](docs/observability.md) | with chapter 03 | 03 |
-| 6 | [🤖 Prompt agents](docs/agents.md) | with chapter 04 | 04 |
-| 7 | [🛠️ How agents use tools](docs/tools.md) | with chapter 05 | 05, 06 |
-| 8 | [🔌 MCP servers and skills](docs/mcp-skills.md) | with chapters 06, 07 | 06, 07 |
-| 9 | [📄 Agents as files](docs/agents-yaml.md) | with chapter 08 | 08 |
-| 10 | [🚢 Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 15 |
+| 1 | [Foundry in plain words](docs/concepts.md) | before anything else | all |
+| 2 | [Getting started](docs/getting-started.md) | deploy, run chapter 00 | 00 |
+| 3 | [How you call a model](docs/models.md) | with chapter 01 | 01 |
+| 4 | [How conversations work](docs/conversations.md) | with chapter 02 | 02 |
+| 5 | [How Foundry traces and monitors](docs/observability.md) | with chapter 03 | 03 |
+| 6 | [Prompt agents](docs/agents.md) | with chapter 04 | 04 |
+| 7 | [How agents use tools](docs/tools.md) | with chapter 05 | 05, 06 |
+| 8 | [MCP servers and skills](docs/mcp-skills.md) | with chapters 06, 07 | 06, 07 |
+| 9 | [Agents as files](docs/agents-yaml.md) | with chapter 08 | 08 |
+| 10 | [Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 15 |
 | 11 | [🧪 Datasets and evaluations](docs/datasets-evals.md) | with chapters 10, 11 | 10, 11 |
-| 12 | [🔬 Foundry Tools](docs/foundry-tools.md) | with chapters 12, 13 | 12, 13 |
-| 13 | [🛡️ Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 14 | 14 |
-| 14 | [🔀 Workflows](docs/workflows.md) | with chapter 15 | 15 |
-| 15 | [🦾 Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 16 | 16 |
-| – | [📖 Glossary](docs/glossary.md) | when a word is new | any |
-| – | [🩺 Troubleshooting](docs/troubleshooting.md) | when something fails | any |
-| – | [👀 Portal tour](docs/portal-tour.md) | to find your work in the portal | any |
-| – | [📖 story.md](story.md) | the chapters as a story | all |
+| 12 | [Foundry Tools](docs/foundry-tools.md) | with chapters 12, 13 | 12, 13 |
+| 13 | [Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 14 | 14 |
+| 14 | [Workflows](docs/workflows.md) | with chapter 15 | 15 |
+| 15 | [Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 16 | 16 |
+| – | [Glossary](docs/glossary.md) | when a word is new | any |
+| – | [Troubleshooting](docs/troubleshooting.md) | when something fails | any |
+| – | [Portal tour](docs/portal-tour.md) | to find your work in the portal | any |
+| – | [story.md](story.md) | the chapters as a story | all |
 
 ---
 
@@ -57,19 +57,19 @@ Infrastructure is **Bicep + azd** 🦾, custom code is **Python only** 🐍.
 
 ```mermaid
 flowchart LR
-  NB[📓 Notebooks<br/>00 … 16] -->|project endpoint · Entra ID| P
-  subgraph F[☁️ Foundry resource · Sweden Central]
-    M[🧠 Models]
-    T[🔬 Foundry Tools<br/>OCR · Document Intelligence]
-    subgraph P[📁 Project]
-      A[🤖 Agents]
-      C[💬 Conversations]
-      E[🧪 Datasets + Evals]
+  NB[Notebooks<br/>00 … 16] -->|project endpoint · Entra ID| P
+  subgraph F[Foundry resource · Sweden Central]
+    M[Models]
+    T[Foundry Tools<br/>OCR · Document Intelligence]
+    subgraph P[Project]
+      A[Agents]
+      C[Conversations]
+      E[Datasets + Evals]
     end
   end
   A --> M
-  A -.-> X[🛠️ MCP · A2A · skills]
-  P --> AI[(📈 App Insights<br/>+ Log Analytics)]
+  A -.-> X[MCP · A2A · skills]
+  P --> AI[(App Insights<br/>+ Log Analytics)]
 ```
 
 ---
@@ -88,7 +88,7 @@ pip install -r requirements.txt
 jupyter lab                                    # or open notebooks in VS Code, start with 00
 ```
 
-| 🧹 When done | 💻 Command |
+| When done | Command |
 |---|---|
 | Remove everything | `azd down --purge` (or `python scripts/teardown.py`) |
 
@@ -100,7 +100,7 @@ jupyter lab                                    # or open notebooks in VS Code, s
 
 > 📖 Each chapter is also told as part of a story in [story.md](story.md).
 
-| # | 🎬 Chapter | Status |
+| # | Chapter | Status |
 |---|---|---|
 | 00 | [Setup the workshop](notebooks/00_setup_workshop.ipynb) | ✅ |
 | 01 | [Dummy's first call](notebooks/01_dummy_first_call.ipynb) | ✅ |
