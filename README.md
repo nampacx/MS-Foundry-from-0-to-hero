@@ -2,7 +2,7 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
-> 🚧 **Version 0.1: a first release that still needs improvement.** Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example the GitHub Copilot harness and web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly.
+> 🚧 **Version 0.1: a first release that still needs improvement.** Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example the GitHub Copilot harness and web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
 
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
 

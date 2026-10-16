@@ -50,3 +50,14 @@ Reference example: [docs/conversations.md](docs/conversations.md). Match its sty
 - Notebooks clean up what they create (agent versions, conversations, datasets) unless the next chapter needs it.
 - Every chapter follows one template: `# NN · Title` with the story hook, a concept table and a "Deep dive" doc link; a setup cell (`import sys; sys.path.insert(0, '.')` + `from stark_helpers import *`); numbered sections `## 1 · …`; then, in this order, `## 👀 In the portal` (skip when there is nothing to see), `## 🧹 Clean up` (say so when there is nothing to delete), `## 🎯 Recap` ending with `> 💡 Next: …`.
 - Shared logic lives in `stark_helpers.py` / `stark_docs.py`, not copied between notebooks: `run_functions` (function-call loop), `ask_agent` (MCP approvals), `skill_body`, `criterion` / `item_schema` / `agent_target` (evaluations), `arm` / `account_path` (ARM calls), `delete_agent` / `delete_dataset`. Show a mechanism inline once, in the chapter that teaches it (the loop in 05), then use the helper.
+
+## Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Keep it up to date in the same commit as the change:
+
+- Add one line under `## [Unreleased]` for every change a reader notices: a notebook, doc, script, helper, infra or deploy change. Skip typo and formatting-only fixes.
+- File it under `### Added`, `### Changed`, `### Fixed` or `### Removed`. Create the heading when it is missing.
+- Write for the reader, not the commit log: name the chapter, doc or file and say what is different for them. No commit hashes.
+- Mark preview features with 🧪, as everywhere else.
+- If a later change in the same release replaces an `[Unreleased]` line, edit that line instead of adding a second one.
+- Never edit a released section. Releasing (renaming `[Unreleased]` to `[x.y] – YYYY-MM-DD`) is the maintainer's call.
