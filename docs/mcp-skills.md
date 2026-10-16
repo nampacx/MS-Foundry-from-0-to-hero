@@ -54,7 +54,7 @@ flowchart LR
 | Primitive | Status here |
 |---|---|
 | Tools | ✅ `MCPTool` on a prompt agent: the model calls them, with `allowed_tools` and approvals ([tools.md](tools.md)) |
-| Resources | ✅ for **MCP clients** of a toolbox: skills appear in `resources/list` (section 4, Skills). ❓ Whether an agent's `MCPTool` exposes a server's resources to the model is **not documented** in the MCP tool article and was **not tested** |
+| Resources | ✅ for **MCP clients** of a toolbox: skills appear in `resources/list` (section 4, Skills), and [chapter 07](../notebooks/07_agent_skills.ipynb) section 6 reads one with `resources/read`. ❓ Whether an agent's `MCPTool` exposes a server's resources to the model is **not documented** in the MCP tool article and was **not tested** |
 | Prompts | ❓ same: not documented for agents, not tested, and the Learn MCP server and `stark-mcp` offer none |
 
 > ℹ️ The Microsoft Learn MCP server **declares** the resources and prompts capabilities, but its lists were empty when checked (0 resources, 0 prompts). Declaring a capability does not mean the server fills it.
@@ -124,8 +124,8 @@ A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Ma
 | Mode | How |
 |---|---|
 | Direct injection | your code adds the `SKILL.md` text to the instructions: `load_skills` in [main.py](../src/jarvis-hosted/main.py), [`skill_body()`](../notebooks/stark_helpers.py) in chapters 15 and 16 |
-| Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read` |
-| Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=GitHubCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 6), or `skills:` and `harness.type: github_copilot_preview` in `azure.yaml` |
+| Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read`. The toolbox only **offers** the skill: it is used only when the client loads it and the model follows it |
+| Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=GitHubCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 7), or `skills:` and `harness.type: github_copilot_preview` in `azure.yaml` |
 
 > ⚠️ **Skills need the harness.** On a default prompt agent, `skills=[...]` is accepted but had no effect in a test: the agent did not follow the skill. The Copilot harness is a gated preview, so creating it can fail with `not enabled for this subscription`. That was the result on this project, so **the harness path itself was not run successfully here**.
 
@@ -143,7 +143,7 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 
 **Step 4. Deliver it.** Attach it to a toolbox (`ToolboxSkillReference`, MCP clients read it with `resources/read`), or download it into an agent project for direct injection.
 
-**Step 5. Check it took effect.** The `stark-escalation` skill makes an answer start with `Severity:`. Chapter 07 section 6 tests exactly that.
+**Step 5. Check it took effect.** Attaching a skill does not prove it is used, so test the behaviour. The `stark-escalation` skill makes an answer start with `Severity:`, and version 2 adds a floor for critical incidents. Chapter 07 section 6 reads the skill from the toolbox and compares an answer with and without it; section 7 runs the same check on a prompt agent.
 
 ---
 
