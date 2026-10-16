@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** Check your tools, check that your region has the models, run `azd up` (about 10 minutes), install the Python packages, then open notebook `00`. If the smoke test in `00` prints `Workshop online`, your endpoint, identity and model all work. Everything after that is one concept per notebook.
 
-| ⏱️ Step | 💻 What you do | 🎯 What it proves |
+| Step | What you do | What it proves |
 |---|---|---|
 | 1 | install the tools | your machine is ready |
 | 2 | `python scripts/check_models.py` | the models exist in your region |
@@ -16,19 +16,19 @@
 
 ```mermaid
 flowchart LR
-  A[🧰 1 Tools<br/>az · azd · Python] --> B[🔎 2 check_models.py]
-  B --> C[☁️ 3 azd up]
-  C -->|postprovision hook| D[📄 .env written]
-  D --> E[🐍 4 venv + pip]
-  E --> F[📓 5 notebook 00]
-  F --> G[🎬 notebooks 01 … 16]
+  A[1 Tools<br/>az · azd · Python] --> B[2 check_models.py]
+  B --> C[3 azd up]
+  C -->|postprovision hook| D[.env written]
+  D --> E[4 venv + pip]
+  E --> F[5 notebook 00]
+  F --> G[notebooks 01 … 16]
 ```
 
 ---
 
-## 1️⃣ Prerequisites
+## 1 · Prerequisites
 
-| 🧰 You need | 🔎 Why | ✅ Check |
+| You need | Why | Check |
 |---|---|---|
 | Azure subscription | hosts everything. You need **Owner** (or Contributor + User Access Administrator) because [rbac.bicep](../infra/modules/rbac.bicep) creates role assignments | `az account show` |
 | quota for the models | the models in [stark.json](../infra/config/stark.json) are deployed as `GlobalStandard` | step 2 |
@@ -45,7 +45,7 @@ flowchart LR
 
 ---
 
-## 2️⃣ Check the models
+## 2 · Check the models
 
 Model names, versions and regions change often. Ask Azure before you deploy:
 
@@ -54,7 +54,7 @@ az login
 python scripts/check_models.py swedencentral
 ```
 
-| 🖨️ Output | 🔧 What to do |
+| Output | What to do |
 |---|---|
 | `OK (version ...)` | nothing |
 | `VERSION MISMATCH` | change `version` in [stark.json](../infra/config/stark.json) to one that is listed |
@@ -62,7 +62,7 @@ python scripts/check_models.py swedencentral
 
 ---
 
-## 3️⃣ Deploy with `azd up`
+## 3 · Deploy with `azd up`
 
 ```bash
 azd auth login
@@ -74,13 +74,13 @@ azd up                                        # asks for an environment name and
 
 ```mermaid
 flowchart LR
-  P[☁️ provision<br/>infra/azd/main.bicep] --> H[🪝 postprovision<br/>write_env.py]
-  H --> S[🪝 predeploy<br/>sync_skills.py]
-  S --> D[📦 deploy<br/>stark-mcp function + hosted agents]
-  D --> H2[🪝 postdeploy<br/>connect_mcp.py]
+  P[provision<br/>infra/azd/main.bicep] --> H[postprovision<br/>write_env.py]
+  H --> S[predeploy<br/>sync_skills.py]
+  S --> D[deploy<br/>stark-mcp function + hosted agents]
+  D --> H2[postdeploy<br/>connect_mcp.py]
 ```
 
-| 🧩 Created | 📄 Defined in | 🎯 Used from chapter |
+| Created | Defined in | Used from chapter |
 |---|---|---|
 | Foundry resource, project, model deployments | [foundry.bicep](../infra/modules/foundry.bicep) | 00 |
 | Log Analytics + Application Insights | [monitoring.bicep](../infra/modules/monitoring.bicep) | 03 |
@@ -95,9 +95,9 @@ The model list is data, not code: [stark.json](../infra/config/stark.json). Agen
 
 > ⚠️ **Hosted agents need the extension and the right roles.** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. If `azd up` still fails in the *deploy* phase on `azure.ai.agent` services, the infrastructure and `.env` are already done. All chapters except 09 and section 6 of 15 still work. See [troubleshooting.md](troubleshooting.md).
 
-### 💰 What it costs
+### What it costs
 
-| 💸 Item | 🔎 Billed by |
+| Item | Billed by |
 |---|---|
 | Model calls | tokens in and out (`usage` in every response) |
 | Application Insights | GB of data ingested |
@@ -108,7 +108,7 @@ No price list is kept here because prices change. **Remove everything when you a
 
 ---
 
-## 4️⃣ Python environment
+## 4 · Python environment
 
 ```bash
 python -m venv .venv
@@ -120,11 +120,11 @@ Select this `.venv` as the **kernel** in Jupyter or VS Code. A wrong kernel is t
 
 ---
 
-## 5️⃣ Run notebook `00`
+## 5 · Run notebook `00`
 
 Open [00_setup_workshop.ipynb](../notebooks/00_setup_workshop.ipynb) and run all cells.
 
-| 🧪 Cell | ✅ Good result |
+| Cell | Good result |
 |---|---|
 | `check_env()` | prints your endpoint and model names |
 | `az account show` | your user and subscription |
@@ -135,9 +135,9 @@ If a cell fails, look up the message in [troubleshooting.md](troubleshooting.md)
 
 ---
 
-## 6️⃣ Pick a path
+## 6 · Pick a path
 
-| 🧑‍💻 You are | 🛤️ Take this path |
+| You are | Take this path |
 |---|---|
 | brand new to Foundry | `00` → `01` → `02` → `04` → `05`, then the rest in order |
 | here for agents | `04` → `05` → `06` → `08` → `09`. Read [agents.md](agents.md) first |

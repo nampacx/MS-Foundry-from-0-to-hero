@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** **MCP** is a protocol where a server offers three kinds of things: *tools*, *resources* and *prompts*. A Foundry agent uses an MCP server for its *tools*; this repo runs its own server, `stark-mcp`, protected by a key that Foundry reads from a project connection. **Skills** give an agent *procedures* from a versioned `SKILL.md`, delivered by your code, a toolbox or the Copilot harness. Secrets live in **project connections**, never in the agent definition.
 
-| 🔌 | 🎯 Gives the agent | 📦 Lives in | 🧪 Status |
+| | Gives the agent | Lives in | Status |
 |---|---|---|---|
 | MCP | tools (functions with schemas) | remote MCP server + optional project connection | GA tool |
 | Skills | instructions / know-how | Foundry Skills API (versioned) | 🧪 preview |
@@ -16,22 +16,22 @@ Hands-on: [06 MCP](../notebooks/06_mcp_tools.ipynb) · [07 skills](../notebooks/
 
 ```mermaid
 flowchart LR
-  A[🤖 Agent] -->|mcp tool<br/>server_url| S1[🌐 Microsoft Learn MCP<br/>public]
-  A -->|mcp tool + project_connection_id| S2[⚡ stark-mcp<br/>Azure Function]
-  A -->|mcp tool → toolbox URL| TB[🧰 Toolbox]
+  A[Agent] -->|mcp tool<br/>server_url| S1[Microsoft Learn MCP<br/>public]
+  A -->|mcp tool + project_connection_id| S2[stark-mcp<br/>Azure Function]
+  A -->|mcp tool → toolbox URL| TB[Toolbox]
   TB -->|tools| S2
-  TB -->|skills as MCP resources| SK[📜 stark-escalation<br/>SKILL.md v1, v2]
-  CN[(🔑 project connection<br/>stark-mcp · function key)] -.-> S2
-  H[🏗️ Hosted agent] -->|direct injection<br/>skills/*/SKILL.md| SK
+  TB -->|skills as MCP resources| SK[stark-escalation<br/>SKILL.md v1, v2]
+  CN[(project connection<br/>stark-mcp · function key)] -.-> S2
+  H[Hosted agent] -->|direct injection<br/>skills/*/SKILL.md| SK
 ```
 
 ---
 
-## 1️⃣ The three MCP primitives
+## 1 · The three MCP primitives
 
 An MCP server can offer three kinds of building blocks. Each has a different **controller**, which decides who triggers it:
 
-| 🧩 Primitive | 🎯 What it is | 🎮 Controlled by | 📡 Methods | 🔎 Here |
+| Primitive | What it is | Controlled by | Methods | Here |
 |---|---|---|---|---|
 | **Tools** | functions the model can call, with a JSON schema | the **model** (you approve) | `tools/list`, `tools/call` | [chapter 06](../notebooks/06_mcp_tools.ipynb): Microsoft Learn and `stark-mcp` |
 | **Resources** | read-only data with a URI: files, schemas, documents | the **application** | `resources/list`, `resources/templates/list`, `resources/read` | [chapter 07](../notebooks/07_agent_skills.ipynb): a toolbox serves skills as resources |
@@ -41,27 +41,27 @@ A server says which primitives it supports when a client connects (its **capabil
 
 ```mermaid
 flowchart LR
-  S[🌐 MCP server] --- T[🛠️ Tools<br/>model decides]
-  S --- R[📄 Resources<br/>app selects]
-  S --- P[💬 Prompts<br/>user picks]
-  T --> M[🧠 model]
+  S[MCP server] --- T[Tools<br/>model decides]
+  S --- R[Resources<br/>app selects]
+  S --- P[Prompts<br/>user picks]
+  T --> M[model]
   R -->|context| M
   P -->|template| M
 ```
 
-### 🤖 What a Foundry agent does with them
+### What a Foundry agent does with them
 
-| 🔌 Primitive | 📋 Status here |
+| Primitive | Status here |
 |---|---|
 | Tools | ✅ `MCPTool` on a prompt agent: the model calls them, with `allowed_tools` and approvals ([tools.md](tools.md)) |
-| Resources | ✅ for **MCP clients** of a toolbox: skills appear in `resources/list` (section 4, Skills). ❓ Whether an agent's `MCPTool` exposes a server's resources to the model is **not documented** in the MCP tool article and was **not tested** |
+| Resources | ✅ for **MCP clients** of a toolbox: skills appear in `resources/list` (section 4, Skills), and [chapter 07](../notebooks/07_agent_skills.ipynb) section 6 reads one with `resources/read`. ❓ Whether an agent's `MCPTool` exposes a server's resources to the model is **not documented** in the MCP tool article and was **not tested** |
 | Prompts | ❓ same: not documented for agents, not tested, and the Learn MCP server and `stark-mcp` offer none |
 
 > ℹ️ The Microsoft Learn MCP server **declares** the resources and prompts capabilities, but its lists were empty when checked (0 resources, 0 prompts). Declaring a capability does not mean the server fills it.
 
 ---
 
-## 2️⃣ Our MCP server
+## 2 · Our MCP server
 
 [src/stark-mcp/function_app.py](../src/stark-mcp/function_app.py) is an Azure Function (Flex Consumption, Python) using the Functions MCP extension. Endpoint: `https://<app>.azurewebsites.net/runtime/webhooks/mcp`, authenticated with the `mcp_extension` system key. The postdeploy hook [connect_mcp.py](../scripts/connect_mcp.py) stores that key in the project connection `stark-mcp`.
 
@@ -69,30 +69,30 @@ flowchart LR
 
 ---
 
-## 3️⃣ Authentication and authorization
+## 3 · Authentication and authorization
 
 Two different questions, often mixed up:
 
-| ❓ | 🔎 Question | 🔧 Answered by |
+| | Question | Answered by |
 |---|---|---|
-| 🪪 **Authentication** | *who* is calling? | a key or an Entra token that proves the caller |
-| 🛂 **Authorization** | *what* may the caller do? | roles, allow-lists, approvals, the server's own rules |
+| **Authentication** | *who* is calling? | a key or an Entra token that proves the caller |
+| **Authorization** | *what* may the caller do? | roles, allow-lists, approvals, the server's own rules |
 
 An MCP call from a Foundry agent has two hops, and each hop answers both questions on its own:
 
 ```mermaid
 flowchart LR
-  U[🧑 You] -->|1 · Entra token<br/>role Azure AI User| F[☁️ Foundry agent]
-  F -->|2 · credential from the<br/>project connection| S[⚡ MCP server]
-  G[🛂 allowed_tools<br/>require_approval] -.->|limits| F
+  U[You] -->|1 · Entra token<br/>role Azure AI User| F[Foundry agent]
+  F -->|2 · credential from the<br/>project connection| S[MCP server]
+  G[allowed_tools<br/>require_approval] -.->|limits| F
 ```
 
 1. **You → Foundry.** You sign in with Entra ID (`DefaultAzureCredential`). The *Azure AI User* role from [rbac.bicep](../infra/modules/rbac.bicep) allows you to call the agent.
 2. **Foundry → MCP server.** Foundry signs in to the server with what the **project connection** holds. Your own token never reaches the server.
 
-### 🔑 How Foundry signs in to an MCP server
+### How Foundry signs in to an MCP server
 
-| 🔑 Method | 🔎 How it works | 👤 Server sees each user? | 🏗️ In this repo |
+| Method | How it works | Server sees each user? | In this repo |
 |---|---|---|---|
 | **Key-based** | a header (API key, PAT, `Bearer` token) stored in the connection | no, one shared secret | ✅ `stark-mcp`: header `x-functions-key`, connection `stark-mcp` ([connect_mcp.py](../scripts/connect_mcp.py)) |
 | **Entra: agent identity** | Foundry gets a token for the agent's own identity (connection auth type `AgenticIdentityToken`) | no, the agent | ❌ |
@@ -102,9 +102,9 @@ flowchart LR
 
 > ⚠️ Everyone with access to the project can read a key stored in a connection. Store only **shared** secrets there; for per-user access use OAuth identity passthrough.
 
-### 🛂 Who may do what
+### Who may do what
 
-| 📍 Where | 🛂 Control | 🔎 Effect |
+| Where | Control | Effect |
 |---|---|---|
 | agent definition | `allowed_tools` | the model never sees the other tools ([tools.md](tools.md)) |
 | agent definition | `require_approval` | your code approves each call before it runs ([`ask_agent()`](../notebooks/stark_helpers.py)) |
@@ -117,15 +117,15 @@ flowchart LR
 
 ---
 
-## 4️⃣ Skills
+## 4 · Skills
 
 A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Markdown). In Foundry it is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get. Three ways to deliver it:
 
-| 🚚 Mode | How |
+| Mode | How |
 |---|---|
 | Direct injection | your code adds the `SKILL.md` text to the instructions: `load_skills` in [main.py](../src/jarvis-hosted/main.py), [`skill_body()`](../notebooks/stark_helpers.py) in chapters 15 and 16 |
-| Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read` |
-| Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=GitHubCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 6), or `skills:` and `harness.type: github_copilot_preview` in `azure.yaml` |
+| Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read`. The toolbox only **offers** the skill: it is used only when the client loads it and the model follows it |
+| Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=GitHubCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 7), or `skills:` and `harness.type: github_copilot_preview` in `azure.yaml` |
 
 > ⚠️ **Skills need the harness.** On a default prompt agent, `skills=[...]` is accepted but had no effect in a test: the agent did not follow the skill. The Copilot harness is a gated preview, so creating it can fail with `not enabled for this subscription`. That was the result on this project, so **the harness path itself was not run successfully here**.
 
@@ -143,13 +143,13 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 
 **Step 4. Deliver it.** Attach it to a toolbox (`ToolboxSkillReference`, MCP clients read it with `resources/read`), or download it into an agent project for direct injection.
 
-**Step 5. Check it took effect.** The `stark-escalation` skill makes an answer start with `Severity:`. Chapter 07 section 6 tests exactly that.
+**Step 5. Check it took effect.** Attaching a skill does not prove it is used, so test the behaviour. The `stark-escalation` skill makes an answer start with `Severity:`, and version 2 adds a floor for critical incidents. Chapter 07 section 6 reads the skill from the toolbox and compares an answer with and without it; section 7 runs the same check on a prompt agent.
 
 ---
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | key in the agent definition | it shows up in versions and traces | project connection |
 | a personal token in a shared connection | every project member can read it, every user acts as you | OAuth identity passthrough for per-user access |
@@ -159,7 +159,7 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 
 ## 📚 Learn more
 
-| 🏷️ Source | 📖 What you get |
+| Source | What you get |
 |---|---|
 | [MCP architecture overview](https://modelcontextprotocol.io/docs/learn/architecture) | participants, layers, the primitives and discovery |
 | [Understanding MCP servers](https://modelcontextprotocol.io/docs/learn/server-concepts) | tools, resources and prompts with who controls each, plus a worked example |

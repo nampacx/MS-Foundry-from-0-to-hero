@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** A **dataset** is a versioned file of test inputs. An **evaluation** defines *what to score* (data schema + evaluators). A **run** executes it against a **target** (model or agent), saved responses, or live **traces**, and returns per-item scores with reasons plus a pass rate per evaluator. Use the pass rate as a **quality gate** before you ship a new agent version.
 
-| 🧱 Concept | 🔎 What it is | 🧰 SDK |
+| Concept | What it is | SDK |
 |---|---|---|
 | Dataset | versioned JSONL/CSV in the project | `project.datasets.upload_file(name, version, file_path)` |
 | Evaluation | schema + evaluators (`testing_criteria`) | `openai.evals.create(...)` |
@@ -17,28 +17,28 @@ Hands-on: [10 · datasets and evals](../notebooks/10_datasets_and_evals.ipynb) �
 
 ```mermaid
 flowchart LR
-  D[🗂️ Dataset<br/>query · response · ground_truth] --> R
-  AG[🤖 Agent / 🧠 model<br/>target] --> R
-  TR[📈 Traces<br/>Application Insights 🧪] --> R
-  E[📐 Evaluation<br/>schema + evaluators] --> R{▶️ Run}
-  R --> S[📊 Items: score · label · reason]
-  S --> P[✅ Pass rate per evaluator]
-  P --> G[🚦 Quality gate in CI]
+  D[Dataset<br/>query · response · ground_truth] --> R
+  AG[Agent / model<br/>target] --> R
+  TR[Traces<br/>Application Insights] --> R
+  E[Evaluation<br/>schema + evaluators] --> R{▶Run}
+  R --> S[Items: score · label · reason]
+  S --> P[Pass rate per evaluator]
+  P --> G[Quality gate in CI]
 ```
 
 ---
 
-## 1️⃣ Data sources
+## 1 · Data sources
 
-| 📥 Source (`data_source.type`) | You provide | Foundry does |
+| Source (`data_source.type`) | You provide | Foundry does |
 |---|---|---|
 | `azure_ai_target_completions` + `azure_ai_agent` / `azure_ai_model` target | queries | calls the target for every row, then scores the answer |
 | `jsonl` | queries **and** responses | scores what you already have |
 | `azure_ai_trace_data_source_preview` 🧪 | conversation ids or an agent filter | reads spans from Application Insights, scores conversations |
 
-## 2️⃣ Evaluators
+## 2 · Evaluators
 
-| 🏷️ Family | Examples (`builtin.*`) | Needs a judge model |
+| Family | Examples (`builtin.*`) | Needs a judge model |
 |---|---|---|
 | Quality | `coherence`, `fluency` | ✅ |
 | Agent | `task_adherence`, `intent_resolution`, `tool_call_accuracy`, `task_completion` | ✅ |
@@ -48,11 +48,11 @@ flowchart LR
 
 Each result has a **score**, a pass/fail **label** (score vs. threshold) and, for LLM judges, a **reason**. `data_mapping` connects evaluator inputs to dataset fields (`{{item.query}}`) or to the target's output (`{{sample.output_text}}`, `{{sample.output_items}}`).
 
-## 3️⃣ Conversation level
+## 3 · Conversation level
 
 Turn-level scores miss repeated failures and unresolved problems. With `extra_body={"evaluation_level": "conversation"}` the judge reads the whole `messages` array. Dataset example: [data/conversations.jsonl](../data/conversations.jsonl).
 
-## 4️⃣ Quality gates and continuous evaluation
+## 4 · Quality gates and continuous evaluation
 
 [assert_pass_rate()](../notebooks/stark_helpers.py) raises when a pass rate falls below a threshold: run it in CI after deploying an agent version. For live traffic, schedule a trace run (agent filter) or use the agent's **Monitor** tab to track pass rates over time.
 
@@ -96,7 +96,7 @@ TestingCriterionAzureAIEvaluator(type="azure_ai_evaluator", name="coherence", ev
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | mapping `response` to `{{sample.output_text}}` for agent evaluators | they cannot see the tool calls | the chapter maps `{{sample.output_items}}` for `task_adherence` and `intent_resolution` |
 | forgetting the judge model | LLM-judged evaluators fail 🔎 | set `initialization_parameters={"model": JUDGE}` ([`model("judge")`](../notebooks/stark_helpers.py)) |

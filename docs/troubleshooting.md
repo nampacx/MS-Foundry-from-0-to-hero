@@ -2,14 +2,14 @@
 
 > 💡 **TL;DR:** Most problems are one of five things: a **missing `.env`**, the **wrong Python kernel**, a **role that has not propagated yet**, a **model that does not exist in your region**, or **telemetry that has not arrived yet**. Find your symptom below. Each row says why it happens, then how to fix it.
 
-| 🧭 Area | 🎯 Section |
+| Area | Section |
 |---|---|
-| 🔧 Setup and deploy | section 1 |
-| 🔐 Login and permissions | section 2 |
-| 🤖 Agents and tools | section 3 |
-| 📈 Traces and KQL | section 4 |
-| 🧪 Evaluations, 🛡️ guardrails, 🔬 documents | section 5 |
-| 🔀 Workflows | section 6 |
+| Setup and deploy | section 1 |
+| Login and permissions | section 2 |
+| Agents and tools | section 3 |
+| Traces and KQL | section 4 |
+| Evaluations, guardrails, documents | section 5 |
+| Workflows | section 6 |
 
 > ⚠️ Rows marked 🔎 are **likely causes** from how Foundry and Azure normally behave. The others were hit while building this repo. If you find a new one, open an issue.
 
@@ -19,7 +19,7 @@
 
 ```mermaid
 flowchart TD
-  E[❌ error] --> A{.env exists and<br/>has STARK_PROJECT_ENDPOINT?}
+  E[error] --> A{.env exists and<br/>has STARK_PROJECT_ENDPOINT?}
   A -->|no| A1[run azd up or copy .env.example]
   A -->|yes| B{right kernel<br/>.venv?}
   B -->|no| B1[select .venv, restart kernel]
@@ -34,9 +34,9 @@ flowchart TD
 
 ---
 
-## 1️⃣ Setup and deploy
+## 1 · Setup and deploy
 
-| 🚨 Symptom | 🔎 Why | 🔧 Fix |
+| Symptom | Why | Fix |
 |---|---|---|
 | `STARK_PROJECT_ENDPOINT is not set. Run azd up ...` | no `.env`, or an empty value. This is the friendly error from [`cfg()`](../notebooks/stark_helpers.py) | run `azd up` (it writes `.env`), or copy [.env.example](../.env.example) to `.env` and fill it |
 | `ModuleNotFoundError` in a notebook | the notebook uses another Python than your `.venv` | pick the `.venv` kernel, run `pip install -r requirements.txt`, restart the kernel |
@@ -51,9 +51,9 @@ flowchart TD
 
 ---
 
-## 2️⃣ Login and permissions
+## 2 · Login and permissions
 
-| 🚨 Symptom | 🔎 Why | 🔧 Fix |
+| Symptom | Why | Fix |
 |---|---|---|
 | `DefaultAzureCredential failed to retrieve a token` | no valid login for the credential chain | `az login` and `azd auth login`, restart the kernel |
 | right after `azd up`: `401` or `403` (`PermissionDenied`) | role assignments take a minute or more to apply | wait, restart the kernel, retry |
@@ -66,9 +66,9 @@ flowchart TD
 
 ---
 
-## 3️⃣ Agents and tools
+## 3 · Agents and tools
 
-| 🚨 Symptom | 🔎 Why | 🔧 Fix |
+| Symptom | Why | Fix |
 |---|---|---|
 | the run stops with an `mcp_approval_request` | MCP tools default to `require_approval="always"` | answer with `mcp_approval_response`. [`ask_agent()`](../notebooks/stark_helpers.py) does it and **denies by default**: pass `approve=lambda item: ...` ([tools.md](tools.md)) |
 | a `function_call` and no answer | Foundry waits for **your** function result | run the function, send `function_call_output` with the same `call_id`, loop until none is left |
@@ -85,9 +85,9 @@ flowchart TD
 
 ---
 
-## 4️⃣ Traces and KQL
+## 4 · Traces and KQL
 
-| 🚨 Symptom | 🔎 Why | 🔧 Fix |
+| Symptom | Why | Fix |
 |---|---|---|
 | no traces for direct model calls | your process sends traces only after `configure_azure_monitor` (agent calls are traced server-side) | run the setup cell in [notebook 03](../notebooks/03_tracing_and_monitoring.ipynb) **before** the SDK calls, and wait 2–5 minutes |
 | traces are empty just after a call | ingestion takes **2–5 minutes** | wait. [`kql_wait()`](../notebooks/stark_helpers.py) retries for you |
@@ -98,9 +98,9 @@ flowchart TD
 
 ---
 
-## 5️⃣ Evaluations, guardrails, documents
+## 5 · Evaluations, guardrails, documents
 
-| 🚨 Symptom | 🔎 Why | 🔧 Fix |
+| Symptom | Why | Fix |
 |---|---|---|
 | evaluation run seems stuck | runs are asynchronous and judge calls take time | [`wait_eval_run()`](../notebooks/stark_helpers.py) polls (30 minute default limit) |
 | `assert_pass_rate` raises | the pass rate is below the threshold | open the item **reasons** ([`eval_scores()`](../notebooks/stark_helpers.py)). Fix the agent, run again ([datasets-evals.md](datasets-evals.md)) |
@@ -112,9 +112,9 @@ flowchart TD
 
 ---
 
-## 6️⃣ Workflows
+## 6 · Workflows
 
-| 🚨 Symptom | 🔎 Why | 🔧 Fix |
+| Symptom | Why | Fix |
 |---|---|---|
 | `PowerFx is not available (dotnet runtime not installed)` | the declarative YAML needs .NET, **or** the .NET CPU architecture differs from Python's (e.g. x64 Python on Windows-on-ARM, `error 0xc1`) | install .NET; if it is installed, point `DOTNET_ROOT` to the matching install. [`fix_dotnet_for_powerfx()`](../notebooks/stark_helpers.py) does it, then **restart the kernel** ([workflows.md](workflows.md)) |
 | handoff `build()` refuses a participant | `require_per_service_call_history_persistence=True` is missing | set it on **every** agent |

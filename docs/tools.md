@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** A tool is a capability listed in the agent **version**. The model sees each tool's name, description and schema and decides **when** to call it. Who **runs** the call depends on the tool: Foundry (code interpreter, file search, web search), your code (function), or a remote server (MCP, A2A). Pick the tool by who should run it, and treat every tool result as untrusted input.
 
-| 🛠️ Tool | 🧰 SDK class | 🏃 Who runs it | 🔎 Item in `response.output` | 📓 Chapter |
+| Tool | SDK class | Who runs it | Item in `response.output` | Chapter |
 |---|---|---|---|---|
 | Function | `FunctionTool` | **your code** | `function_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | Code interpreter | `CodeInterpreterTool` | Foundry sandbox | `code_interpreter_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
@@ -19,14 +19,14 @@
 
 ```mermaid
 flowchart TD
-  U[🧑 input] --> M{🧠 model<br/>reads the tool list}
-  M -->|no tool needed| T[💬 text answer]
-  M -->|Foundry tool| F[☁️ Foundry runs it<br/>code · file search · web]
-  M -->|function| Y[🧑‍💻 function_call<br/>your code runs it]
-  M -->|MCP| A[✋ mcp_approval_request<br/>you approve]
-  F --> R[📦 result goes back to the model]
+  U[input] --> M{model<br/>reads the tool list}
+  M -->|no tool needed| T[text answer]
+  M -->|Foundry tool| F[Foundry runs it<br/>code · file search · web]
+  M -->|function| Y[function_call<br/>your code runs it]
+  M -->|MCP| A[mcp_approval_request<br/>you approve]
+  F --> R[result goes back to the model]
   Y -->|function_call_output| R
-  A -->|mcp_approval_response| S[🌐 MCP server runs it] --> R
+  A -->|mcp_approval_response| S[MCP server runs it] --> R
   R --> M
 ```
 
@@ -34,7 +34,7 @@ The model can loop: call a tool, read the result, call another. Your code only g
 
 ---
 
-## 1️⃣ Declaring tools
+## 1 · Declaring tools
 
 Tools are part of the definition, so they are **versioned** with the instructions (see [agents.md](agents.md)):
 
@@ -48,12 +48,12 @@ PromptAgentDefinition(model=..., instructions=..., tools=[fn_tool, CodeInterpret
 
 ---
 
-## 2️⃣ Function tool: you run the code
+## 2 · Function tool: you run the code
 
 ```mermaid
 sequenceDiagram
-    participant C as 🧑‍💻 Your code
-    participant F as ☁️ Foundry agent
+    participant C as Your code
+    participant F as Foundry agent
     C->>F: responses.create(input, agent_reference)
     F-->>C: function_call(name, arguments, call_id)
     Note over C: you run the function
@@ -63,7 +63,7 @@ sequenceDiagram
 
 What came back for "Output of the Mark 42?" on this project:
 
-| 🧱 Item | 🔎 Fields that matter |
+| Item | Fields that matter |
 |---|---|
 | `reasoning` | present for reasoning models, ignore it |
 | `function_call` | `name`, `arguments` (a **JSON string**), `call_id`, `status` |
@@ -75,7 +75,7 @@ You answer with one item per call, tied to the `call_id`:
 {"type": "function_call_output", "call_id": call.call_id, "output": json.dumps(result)}
 ```
 
-| ✅ Do | 🚫 Don't |
+| Do | Don't |
 |---|---|
 | `json.loads(arguments)`, then validate | trust the arguments: the model (or a prompt injection) chose them |
 | loop until no `function_call` is left, and cap the rounds | assume exactly one call |
@@ -87,15 +87,15 @@ Code: [chapter 05 section 1](../notebooks/05_tools_function_and_builtin.ipynb) w
 
 ---
 
-## 3️⃣ Code interpreter: Foundry runs Python
+## 3 · Code interpreter: Foundry runs Python
 
 No code from you. The model writes Python, Foundry runs it in a sandbox, and the result flows back in the same response.
 
 - Output item: `code_interpreter_call` with the `code` the model wrote and a `container_id`.
 - Use it for exact arithmetic, data analysis and charts. Read the generated code before you trust a number: the notebook prints it.
-- ⚠️ The model writes the code, so never put secrets in files you hand to the sandbox.
+- The model writes the code, so never put secrets in files you hand to the sandbox.
 
-## 4️⃣ File search: ask your own documents
+## 4 · File search: ask your own documents
 
 1. Create a **vector store** and upload files (`vector_stores.files.upload_and_poll`).
 2. Give the agent `FileSearchTool(vector_store_ids=[...])`.
@@ -104,7 +104,7 @@ Observed: the response has a `file_search_call` item with the `queries` the mode
 
 The vector store is a **project resource** that outlives the agent. [Chapter 05](../notebooks/05_tools_function_and_builtin.ipynb) deletes it in its clean-up cell.
 
-## 5️⃣ Web search
+## 5 · Web search
 
 > 🧪 **Preview.** The class name says so: `WebSearchPreviewTool`.
 
@@ -114,9 +114,9 @@ The vector store is a **project resource** that outlives the agent. [Chapter 05]
 
 ---
 
-## 6️⃣ MCP: tools from a remote server
+## 6 · MCP: tools from a remote server
 
-| ⚙️ Setting on `MCPTool` | 🎯 Purpose |
+| Setting on `MCPTool` | Purpose |
 |---|---|
 | `server_label` | name of the server inside the agent |
 | `server_url` | remote endpoint, reachable from Foundry |
@@ -126,9 +126,9 @@ The vector store is a **project resource** that outlives the agent. [Chapter 05]
 
 ```mermaid
 sequenceDiagram
-    participant C as 🧑‍💻 Your code
-    participant F as ☁️ Foundry agent
-    participant S as 🌐 MCP server
+    participant C as Your code
+    participant F as Foundry agent
+    participant S as MCP server
     C->>F: responses.create(question)
     F->>S: list tools
     F-->>C: mcp_list_tools, mcp_approval_request(name, arguments)
@@ -139,7 +139,7 @@ sequenceDiagram
 
 Observed with the public Microsoft Learn server (`require_approval="always"`):
 
-| 🧱 Item | 🔎 What it held |
+| Item | What it held |
 |---|---|
 | `mcp_list_tools` | the server's tools: `microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch` |
 | `mcp_approval_request` | `server_label: learn`, `name: microsoft_docs_search`, `arguments: {"query": "..."}` |
@@ -150,7 +150,7 @@ Approve with `mcp_approval_response` and send it with `previous_response_id`. [a
 ask_agent(agent, "question", approve=lambda item: item.server_label == "learn")
 ```
 
-| 🛡️ Practice | 💡 Why |
+| Practice | Why |
 |---|---|
 | `allowed_tools` | smaller attack surface, fewer wrong tool picks |
 | approval for anything that writes | a human sees tool and arguments first |
@@ -163,16 +163,16 @@ What an MCP server offers besides tools, and our own server [src/stark-mcp](../s
 
 ---
 
-## 7️⃣ A2A and skills
+## 7 · A2A and skills
 
 - **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. See [capstone.md](capstone.md) (chapter 16).
 - **Skills** are not tools: they add procedures (a `SKILL.md`) 🧪. See [mcp-skills.md](mcp-skills.md) (chapter 07).
 
 ---
 
-## 8️⃣ Choosing and securing tools
+## 8 · Choosing and securing tools
 
-| 🎯 You need | 🛠️ Use | ⚠️ Watch for |
+| You need | Use | Watch for |
 |---|---|---|
 | your own logic, database, internal API | function | validate arguments, you own the side effects |
 | exact maths, tables, charts | code interpreter | read the generated code |
@@ -211,7 +211,7 @@ agent = project().agents.create_version(
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | vague tool description | the model picks the wrong tool or none | write the description for the model |
 | no "use tools for facts" in the instructions | the model answers from memory | say **when** to use tools |

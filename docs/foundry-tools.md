@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** The Foundry **resource** that hosts your models also hosts **Foundry Tools**: services that are not LLM chat. For text in images use **Vision Read**; for documents use **Document Intelligence** (read, layout, prebuilt models like invoice and receipt); for your **own schema** or messy documents use **Content Understanding** (LLM-powered, needs model deployments). All share one endpoint and Entra ID auth. Wrap them as **agent tools** so a model decides *when* to read a document.
 
-| 🔧 Service | 📦 SDK | 🎯 Output | 🧠 Needs models |
+| Service | SDK | Output | Needs models |
 |---|---|---|---|
 | Vision Read | `azure-ai-vision-imageanalysis` | lines, words, polygons | ❌ |
 | Document Intelligence `prebuilt-read` | `azure-ai-documentintelligence` | text, pages, languages, handwriting | ❌ |
@@ -18,25 +18,25 @@ Hands-on: [12 · OCR and Read](../notebooks/12_senses_ocr_read.ipynb) · [13 · 
 
 ```mermaid
 flowchart LR
-  D[📄 PDF · 🖼️ image] --> V[👁️ Vision Read]
-  D --> DI[📑 Document Intelligence<br/>read · layout · invoice · receipt]
-  D --> CU[🧠 Content Understanding<br/>prebuilt + custom analyzers]
-  CU -.->|model deployments| M[(🤖 gpt-4.1 · embeddings<br/>same Foundry resource)]
-  V & DI & CU --> F[🧾 text · tables · fields + confidence]
-  F --> C{🔍 confidence ≥ threshold?<br/>arithmetic OK?}
-  C -->|yes| A[🤖 agent tool result]
-  C -->|no| H[🙋 human review]
+  D[PDF · image] --> V[Vision Read]
+  D --> DI[Document Intelligence<br/>read · layout · invoice · receipt]
+  D --> CU[Content Understanding<br/>prebuilt + custom analyzers]
+  CU -.->|model deployments| M[(gpt-4.1 · embeddings<br/>same Foundry resource)]
+  V & DI & CU --> F[text · tables · fields + confidence]
+  F --> C{confidence ≥ threshold?<br/>arithmetic OK?}
+  C -->|yes| A[agent tool result]
+  C -->|no| H[human review]
 ```
 
 ---
 
-## 1️⃣ One resource, one endpoint
+## 1 · One resource, one endpoint
 
 `STARK_ACCOUNT_ENDPOINT` (`https://<account>.cognitiveservices.azure.com`) serves the Foundry Tools. Auth is Entra ID; the *Cognitive Services User* role is assigned in [rbac.bicep](../infra/modules/rbac.bicep). No keys are created (local auth is disabled in [foundry.bicep](../infra/modules/foundry.bicep)).
 
-## 2️⃣ Which one?
+## 2 · Which one?
 
-| 📄 Your document | ✅ Start with |
+| Your document | Start with |
 |---|---|
 | photo, whiteboard, sign | Vision Read |
 | scan or PDF, only text | `prebuilt-read` |
@@ -45,15 +45,15 @@ flowchart LR
 | varied layouts, inferred or generated fields, summaries, classification, audio/video | Content Understanding |
 | complete control of prompts and models | your own LLM call (you own OCR, chunking, grounding) |
 
-## 3️⃣ Confidence and checks
+## 3 · Confidence and checks
 
 Every extracted field has a `confidence`. Route low values to a human and check arithmetic **in code** (line items vs subtotal): [notebook 13](../notebooks/13_senses_document_intelligence.ipynb) shows both.
 
-## 4️⃣ Content Understanding setup
+## 4 · Content Understanding setup
 
 Analyzers call **your** model deployments. Deploy them with `azd env set STARK_ENABLE_CU true && azd provision` (extra quota needed; off by default) and register them once with `update_defaults`. A **custom analyzer** declares fields with a method: `extract` (literal text), `generate` (model-written) or `classify` (pick from a list).
 
-## 5️⃣ As an agent tool
+## 5 · As an agent tool
 
 The agent never sees the PDF bytes; it calls `extract_invoice(path)` and gets typed JSON ([stark_docs.extract_invoice](../notebooks/stark_docs.py)). The same function is used by the workflow in [chapter 15](../notebooks/15_workflows.ipynb).
 
@@ -81,7 +81,7 @@ Code in [chapter 12](../notebooks/12_senses_ocr_read.ipynb) and [chapter 13](../
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | sending a PDF straight to a chat model | you own OCR, layout and chunking | use Document Intelligence first |
 | using `prebuilt-read` for tables | tables lose their structure | use `prebuilt-layout` |

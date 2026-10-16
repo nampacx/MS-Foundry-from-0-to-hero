@@ -2,7 +2,7 @@
 
 > 💡 **TL;DR:** A Foundry **agent** has a name and numbered **versions**. A **prompt agent** is configuration (model, instructions, tools) that Foundry stores and runs for you. You call it with a Responses call plus an `agent_reference`, usually inside a **conversation**. Change its behaviour by publishing a new version, not by changing the caller.
 
-| 🧩 Part | 🔎 What it is | 🏷️ In chapter 04 |
+| Part | What it is | In chapter 04 |
 |---|---|---|
 | **name** | the stable identity callers use | `jarvis-nb04` |
 | **version** | an immutable snapshot; every `create_version` adds one | 1, 2, 3 |
@@ -17,9 +17,9 @@ Hands-on: [04](../notebooks/04_jarvis_prompt_agent.ipynb), then tools in [05](..
 
 ```mermaid
 sequenceDiagram
-    participant C as 🧑‍💻 Your code
-    participant F as ☁️ Foundry Agent Service
-    participant M as 🧠 Model
+    participant C as Your code
+    participant F as Foundry Agent Service
+    participant M as Model
     C->>F: responses.create(conversation, input, agent_reference)
     F->>F: load the agent version + the conversation items
     F->>M: instructions + history + tool definitions
@@ -30,15 +30,15 @@ sequenceDiagram
 
 ---
 
-## 1️⃣ Versions
+## 1 · Versions
 
 `create_version` with an existing name adds a version; old ones stay. A call without a version uses the latest. Treat a version like a release: review the definition, deploy, evaluate (chapter 10), then keep or delete.
 
-## 2️⃣ Structured inputs and `extra_body`
+## 2 · Structured inputs and `extra_body`
 
 > 💡 One agent, many personalised behaviours: the **version** holds a template, each **request** brings the values. No new version per user.
 
-| 🧩 Part | 📍 Where it lives | 🔎 Example |
+| Part | Where it lives | Example |
 |---|---|---|
 | Template | `instructions` of the agent version | `Greet {{person}} and mention their title: {{title}}.` |
 | Schema | `structured_inputs` on the version: name, description, `required`, JSON `schema` | `StructuredInputDefinition(required=True, schema={"type": "string"})` |
@@ -46,13 +46,13 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  R[📨 responses.create<br/>agent_reference + structured_inputs] --> V{✅ Foundry validates<br/>against the schema}
-  V -->|ok| S[✏️ fills the {{placeholders}}]
-  S --> M[🧠 model sees the resolved instructions]
-  V -->|missing · unknown · wrong type| E[❌ 400 invalid_payload]
+  R[responses.create<br/>agent_reference + structured_inputs] --> V{Foundry validates<br/>against the schema}
+  V -->|ok| S[fills the {{placeholders}}]
+  S --> M[model sees the resolved instructions]
+  V -->|missing · unknown · wrong type| E[400 invalid_payload]
 ```
 
-### 🧾 Why `extra_body`?
+### Why `extra_body`?
 
 `agent_reference` and `structured_inputs` are Foundry fields. The OpenAI SDK's `responses.create(...)` only knows the OpenAI fields, so it has no argument for them. `extra_body` adds extra keys to the top level of the JSON request unchanged. The request that leaves your machine for the chapter 04 example is:
 
@@ -64,11 +64,11 @@ flowchart LR
 
 [`agent_ref()`](../notebooks/stark_helpers.py) builds the `agent_reference` part, and `{**agent_ref(AGENT), "structured_inputs": {...}}` merges both into one `extra_body`.
 
-### ✅ What Foundry checks
+### What Foundry checks
 
 Checked against a real project (all answer `400 invalid_payload`):
 
-| 🧪 Request | 💬 Error message |
+| Request | Error message |
 |---|---|
 | a required input is missing | `Required inputs [title] not provided.` |
 | a name the agent does not define | `Unknown inputs [nope]. No such structured inputs are defined on the agent.` |
@@ -80,7 +80,7 @@ Checked against a real project (all answer `400 invalid_payload`):
 
 ---
 
-## 3️⃣ Tools
+## 3 · Tools
 
 Tools are part of the definition, so they are versioned together with the instructions: `PromptAgentDefinition(..., tools=[...])`. Who runs each tool, the function-call loop and MCP approvals are all in [tools.md](tools.md).
 
@@ -123,7 +123,7 @@ Note there is **no `model=`**: the agent version supplies it.
 
 ## 🙈 Common mistakes
 
-| 🚨 Mistake | 💥 What happens | ✅ Do this |
+| Mistake | What happens | Do this |
 |---|---|---|
 | expecting `create_version` to replace the old one | a new version is added, old ones stay | delete versions you do not need |
 | putting user text into `structured_inputs` | it is pasted into the instructions and can hijack them | user text goes in `input` |
