@@ -48,6 +48,28 @@ services:
         cpu: "0.25"
         memory: 0.5Gi
 
+  jarvis-skills:         # the same J.A.R.V.I.S., but skills load on demand (Agent Framework SkillsProvider), chapter 09
+    host: azure.ai.agent
+    project: src/jarvis-skills
+    uses:
+      - ai-project
+    kind: hosted
+    name: jarvis-skills
+    description: J.A.R.V.I.S. hosted agent that loads skills on demand with Agent Framework SkillsProvider.
+    protocols:
+      - protocol: responses
+        version: 2.0.0
+    codeConfiguration:
+      runtime: python_3_13
+      entryPoint: main.py
+      dependencyResolution: remote_build
+    env:
+      MODEL_DEPLOYMENT_NAME: ${STARK_CHAT_MODEL}
+    container:
+      resources:
+        cpu: "0.25"
+        memory: 0.5Gi
+
   invoice-workflow:      # the chapter 15 invoice pipeline as a hosted agent (native Agent Framework workflow), chapter 15
     host: azure.ai.agent
     project: src/invoice-workflow
@@ -98,7 +120,7 @@ hooks:
   postprovision:         # write .env for the notebooks from the azd environment values
     posix: { shell: sh, run: 'python3 scripts/write_env.py' }
     windows: { shell: pwsh, run: 'python scripts/write_env.py; exit $LASTEXITCODE' }
-  predeploy:             # copy skills/ into the hosted agent project
+  predeploy:             # copy skills/ into the hosted agent projects
     posix: { shell: sh, run: 'python3 scripts/sync_skills.py' }
     windows: { shell: pwsh, run: 'python scripts/sync_skills.py; exit $LASTEXITCODE' }
   postdeploy:            # create the project connection `stark-mcp` (function key) for chapter 06

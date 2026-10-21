@@ -50,6 +50,7 @@ flowchart LR
 | **Prompt agent** | an agent that is only configuration: model, instructions, tools | [agents.md](agents.md) |
 | **Response** | what one `responses.create` call returns: `output_text`, `output` items, `usage` | [models.md](models.md) |
 | **Skill** 🧪 | a versioned `SKILL.md` with a procedure an agent should follow | [mcp-skills.md](mcp-skills.md) |
+| **SkillsProvider** | the Agent Framework context provider that lists skills by name and description and loads one with `load_skill` only when the model picks it | [mcp-skills.md](mcp-skills.md) |
 | **Structured inputs** | `{{placeholders}}` in an agent's instructions, filled per request | [agents.md](agents.md) |
 | **Toolbox** 🧪 | a named, versioned bundle of tools and skills behind one MCP endpoint | [mcp-skills.md](mcp-skills.md) |
 | **Vector store** | an index of your files that file search reads from. It outlives the agent | [tools.md](tools.md) |
