@@ -6,6 +6,7 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 
 ### Added
 - Chapter 07, section 6: a marker test that reads the skill from the toolbox with `resources/read` and compares an answer with and without it, to prove a toolbox skill is really used. 🧪
+- `samples/skills_provider.py`: a local J.A.R.V.I.S. that loads skills on demand with Agent Framework's `SkillsProvider` (the `skills/` files plus a code-defined `workshop-status` skill) and prints which skill tools the model called. Explained in [mcp-skills.md](docs/mcp-skills.md) section 4.
 - `CHANGELOG.md` and the rule in `AGENTS.md` that every change adds a line here.
 
 ### Changed

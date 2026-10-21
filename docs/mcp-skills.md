@@ -23,6 +23,7 @@ flowchart LR
   TB -->|skills as MCP resources| SK[stark-escalation<br/>SKILL.md v1, v2]
   CN[(project connection<br/>stark-mcp · function key)] -.-> S2
   H[Hosted agent] -->|direct injection<br/>skills/*/SKILL.md| SK
+  SP[SkillsProvider sample] -->|load_skill on demand<br/>skills/*/SKILL.md| SK
 ```
 
 ---
@@ -119,13 +120,16 @@ flowchart LR
 
 ## 4 · Skills
 
-A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Markdown). In Foundry it is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get. Three ways to deliver it:
+A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Markdown). In Foundry it is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get. Four ways to deliver it:
 
 | Mode | How |
 |---|---|
 | Direct injection | your code adds the `SKILL.md` text to the instructions: `load_skills` in [main.py](../src/jarvis-hosted/main.py), [`skill_body()`](../notebooks/stark_helpers.py) in chapters 15 and 16 |
+| Agent Framework `SkillsProvider` | the model sees only each skill's name and description, and calls `load_skill`, `read_skill_resource` or `run_skill_script` when a skill fits. Runs locally in [skills_provider.py](../samples/skills_provider.py): file skills from `skills/` plus one code-defined skill, and it prints which skill tools the model called |
 | Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read`. The toolbox only **offers** the skill: it is used only when the client loads it and the model follows it |
 | Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=GitHubCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 7), or `skills:` and `harness.type: github_copilot_preview` in `azure.yaml` |
+
+Direct injection is the simplest, but every run pays for every skill. `SkillsProvider` loads a skill only when the model picks it, so it scales to many skills. It is also the fast loop for writing one: edit `skills/<name>/SKILL.md`, run `python samples/skills_provider.py "<question>"`, and check that the right `load_skill` call shows up. All three skill tools need approval by default; the sample turns approval off because the skills are this repo's own. The sample is local only and not deployed as a hosted agent.
 
 > ⚠️ **Skills need the harness.** On a default prompt agent, `skills=[...]` is accepted but had no effect in a test: the agent did not follow the skill. The Copilot harness is a gated preview, so creating it can fail with `not enabled for this subscription`. That was the result on this project, so **the harness path itself was not run successfully here**.
 
@@ -153,7 +157,8 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 |---|---|---|
 | key in the agent definition | it shows up in versions and traces | project connection |
 | a personal token in a shared connection | every project member can read it, every user acts as you | OAuth identity passthrough for per-user access |
-| expecting skills to work on a default prompt agent | no effect | use direct injection or a toolbox |
+| expecting skills to work on a default prompt agent | no effect | use direct injection, `SkillsProvider` or a toolbox |
+| turning off approval for skills you did not write | `run_skill_script` runs their code, and their instructions go into the context | keep approval on for outside skills, at least for scripts |
 
 ---
 
@@ -167,6 +172,7 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 | [MCP Inspector](https://github.com/modelcontextprotocol/inspector) | a tool to connect to a server and browse its tools, resources and prompts |
 | [Reference MCP servers](https://github.com/modelcontextprotocol/servers) | sample servers to read and run |
 | [Anthropic: Introducing the Model Context Protocol](https://www.anthropic.com/news/model-context-protocol) | why MCP exists (announcement, November 2024) |
+| [Agent Skills in Agent Framework (Microsoft Learn)](https://learn.microsoft.com/agent-framework/agents/skills) | `SkillsProvider`, file, code-defined, class-based and MCP skill sources, approvals |
 | [Connect agents to MCP server endpoints (Microsoft Learn)](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/model-context-protocol) | the Foundry MCP tool: connections, approvals, best practices |
 | [What is Toolbox in Foundry? (Microsoft Learn)](https://learn.microsoft.com/azure/foundry/agents/concepts/toolbox-overview) | one MCP endpoint for tools and skills |
 | [Secure MCP servers (Microsoft Learn)](https://learn.microsoft.com/azure/api-management/secure-mcp-servers) | protecting an MCP server with API Management |
