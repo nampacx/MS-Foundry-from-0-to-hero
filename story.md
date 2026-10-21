@@ -55,7 +55,7 @@ A mind without hands is just advice. The question is always **who runs the tool*
 Why build every tool yourself? Plug in **MCP** servers: the public Microsoft Learn server (with approvals and `allowed_tools`), then our own **`stark-mcp`** Azure Function behind a project connection. The key never touches the agent. And remember: tool output is untrusted input. See [MCP and skills](docs/mcp-skills.md).
 
 ### 07 · `07_agent_skills` (preview) – A procedure, not a tool
-Some knowledge is a recipe, not a gadget. Write a `SKILL.md`, upload versions, promote the default, attach it to a toolbox, read it as an MCP resource, prove with a marker test that the model actually follows it, and pull it into a hosted agent. Preview territory: expect rough ground. See [MCP and skills](docs/mcp-skills.md).
+Some knowledge is a recipe, not a gadget. Write a `SKILL.md`, upload versions, promote the default, attach it to a toolbox, read it as an MCP resource, prove with a marker test that the model actually follows it, and pull it into a hosted agent. Writing a new skill? Draft it on the bench first: [skills_provider.py](samples/skills_provider.py) runs J.A.R.V.I.S. locally with Agent Framework's `SkillsProvider`, which loads a skill only when the model asks for it and shows you which one it picked. Preview territory: expect rough ground. See [MCP and skills](docs/mcp-skills.md).
 
 ### 08 · `08_agents_from_yaml` – Agents as files
 Blueprints belong in a vault. Define agents in `agents/*.yaml`, dry-run them, deploy them with `scripts/deploy_agents.py`, and meet the azd `azure.yaml` route (`azure.ai.agent` services). See [agents as files](docs/agents-yaml.md).
