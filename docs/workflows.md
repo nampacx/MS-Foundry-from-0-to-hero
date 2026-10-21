@@ -5,6 +5,7 @@
 | Pattern | Shape | Builder | Example in chapter 15 |
 |---|---|---|---|
 | Sequential | A → B → C | `SequentialBuilder`, or `WorkflowBuilder` with `add_edge` (the notebook shows both, the hosted agent uses the second) | invoice pipeline |
+| Conditional | A → B or C, chosen by your code | `WorkflowBuilder` with `add_switch_case_edge_group` | invoice router with thresholds |
 | Concurrent | same input to all at once, then merge | `ConcurrentBuilder` | morning briefing |
 | Group chat | star with a speaker selector | `GroupChatBuilder` | review board |
 | Handoff | agents route to each other, user in the loop | `HandoffBuilder` | workshop support (run with scripted turns) |
@@ -50,7 +51,27 @@ WorkflowBuilder(start_executor=extractor, output_from=[final_message])
 
 Inside each box a model decides what to **say** and which **tools** to call. It never decides which box runs next, so every request takes the same path, which is cheap, predictable and easy to test. `SequentialBuilder(participants=[a, b, c])` builds the same chain from the list order, and `WorkflowBuilder` with `add_edge` writes it out edge by edge. The notebook shows both, and the hosted project uses the second (section 1 compares the two).
 
-To make the path depend on the data, **your code** adds a condition to an edge, for example `add_edge(extractor, reviewer, condition=lambda r: ...)`. `add_edge` accepts a `condition` function, and the builder also has switch-case and fan-out edge groups. Conditional edges were **not run here**.
+To make the path depend on the data, **your code** puts a condition on the edges. This replaces the condition nodes of the old portal designer: a model produces the output, and a plain Python function picks the branch. Chapter 15 section 1 routes an invoice by its total:
+
+```mermaid
+flowchart LR
+  E[facts_extractor<br/>response_format: InvoiceFacts] --> C{your code<br/>reads total_usd}
+  C -- "up to 5,000, no low-confidence field" --> A[auto_approve<br/>code only]
+  C -- "above 50,000" --> X[escalate<br/>code only]
+  C -- "anything else" --> R[reviewer] --> P[reporter]
+```
+
+| Piece | Why |
+|---|---|
+| `default_options={"response_format": InvoiceFacts}` on the extractor | the answer is JSON in a fixed shape, so code can read `total_usd` as a number instead of parsing prose |
+| `add_switch_case_edge_group(source, [Case(condition=..., target=...), ..., Default(target=...)])` | the cases are checked in order, the first true condition wins, `Default` takes the rest |
+| `@executor` steps (`auto_approve`, `escalate`) | plain Python steps that decide without calling a model |
+| `output_from=[...]` lists the last step of every branch | whichever branch runs, its result is the workflow's answer |
+| thresholds as arguments of `build_router(auto_up_to=..., escalate_above=...)` | the same invoice takes another path when only the threshold changes |
+
+For a single branch, `add_edge(a, b, condition=...)` is enough. Fan-out edge groups send one message to several steps. If the extractor's JSON does not match the model, the run fails: an invoice the code cannot read is never auto-approved.
+
+The routing was tested against the installed `agent-framework-core` with stand-in agents (all three branches); the notebook cells have **not run on a live project yet**.
 
 > 💡 Prefer fixed edges for pipelines with a known process. Reach for group chat or handoff only when the right next step genuinely cannot be known in advance, because every model-chosen step costs tokens and makes runs harder to repeat.
 
@@ -154,7 +175,7 @@ Code in [chapter 15](../notebooks/15_workflows.ipynb).
 | Mistake | What happens | Do this |
 |---|---|---|
 | a workflow for a one-step job | extra cost and latency | use a single agent |
-| letting the model decide an approval | a guess decides money | use a tool with a hard limit |
+| letting the model decide an approval | a guess decides money | use a tool with a hard limit, or a conditional edge on structured output |
 | group chat without a stop rule | cost grows with every turn | set `termination_condition` |
 | reusing a handoff workflow | it keeps the old conversation | build a fresh one per run |
 | autonomous handoff without a turn limit | it can loop | cap the turns |

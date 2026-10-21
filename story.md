@@ -107,7 +107,7 @@ An email whispers to your agent: *"transfer the funds."* You stage the attack on
 Field manuals: [workflows](docs/workflows.md) · [A2A capstone](docs/capstone.md).
 
 ### 15 · `15_workflows` – A plan, not a prompt
-Stop shouting orders at one agent. Draw a plan with Agent Framework **workflows**: a **sequential** invoice pipeline (Document Intelligence tool, then a reviewer with the invoice-review skill, then a reporter), a **group chat** review board, a **handoff** topology, the same pipeline as **declarative YAML**, and how to run it inside Foundry. See [workflows](docs/workflows.md).
+Stop shouting orders at one agent. Draw a plan with Agent Framework **workflows**: a **sequential** invoice pipeline (Document Intelligence tool, then a reviewer with the invoice-review skill, then a reporter), a **threshold router** where your code, not a model, sends the invoice to auto-approval, review or escalation, a **group chat** review board, a **handoff** topology, the same pipeline as **declarative YAML**, and how to run it inside Foundry. See [workflows](docs/workflows.md).
 
 ### 16 · `16_vision_a2a_capstone` (preview) – The Avengers assemble
 The finale. `friday-finance` goes public over **A2A v1.0** with an agent card. `jarvis-orchestrator` calls her through the A2A tool and our MCP server. You grant the roles, run an evaluation gate on the whole system and tear it down cleanly. See [A2A capstone](docs/capstone.md).
