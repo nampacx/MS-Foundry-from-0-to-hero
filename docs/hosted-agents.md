@@ -19,7 +19,7 @@
 | Called with | `agent_reference` in a Responses call | the same |
 | Chapter | [04](../notebooks/04_jarvis_prompt_agent.ipynb)–[08](../notebooks/08_agents_from_yaml.ipynb) | [09](../notebooks/09_hosted_agent.ipynb), [15](../notebooks/15_workflows.ipynb) section 6 |
 
-> ✅ **Deployed live:** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project, with the `azure.ai.agent` services in [azure.yaml](../azure.yaml) as they are. `jarvis-hosted` uses the same format. If a newer `azd` rejects a field, run `azd ai agent init --deploy-mode code` in a scratch folder and compare.
+> ✅ **Deployed live:** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project, with the `azure.ai.agent` services in [azure.yaml](../azure.yaml) as they are. `jarvis-hosted` and `jarvis-skills` use the same format; `jarvis-skills` was not deployed yet. If a newer `azd` rejects a field, run `azd ai agent init --deploy-mode code` in a scratch folder and compare.
 
 ---
 
@@ -49,6 +49,8 @@ Three things per agent. Take `jarvis-hosted` as the example.
 | Dependencies | [requirements.txt](../src/jarvis-hosted/requirements.txt) | what the remote build installs |
 | Service entry | [azure.yaml](../azure.yaml) | tells `azd` how to deploy it |
 
+[jarvis-skills](../src/jarvis-skills/main.py) is the same agent with the skills loaded on demand by Agent Framework's `SkillsProvider` instead of pasted into the instructions ([mcp-skills.md](mcp-skills.md) section 4, chapter 09 section 4).
+
 `ResponsesHostServer` is what makes the container a Foundry agent. It speaks the Responses protocol on port `8088`, so conversations, streaming and tracing work like for prompt agents.
 
 The service entry in [azure.yaml](../azure.yaml), field by field:
@@ -72,7 +74,7 @@ The service entry in [azure.yaml](../azure.yaml), field by field:
 
 ## 2 · What `azd deploy` does, step by step
 
-1. **`predeploy` hook.** [sync_skills.py](../scripts/sync_skills.py) copies `skills/` into `src/jarvis-hosted` and `src/invoice-workflow`, and the sample invoices into `src/invoice-workflow/data/docs`. The ZIP only contains the service folder, so everything the agent reads at runtime must be inside it first.
+1. **`predeploy` hook.** [sync_skills.py](../scripts/sync_skills.py) copies `skills/` into `src/jarvis-hosted`, `src/jarvis-skills` and `src/invoice-workflow`, and the sample invoices into `src/invoice-workflow/data/docs`. The ZIP only contains the service folder, so everything the agent reads at runtime must be inside it first.
 2. **Package and upload.** The `azure.ai.agents` extension zips the folder, computes the SHA-256 and uploads it. The ZIP limit is 250 MB.
 3. **Remote build.** Foundry reads `requirements.txt`, installs it on the platform runtime image and builds the container. No Docker on your machine.
 4. **New agent version.** The version moves `creating` → `active`. `azd` waits for `active`. A new version is only created when the ZIP or the definition changed.

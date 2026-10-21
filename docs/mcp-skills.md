@@ -8,7 +8,7 @@
 | Skills | instructions / know-how | Foundry Skills API (versioned) | 🧪 preview |
 | Toolbox | one MCP endpoint for tools **and** skills | Foundry toolbox (versioned) | 🧪 preview |
 
-Hands-on: [06 MCP](../notebooks/06_mcp_tools.ipynb) · [07 skills](../notebooks/07_agent_skills.ipynb) · [skills_provider.py](../samples/skills_provider.py). How an agent *calls* an MCP tool (allow-lists, approvals): [tools.md](tools.md). Agents calling agents (A2A): [capstone.md](capstone.md).
+Hands-on: [06 MCP](../notebooks/06_mcp_tools.ipynb) · [07 skills](../notebooks/07_agent_skills.ipynb) · [09 hosted agents](../notebooks/09_hosted_agent.ipynb) section 4 (`jarvis-skills`). How an agent *calls* an MCP tool (allow-lists, approvals): [tools.md](tools.md). Agents calling agents (A2A): [capstone.md](capstone.md).
 
 ---
 
@@ -23,7 +23,7 @@ flowchart LR
   TB -->|skills as MCP resources| SK[stark-escalation<br/>SKILL.md v1, v2]
   CN[(project connection<br/>stark-mcp · function key)] -.-> S2
   H[Hosted agent] -->|direct injection<br/>skills/*/SKILL.md| SK
-  SP[SkillsProvider sample] -->|load_skill on demand<br/>skills/*/SKILL.md| SK
+  SP[Hosted agent<br/>jarvis-skills] -->|SkillsProvider: load_skill<br/>on demand, skills/*/SKILL.md| SK
 ```
 
 ---
@@ -125,13 +125,13 @@ A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Ma
 | Mode | How | Reads |
 |---|---|---|
 | Direct injection | your code adds the `SKILL.md` text to the instructions: `load_skills` in [main.py](../src/jarvis-hosted/main.py), [`skill_body()`](../notebooks/stark_helpers.py) in chapters 15 and 16 | local `skills/` files, or a version downloaded from Foundry |
-| Agent Framework `SkillsProvider` | the model sees only each skill's name and description, and calls `load_skill`, `read_skill_resource` or `run_skill_script` when a skill fits. Runs locally in [skills_provider.py](../samples/skills_provider.py): file skills from `skills/` plus one code-defined skill, and it prints which skill tools the model called. ❓ Run here only against a scripted model, not a live deployment | local `skills/` files |
+| Agent Framework `SkillsProvider` | the model sees only each skill's name and description, and calls `load_skill`, `read_skill_resource` or `run_skill_script` when a skill fits. The hosted agent [jarvis-skills](../src/jarvis-skills/main.py) does this with the file skills from `skills/` plus one code-defined skill. ❓ Tested only against a scripted model, not deployed yet | local `skills/` files (copied into the ZIP on deploy) |
 | Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read`. The toolbox only **offers** the skill: it is used only when the client loads it and the model follows it | the Foundry version (default or pinned) |
 | Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=GitHubCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 7), or `skills:` and `harness.type: github_copilot_preview` in `azure.yaml` | the Foundry version the agent version pins |
 
 > ⚠️ **Skills need the harness.** On a default prompt agent, `skills=[...]` is accepted but had no effect in a test: the agent did not follow the skill. The Copilot harness is a gated preview, so creating it can fail with `not enabled for this subscription`. That was the result on this project, so **the harness path itself was not run successfully here**.
 
-Direct injection is the simplest, but every run pays for every skill. `SkillsProvider` loads a skill only when the model picks it, so it scales to many skills. It is also the fast loop for writing one: edit `skills/<name>/SKILL.md`, run `python samples/skills_provider.py "<question>"`, and check that the right `load_skill` call shows up. All three skill tools need approval by default; the sample turns approval off because the skills are this repo's own. The sample is local only and not deployed as a hosted agent. It reads `skills/` from disk, so a new Foundry version reaches it only when you copy that version into `skills/`.
+Direct injection is the simplest, but every run pays for every skill. `SkillsProvider` loads a skill only when the model picks it, so it scales to many skills. It is also the fast loop for writing one: edit `skills/<name>/SKILL.md`, run `python samples/skills_provider.py "<question>"` (the `jarvis-skills` agent as a plain script, no deploy), and check that the right `load_skill` call shows up. Deployed, the same calls appear as `function_call` items in the response output. All three skill tools need approval by default; `jarvis-skills` turns approval off because the skills are this repo's own. It reads `skills/` from disk, so a new Foundry version reaches it only when you copy that version into `skills/`.
 
 ---
 
