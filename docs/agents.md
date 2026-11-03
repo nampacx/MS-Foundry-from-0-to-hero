@@ -62,7 +62,7 @@ flowchart LR
  "structured_inputs": {"person": "Pepper", "title": "CEO of Stark Industries"}}
 ```
 
-[`agent_ref()`](../notebooks/stark_helpers.py) builds the `agent_reference` part, and `{**agent_ref(AGENT), "structured_inputs": {...}}` merges both into one `extra_body`.
+[`agent_ref()`](../notebooks/stark_helpers.py) builds the `agent_reference` part, and `{**agent_ref(AGENT_NAME), "structured_inputs": {...}}` merges both into one `extra_body`.
 
 ### What Foundry checks
 

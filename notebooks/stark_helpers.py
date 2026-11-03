@@ -172,6 +172,28 @@ def ask_agent(agent, text, conversation: str | None = None, approve=None, oai=No
     return resp
 
 
+def messages(response) -> list[str]:
+    """The agent's messages in order. An agent with tools often sends a short preamble ("I'll check ...") first."""
+    return ["".join(part.text for part in item.content if part.type == "output_text")
+            for item in response.output if item.type == "message"]
+
+
+def answer_text(response) -> str:
+    """All messages, one paragraph each. `output_text` glues them together without a line break."""
+    return "\n\n".join(messages(response))
+
+
+def final_message(response) -> str:
+    """The last message, the one that holds the answer. Checks look here, not at a preamble."""
+    found = messages(response)
+    return found[-1] if found else ""
+
+
+def mark(ok: bool) -> str:
+    """✅ or ❌ for a check that has a right answer."""
+    return "✅" if ok else "❌"
+
+
 def tool_calls(resp) -> list[str]:
     """Names of the tool calls in a response (function, MCP, code interpreter, search, ...)."""
     names = []

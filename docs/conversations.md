@@ -91,7 +91,7 @@ r = oai.responses.create(model=MODEL, conversation=conv.id, input="Which suit is
 
 **Step 4. Look inside.** `oai.conversations.items.list(conv.id)` prints every item. Add your own with `oai.conversations.items.create(conv.id, items=[...])`.
 
-**Step 5. Clean up.** `oai.responses.delete(id)` and `oai.conversations.delete(id)`. The chapter keeps a `created` dict so the last cell can delete everything.
+**Step 5. Clean up.** `oai.responses.delete(id)` and `oai.conversations.delete(id)`. The chapter keeps an `ids_to_delete` dict so the last cell can delete everything.
 
 > 💡 **Which one do I pick?** Two or three quick follow-ups in a script: `previous_response_id`. A chat, an agent or anything you want to look at later in the portal: a conversation. Nothing stored at all: `store=False`.
 

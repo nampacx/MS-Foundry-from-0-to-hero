@@ -84,11 +84,11 @@ TestingCriterionAzureAIEvaluator(type="azure_ai_evaluator", name="coherence", ev
 
 **Step 4. Run it against agent version 1.** Use `azure_ai_target_completions` with `target = {"type": "azure_ai_agent", "name": ..., "version": ...}`, then `wait_eval_run(...)` and `pass_rates(run)`.
 
-**Step 5. Read the reasons, not only the number.** [`eval_scores()`](../notebooks/stark_helpers.py) returns a table. Filter `passed == False` and read each `reason`.
+**Step 5. Read the reasons, not only the number.** [`show_scores()`](../notebooks/stark_evals.py) shows one row per query and one column per evaluator, then the full `reason` of every failed result. ([`eval_scores()`](../notebooks/stark_helpers.py) returns the same as a DataFrame.)
 
 **Step 6. Fix the agent, run again.** Create version 2 with better instructions, run the same evaluation, compare the pass rates side by side (the chapter builds a small table; the portal has **Compare**).
 
-**Step 7. Add a gate.** `assert_pass_rate(run2, minimum=0.75)` raises if quality dropped.
+**Step 7. Add a gate.** `assert_pass_rate(strict_run, minimum=0.75)` raises if quality dropped.
 
 **Step 8. Clean up.** Delete evaluations, vector stores and agents (last cell of the chapter).
 

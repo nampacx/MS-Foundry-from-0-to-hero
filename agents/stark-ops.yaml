@@ -1,4 +1,4 @@
-# Prompt agent that uses our own MCP server (chapter 06 creates the project connection `stark-mcp`).
+# Prompt agent that uses our own MCP server (the azd postdeploy hook, scripts/connect_mcp.py, creates the project connection `stark-mcp`; chapter 06 uses it).
 name: stark-ops
 kind: prompt
 description: Workshop operations agent backed by the stark-mcp tools.

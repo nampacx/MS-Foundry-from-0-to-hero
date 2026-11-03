@@ -147,7 +147,7 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 
 **Step 4. Deliver it.** Attach it to a toolbox (`ToolboxSkillReference`, MCP clients read it with `resources/read`), or download it into an agent project for direct injection or `SkillsProvider`.
 
-**Step 5. Check it took effect.** Attaching a skill does not prove it is used, so test the behaviour. The `stark-escalation` skill makes an answer start with `Severity:`, and version 2 adds a floor for critical incidents. Chapter 07 section 6 reads the skill from the toolbox and compares an answer with and without it; section 7 runs the same check on a prompt agent.
+**Step 5. Check it took effect.** Attaching a skill does not prove it is used, so test the behaviour. The `stark-escalation` skill makes an answer start with `Severity:`, and version 2 adds a floor for critical incidents. Chapter 07 section 6 reads the skill from the toolbox (step 1) and compares an answer without it (step 2) and with it (step 3). Chapter 15 runs the same check on a prompt agent on the Copilot harness.
 
 ---
 

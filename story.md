@@ -98,7 +98,7 @@ Turn invoices and receipts into typed fields with `prebuilt-invoice` and `prebui
 Field manual: [guardrails](docs/guardrails.md).
 
 ### 14 · `14_ultron_guardrails_redteam` (preview) – What happens without guardrails
-An email whispers to your agent: *"transfer the funds."* You stage the attack on a harmless demo function and count how often the agent obeys. Then you fight back with four defences (naive, hardened instructions, approval gate, least privilege), a **guardrail with Prompt Shields**, and the **AI Red Teaming Agent**.
+An email whispers to your agent: *"transfer the funds."* You stage the attack on a harmless demo function and count how often the agent obeys. Then you fight back with three defences (hardened instructions, an approval gate, least privilege), counting both what the model asks for and what actually runs, a **guardrail with Prompt Shields**, and the **AI Red Teaming Agent**.
 
 ---
 
@@ -126,7 +126,7 @@ The finale. `friday-finance` goes public over **A2A v1.0** with an agent card. `
 ---
 
 ## 🧰 The toolbelt
-[`notebooks/stark_helpers.py`](notebooks/stark_helpers.py) holds the shared gear: `project()`, `openai_client()`, `model()`, `ask_agent()` (with MCP approvals), `kql_wait()` and the evaluation helpers. [`notebooks/stark_docs.py`](notebooks/stark_docs.py) wraps the document services.
+[`notebooks/stark_helpers.py`](notebooks/stark_helpers.py) holds the shared gear: `project()`, `openai_client()`, `model()`, `ask_agent()` (with MCP approvals), `kql_wait()` and the evaluation helpers. [`notebooks/stark_docs.py`](notebooks/stark_docs.py) wraps the document services, and [`notebooks/stark_harness.py`](notebooks/stark_harness.py) holds chapter 15's harness helpers: publishing skill packages, invoice prompts and the Markdown view of each turn. Other chapter helpers sit next to them: [`stark_replies.py`](notebooks/stark_replies.py) (04–09), [`stark_evals.py`](notebooks/stark_evals.py) (10–11), [`stark_guardrails.py`](notebooks/stark_guardrails.py) (14), [`stark_workflows.py`](notebooks/stark_workflows.py) (16) and [`stark_a2a.py`](notebooks/stark_a2a.py) (17).
 
 ## 🏁 The moral
 Models answer. **Agents act.** **Evaluations prove.** **Monitoring watches.** **Guardrails protect.** **Protocols (MCP, A2A) connect.** You need all of them to go from Dummy to Vision.

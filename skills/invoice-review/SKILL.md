@@ -40,7 +40,7 @@ Each script prints one JSON line and exits with `0` (pass) or `1` (fail). Quote 
 ## Verdict
 
 - `REJECT`: missing fields, wrong arithmetic, a future date, a blocked vendor, an invalid or changed IBAN, or a duplicate.
-- `NEEDS HUMAN REVIEW`: an unknown vendor, a total above the approver's limit, or low extraction confidence on a required field.
+- `NEEDS HUMAN REVIEW`: an unknown vendor, a total above the approver's limit, or low extraction confidence on a required field. An amount that the arithmetic confirms (line items, subtotal, tax and total add up) counts as checked, whatever its confidence: `check_invoice.py` lists it in `confirmed_by_arithmetic`, not in `warnings`.
 - `APPROVE`: every check passed.
 
 Without shell access, do steps 1 to 3 and 7 yourself and say that steps 4 to 6 were not checked.

@@ -86,7 +86,7 @@ There are **two ways to build the same chain**. Both give a fixed order, and in 
 | `SequentialBuilder(participants=[a, b, c])` | the **list order** is the run order (a shortcut) | notebook section 1, first runs |
 | `WorkflowBuilder(...).add_edge(a, b).add_edge(b, c)` | every **edge written out** (the order is hard-wired); the general builder that also does conditions, fan-out and custom code steps, and lets you set what each step sees (`AgentExecutor(..., context_mode=...)`) | notebook section 1 ("wired by hand"), and the hosted [invoice-workflow](../src/invoice-workflow/main.py) |
 
-Each agent consumes the previous agent's conversation (or only its response with `chain_only_agent_responses=True`). `intermediate_output_from=[...]` surfaces earlier steps. The reviewer gets the **invoice-review skill** as instructions, and the decision comes from a limit **tool**, not from the model's guess.
+Each agent consumes the previous agent's conversation (or only its response with `chain_only_agent_responses=True`). `intermediate_output_from=[...]` surfaces earlier steps. The reviewer gets the **invoice-review skill** as instructions, and the limit check comes from a **tool**, not from the model's guess.
 
 > ℹ️ A custom last step that returns plain text, needed for hosting (section 6), can be added to either: a `SequentialBuilder` chain whose last participant is such a step also hosted fine in a local test. The hosted project uses `WorkflowBuilder` to show the explicit wiring, not because `SequentialBuilder` cannot do it.
 
