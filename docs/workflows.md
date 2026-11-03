@@ -71,7 +71,7 @@ flowchart LR
 
 For a single branch, `add_edge(a, b, condition=...)` is enough. Fan-out edge groups send one message to several steps. If the extractor's JSON does not match the model, the run fails: an invoice the code cannot read is never auto-approved.
 
-The routing was tested against the installed `agent-framework-core` with stand-in agents (all three branches); the notebook cells have **not run on a live project yet**.
+The routing was tested against the installed `agent-framework-core` with stand-in agents (all three branches), and the notebook ran on a live project.
 
 > 💡 Prefer fixed edges for pipelines with a known process. Reach for group chat or handoff only when the right next step genuinely cannot be known in advance, because every model-chosen step costs tokens and makes runs harder to repeat.
 

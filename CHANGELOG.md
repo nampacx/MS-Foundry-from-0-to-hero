@@ -4,6 +4,10 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Changed
+- README, Deploy with azd: every azd command the chapters use (08, 09, 13, 15, 16), what it does, where to run it, and whether a notebook cell runs it for you; `azd up` also deploys the MCP function and the four hosted agents. The extension line mentions `azd extension upgrade microsoft.foundry`.
+- Every notebook, 00 to 17, ran against an environment deployed with `azd up`. The README verification note, `capstone.md`, `datasets-evals.md`, `guardrails.md`, `workflows.md` and chapters 16 and 17 no longer say a chapter was not run live; ❓ now marks only outcomes that can vary between runs.
+
 ## [0.2] – 2026-11-03
 
 Second release: chapter 15 on the Microsoft Copilot harness with skills that run scripts, skills on demand with `SkillsProvider`, a threshold router in the workflows chapter, and a quality pass over every notebook. Merged in [nampacx/MS-Foundry-from-0-to-hero#3](https://github.com/nampacx/MS-Foundry-from-0-to-hero/pull/3), [nampacx/MS-Foundry-from-0-to-hero#4](https://github.com/nampacx/MS-Foundry-from-0-to-hero/pull/4), [nampacx/MS-Foundry-from-0-to-hero#5](https://github.com/nampacx/MS-Foundry-from-0-to-hero/pull/5), [nampacx/MS-Foundry-from-0-to-hero#6](https://github.com/nampacx/MS-Foundry-from-0-to-hero/pull/6), [nampacx/MS-Foundry-from-0-to-hero#7](https://github.com/nampacx/MS-Foundry-from-0-to-hero/pull/7).
