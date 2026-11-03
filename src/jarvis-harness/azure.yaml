@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+# J.A.R.V.I.S. as a prompt agent on the Microsoft Copilot harness (preview), chapter 17.
+#
+# A separate azd project on purpose: the harness needs newer Foundry extensions than the root azure.yaml pins,
+# plus an opt-in flag. Nothing is provisioned here: the agent and its skills go into the project that the
+# root `azd up` created. `python scripts/harness_env.py` fills this folder's azd environment from .env.
+#
+#   export AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true     # PowerShell: $env:AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS = "true"
+#   azd deploy --all --no-prompt
+#   azd ai agent invoke --new-conversation --no-prompt "A suit just started smoking in the hangar. What do I do?"
+name: stark-harness
+
+requiredVersions:
+  azd: ">= 1.37.0"
+  extensions:
+    azure.ai.agents: ">= 1.0.0-beta.22"
+    azure.ai.projects: ">= 1.0.0-beta.15"
+    azure.ai.skills: ">= 1.0.0-beta.9"
+
+services:
+  ai-project:            # the existing STARK project (no new project is provisioned)
+    host: azure.ai.project
+    endpoint: ${STARK_PROJECT_ENDPOINT}
+
+  stark-escalation:      # skills/stark-escalation -> a new immutable skill version in Foundry
+    host: azure.ai.skill
+    uses:
+      - ai-project
+    archive: ./skills/stark-escalation
+
+  invoice-review:        # skills/invoice-review -> a new immutable skill version in Foundry
+    host: azure.ai.skill
+    uses:
+      - ai-project
+    archive: ./skills/invoice-review
+
+  jarvis-harness:        # a prompt agent whose runtime is the Copilot harness
+    host: azure.ai.agent
+    project: .
+    uses:                # deploy order only: project, then skills, then the agent
+      - ai-project
+      - stark-escalation
+      - invoice-review
+    kind: prompt
+    name: jarvis-harness
+    description: J.A.R.V.I.S. on the Microsoft Copilot harness with two Foundry skills.
+    harness:
+      type: microsoft_copilot_preview
+    model: ${STARK_CHAT_MODEL}
+    skills:              # attaches the skills (each agent version pins the skill version azd just published)
+      - stark-escalation
+      - invoice-review
+    instructions: |
+      You are J.A.R.V.I.S., Tony Stark's assistant in the workshop.
+      Use your skills when a request matches them: stark-escalation for incidents,
+      invoice-review for supplier invoices. Keep answers short.
+    tools:
+      - type: microsoft_copilot_toolset_preview   # the harness's own tools: least privilege
+        configs:
+          - name: shell
+            enabled: false
+          - name: subagents
+            enabled: false
+
+hooks:
+  predeploy:             # copy the repo's skills/ into this folder, so `archive` finds SKILL.md
+    posix: { shell: sh, run: 'python3 ../../scripts/sync_skills.py' }
+    windows: { shell: pwsh, run: 'python ../../scripts/sync_skills.py; exit $LASTEXITCODE' }

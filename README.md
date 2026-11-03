@@ -2,11 +2,11 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
-> 🚧 **Version 0.1: a first release that still needs improvement.** Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example the GitHub Copilot harness and web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
+> 🚧 **Version 0.1: a first release that still needs improvement.** Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example the Microsoft Copilot harness and web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
 
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
 
-> 📖 **Prefer a story?** Read [The Story of STARK](story.md) first: all 17 chapters as one build log, from Dummy to Vision, with a link to the matching doc in each act.
+> 📖 **Prefer a story?** Read [The Story of STARK](story.md) first: all 18 chapters as one build log, from Dummy to Vision, with a link to the matching doc in each act.
 
 What you learn, chapter by chapter:
 
@@ -14,6 +14,7 @@ What you learn, chapter by chapter:
 - **Monitoring**: OpenTelemetry traces, KQL, the Foundry portal
 - **Agents**: from code, from YAML, hosted agents, with built-in tools
 - **MCP, A2A and skills** attached to agents
+- **The Microsoft Copilot harness** 🧪: prompt agents with skills and a managed loop, deployed with `azd`
 - **Datasets and evaluations**: batch, conversation-level and on live traces
 - **Beyond LLMs**: OCR, Document Intelligence and Content Understanding through the Foundry resource
 - **Workflows** and multi-agent patterns
@@ -46,6 +47,7 @@ Infrastructure is **Bicep + azd**, custom code is **Python only**.
 | 13 | [Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 14 | 14 |
 | 14 | [Workflows](docs/workflows.md) | with chapter 15 | 15 |
 | 15 | [Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 16 | 16 |
+| 16 | [🧪 Prompt agents on the Microsoft Copilot harness](docs/copilot-harness.md) | with chapter 17 | 07, 17 |
 | – | [Glossary](docs/glossary.md) | when a word is new | any |
 | – | [Troubleshooting](docs/troubleshooting.md) | when something fails | any |
 | – | [Portal tour](docs/portal-tour.md) | to find your work in the portal | any |
@@ -57,7 +59,7 @@ Infrastructure is **Bicep + azd**, custom code is **Python only**.
 
 ```mermaid
 flowchart LR
-  NB[Notebooks<br/>00 … 16] -->|project endpoint · Entra ID| P
+  NB[Notebooks<br/>00 … 17] -->|project endpoint · Entra ID| P
   subgraph F[Foundry resource · Sweden Central]
     M[Models]
     T[Foundry Tools<br/>OCR · Document Intelligence]
@@ -119,6 +121,7 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 14 | [Ultron: guardrails and red teaming 🧪](notebooks/14_ultron_guardrails_redteam.ipynb) | ✅ |
 | 15 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/15_workflows.ipynb) | ✅ |
 | 16 | [Vision: A2A capstone 🧪](notebooks/16_vision_a2a_capstone.ipynb) | ✅ |
+| 17 | [The Microsoft Copilot harness 🧪](notebooks/17_copilot_harness.ipynb) | ❓ not run yet |
 
 > ⚠️ **Not verified against a live subscription:** preview features (skills, toolboxes, trace evaluation, guardrail APIs) are the least certain parts. Hosted agents work: `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. `jarvis-hosted` uses the same `azure.yaml` format.
 >

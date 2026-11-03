@@ -5,6 +5,9 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 ## [Unreleased]
 
 ### Added
+- Chapter 17 `17_copilot_harness.ipynb` 🧪: J.A.R.V.I.S. as a prompt agent on the new Microsoft Copilot harness. It publishes the `stark-escalation` and `invoice-review` skills, creates the agent with `MicrosoftCopilotHarness()` and pinned `SkillReference`s, switches off the harness shell and subagents, checks with markers that the skills are used, and shows the per-conversation workspace. Not run on a live project yet.
+- `src/jarvis-harness/azure.yaml` 🧪: the same agent as its own azd project (`azure.ai.skill` services for both skills, `azure.ai.agent` with `harness.type: microsoft_copilot_preview`), deployed into the existing STARK project with `azd deploy --all`. `scripts/harness_env.py` fills its azd environment from `.env`; `sync_skills.py` now also copies `skills/` there.
+- [copilot-harness.md](docs/copilot-harness.md) (doc 16): what the harness changes, request rules, workspace, azd deploy, security and limits.
 - Chapter 07, section 6: a marker test that reads the skill from the toolbox with `resources/read` and compares an answer with and without it, to prove a toolbox skill is really used. 🧪
 - Hosted agent `jarvis-skills` (`src/jarvis-skills`, new `azure.yaml` service): J.A.R.V.I.S. that loads skills on demand with Agent Framework's `SkillsProvider` (the `skills/` files plus a code-defined `workshop-status` skill) instead of pasting them into the instructions. Chapter 09 section 4 deploys it and prints which skill tools the model called; the old section 4 is now section 5. `azd deploy` without a service name now deploys it too. Not deployed on a live project yet.
 - `samples/skills_provider.py`: runs the `jarvis-skills` agent as a plain script, no deploy, and prints which skill tools the model called. The fast loop for drafting a skill. Explained in [mcp-skills.md](docs/mcp-skills.md) section 4, with pointers from chapter 07, `story.md` and the glossary.
@@ -12,6 +15,8 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 - `CHANGELOG.md` and the rule in `AGENTS.md` that every change adds a line here.
 
 ### Changed
+- Chapter 07, section 7, `mcp-skills.md`, glossary and troubleshooting: the GitHub Copilot harness is now the Microsoft Copilot harness (`MicrosoftCopilotHarness`, `microsoft_copilot_preview`), a public preview instead of a gated one. Section 7 calls the agent through an agent-bound client.
+- `requirements.txt` needs `azure-ai-projects>=2.9.0` (for `MicrosoftCopilotHarness`).
 - Fewer emojis in docs, README, story and notebooks: only in titles, `##` headings, callouts and status markers. The rule is in `AGENTS.md`.
 - Chapter 07: the GitHub Copilot harness section moves from section 6 to section 7.
 - `mcp-skills.md` section 4: the delivery table says whether each mode reads the local `skills/` files or a Foundry skill version.
