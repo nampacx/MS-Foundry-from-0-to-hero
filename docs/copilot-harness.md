@@ -153,7 +153,7 @@ It is a **separate azd project** with its own azd environment, so the harness op
 
 Current list: [Copilot harness limits](https://learn.microsoft.com/azure/foundry/agents/concepts/limits-quotas-regions#microsoft-copilot-harness-preview).
 
-> 🧪 **Status in this repo:** the notebook and the `azd` project follow the Microsoft Learn docs as of 2026-11. The skill scripts were tested locally. ❓ Neither the notebook nor the `azd` project was run on a live project yet, including whether `gpt-5-6-terra` is accepted as a harness model, where the harness places a skill's files in the sandbox, and how a shell call looks in the output items.
+> 🧪 **Status in this repo:** the notebook and the `azd` project follow the Microsoft Learn docs as of 2026-11. Chapter 15 was tested on a live project (2026-11-03). It showed that `gpt-5-6-terra` works as a harness model, that shell commands come back as `shell_call` items and the file tools as `function_call` items (for example `view`), and that the workspace is `/home/session/workspace`. ❓ Where the harness places a skill's own files in the sandbox is still not checked.
 
 ---
 

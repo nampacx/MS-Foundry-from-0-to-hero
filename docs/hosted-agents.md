@@ -19,7 +19,7 @@
 | Called with | `agent_reference` in a Responses call | the same |
 | Chapter | [04](../notebooks/04_jarvis_prompt_agent.ipynb)–[08](../notebooks/08_agents_from_yaml.ipynb) | [09](../notebooks/09_hosted_agent.ipynb), [16](../notebooks/16_workflows.ipynb) section 6 |
 
-> ✅ **Deployed live:** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project, with the `azure.ai.agent` services in [azure.yaml](../azure.yaml) as they are. `jarvis-hosted` and `jarvis-skills` use the same format; `jarvis-skills` was not deployed yet. If a newer `azd` rejects a field, run `azd ai agent init --deploy-mode code` in a scratch folder and compare.
+> ✅ **Deployed live:** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project, with the `azure.ai.agent` services in [azure.yaml](../azure.yaml) as they are. `jarvis-hosted` and `jarvis-skills` use the same format; `jarvis-skills` was also deployed and tested on a live project. If a newer `azd` rejects a field, run `azd ai agent init --deploy-mode code` in a scratch folder and compare.
 
 ---
 
