@@ -8,8 +8,8 @@ metadata:
 requiredVersions:
   azd: ">= 1.36.0"
   extensions:
-    azure.ai.agents: "=1.0.0-beta.20"
-    azure.ai.projects: "=1.0.0-beta.14"
+    azure.ai.agents: ">=1.0.0-beta.22"
+    azure.ai.projects: ">=1.0.0-beta.14"
 
 infra:
   provider: bicep
@@ -70,7 +70,7 @@ services:
         cpu: "0.25"
         memory: 0.5Gi
 
-  invoice-workflow:      # the chapter 15 invoice pipeline as a hosted agent (native Agent Framework workflow), chapter 15
+  invoice-workflow:      # the chapter 16 invoice pipeline as a hosted agent (native Agent Framework workflow), chapter 16
     host: azure.ai.agent
     project: src/invoice-workflow
     uses:
@@ -93,7 +93,7 @@ services:
         cpu: "0.5"
         memory: 1Gi
 
-  morning-briefing:      # J.A.R.V.I.S.'s morning briefing: a concurrent Agent Framework workflow as a hosted agent, chapter 15
+  morning-briefing:      # J.A.R.V.I.S.'s morning briefing: a concurrent Agent Framework workflow as a hosted agent, chapter 16
     host: azure.ai.agent
     project: src/morning-briefing
     uses:

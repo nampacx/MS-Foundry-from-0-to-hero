@@ -136,9 +136,9 @@ azd ai agent show --output json
 azd ai agent invoke --new-conversation --no-prompt "A suit just started smoking in the hangar. What do I do?"
 ```
 
-It is a **separate azd project** for one reason: the harness needs `azd` 1.37.0+ and newer Foundry extensions, while the root [azure.yaml](../azure.yaml) pins `azure.ai.agents` `=1.0.0-beta.20` for the hosted agents. [harness_env.py](../scripts/harness_env.py) copies the project values from `.env` into the new azd environment.
+It is a **separate azd project** with its own azd environment, so the harness opt-in and its deploy stay apart from the root project. Both need `azure.ai.agents` 1.0.0-beta.22 or later: the root [azure.yaml](../azure.yaml) requires `>=1.0.0-beta.22` too, so one extension version serves both. [harness_env.py](../scripts/harness_env.py) copies the project values from `.env` into the new azd environment.
 
-> ⚠️ After the upgrade, the root project may refuse the newer extension. Go back with `azd extension install azure.ai.agents --version 1.0.0-beta.20 --force` before chapters 08, 09 and 16.
+> ❓ The hosted agents of chapters 08, 09 and 16 were deployed with beta.20. They were not redeployed with beta.22 yet.
 
 ---
 

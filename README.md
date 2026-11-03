@@ -37,7 +37,7 @@ Infrastructure is **Bicep + azd**, custom code is **Python only**.
 | 3 | [How you call a model](docs/models.md) | with chapter 01 | 01 |
 | 4 | [How conversations work](docs/conversations.md) | with chapter 02 | 02 |
 | 5 | [How Foundry traces and monitors](docs/observability.md) | with chapter 03 | 03 |
-| 6 | [Prompt agents](docs/agents.md) | with chapter 04 | 04 |
+| 6 | [What an agent is, and prompt agents](docs/agents.md) | with chapter 04 | 04 |
 | 7 | [How agents use tools](docs/tools.md) | with chapter 05 | 05, 06 |
 | 8 | [MCP servers and skills](docs/mcp-skills.md) | with chapters 06, 07 | 06, 07 |
 | 9 | [Agents as files](docs/agents-yaml.md) | with chapter 08 | 08 |
