@@ -1,7 +1,8 @@
-"""azd predeploy hook: copy files the hosted agents need into their projects (chapters 07, 09 and 15).
+"""azd predeploy hook: copy files the hosted agents need into their projects (chapters 07, 09, 15 and 17).
 
 - skills/            -> src/jarvis-hosted/skills and src/invoice-workflow/skills (direct skill injection),
-                        src/jarvis-skills/skills (loaded on demand by SkillsProvider)
+                        src/jarvis-skills/skills (loaded on demand by SkillsProvider),
+                        src/jarvis-harness/skills (published as Foundry skills by azd, chapter 17)
 - data/docs/*.pdf    -> src/invoice-workflow/data/docs (the sample invoices the workflow reads)
 """
 import shutil
@@ -21,7 +22,7 @@ def fresh_copy(src: Path, dst: Path, pattern: str | None = None) -> None:
             shutil.copy2(f, dst / f.name)
 
 
-for agent in ("jarvis-hosted", "jarvis-skills", "invoice-workflow"):
+for agent in ("jarvis-hosted", "jarvis-skills", "invoice-workflow", "jarvis-harness"):
     dst = ROOT / "src" / agent / "skills"
     fresh_copy(ROOT / "skills", dst)
     print(f"Copied {sum(1 for _ in dst.rglob('SKILL.md'))} skill(s) to {dst}")

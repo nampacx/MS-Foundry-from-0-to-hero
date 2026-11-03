@@ -43,7 +43,7 @@ flowchart LR
 | **Foundry resource** | the Azure resource (`Microsoft.CognitiveServices/accounts`, kind `AIServices`) that holds models and Foundry Tools | [concepts.md](concepts.md) |
 | **Foundry Tools** | prebuilt services on the same resource: Vision, Document Intelligence, Content Understanding | [foundry-tools.md](foundry-tools.md) |
 | **Guardrail (RAI policy)** | a set of content filters and Prompt Shields that Foundry applies to the input and output of a model or agent. RAI = Responsible AI | [guardrails.md](guardrails.md) |
-| **Harness (GitHub Copilot harness)** 🧪 | an optional managed runtime for prompt agents. It makes skill references work and brings its own tools. Gated preview | [mcp-skills.md](mcp-skills.md) |
+| **Harness (Microsoft Copilot harness)** 🧪 | an optional managed runtime for prompt agents, chosen at creation. It makes skill references work, brings its own tools and a workspace per conversation. Formerly *GitHub Copilot harness*. Public preview | [copilot-harness.md](copilot-harness.md) |
 | **Hosted agent** 🧪 | your own code that Foundry runs in a managed container, called like any agent | [hosted-agents.md](hosted-agents.md) |
 | **Project** | a workspace inside the resource: agents, conversations, datasets, evaluations, connections | [concepts.md](concepts.md) |
 | **Project endpoint** | `https://<resource>.services.ai.azure.com/api/projects/<project>`. The one URL the SDK needs (`STARK_PROJECT_ENDPOINT`) | [concepts.md](concepts.md) |

@@ -76,7 +76,10 @@ flowchart TD
 | agent answers from memory, tool not used | instructions never say *when* to use the tool, or the tool description is vague | write the description for the model, add "use tools for facts" ([tools.md](tools.md)) |
 | agent version 2 appears instead of a replacement | `create_version` with an existing name **adds** a version | expected. Delete old versions with [`delete_agent()`](../notebooks/stark_helpers.py) |
 | agents from earlier runs clutter **Build → Agents** | a notebook was stopped before its clean-up cell | run the clean-up cell, or delete the agent in the portal |
-| skills have no effect on a prompt agent | `skills=[...]` is accepted but needs the Copilot harness | see [mcp-skills.md](mcp-skills.md). The harness is a gated preview |
+| skills have no effect on a prompt agent | `skills=[...]` is accepted but needs the Copilot harness | create a new agent with `harness=MicrosoftCopilotHarness()`. See [copilot-harness.md](copilot-harness.md) |
+| `cannot import name 'MicrosoftCopilotHarness'` | `azure-ai-projects` older than 2.9.0 | `pip install -r requirements.txt` |
+| harness request fails on `previous_response_id`, `store=False` or `temperature` | the harness manages these settings | pass a `conversation`, leave the fields out ([copilot-harness.md](copilot-harness.md)) |
+| `azd deploy` ignores or rejects `harness:` | `azure.ai.agents` older than 1.0.0-beta.22, or the opt-in is missing | `azd extension upgrade microsoft.foundry` and `AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true` in the same shell |
 | `not enabled for this subscription` | a gated preview feature | cannot be fixed in code. Skip that section |
 | MCP call returns an auth error | the project connection `stark-mcp` is missing | `azd deploy` runs [connect_mcp.py](../scripts/connect_mcp.py) in the *postdeploy* hook. Run it again after the function exists |
 | A2A call uses the wrong protocol version | unrequested version defaults to preview **v0.3** | use the v1.0 card or the `A2A-Version: 1.0` header ([capstone.md](capstone.md)) |

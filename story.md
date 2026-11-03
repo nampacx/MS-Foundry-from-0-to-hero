@@ -7,7 +7,7 @@ A cave. A box of scraps. A man with a deadline and one clumsy robot arm.
 Tony Stark did not build J.A.R.V.I.S. in one night. He built it the hard way: a first spark, a memory, a toolbox, a test lab, a pair of eyes, a near disaster, and finally a team that could fight together. **Microsoft Foundry** is the workshop. The notebooks are the build log. You are the engineer holding the soldering iron.
 
 ```
-00 setup → 01 Dummy → 02 memory → 03 instruments → 04–09 J.A.R.V.I.S. → 10–11 F.R.I.D.A.Y. → 12–13 senses → 14 Ultron → 15–16 Vision
+00 setup → 01 Dummy → 02 memory → 03 instruments → 04–09 J.A.R.V.I.S. → 10–11 F.R.I.D.A.Y. → 12–13 senses → 14 Ultron → 15–16 Vision → 17 the harness
 ```
 
 > 🧭 **New to Foundry?** Read [concepts](docs/concepts.md) and [getting started](docs/getting-started.md) first. If something breaks mid-mission, open [troubleshooting](docs/troubleshooting.md).
@@ -20,6 +20,7 @@ Tony Stark did not build J.A.R.V.I.S. in one night. He built it the hard way: a 
 | IV · The Senses | learn to see the world | 12–13 | [Foundry Tools](docs/foundry-tools.md) |
 | V · The Warning | meet the enemy you built | 14 | [guardrails](docs/guardrails.md) |
 | VI · The Avengers | stop working alone | 15–16 | [workflows](docs/workflows.md) · [A2A capstone](docs/capstone.md) |
+| Epilogue · The Suit Assembles Itself | let Foundry run the loop | 17 | [Copilot harness](docs/copilot-harness.md) |
 
 ---
 
@@ -111,6 +112,16 @@ Stop shouting orders at one agent. Draw a plan with Agent Framework **workflows*
 
 ### 16 · `16_vision_a2a_capstone` (preview) – The Avengers assemble
 The finale. `friday-finance` goes public over **A2A v1.0** with an agent card. `jarvis-orchestrator` calls her through the A2A tool and our MCP server. You grant the roles, run an evaluation gate on the whole system and tear it down cleanly. See [A2A capstone](docs/capstone.md).
+
+---
+
+## 🧩 Epilogue · The Suit Assembles Itself
+*Tony wrote every loop by hand. Then he asked: what if the suit ran the loop for him?*
+
+Field manual: [Copilot harness](docs/copilot-harness.md).
+
+### 17 · `17_copilot_harness` (preview) – J.A.R.V.I.S. stops writing his own loop
+The skill that a plain prompt agent ignored in chapter 07 finally works. J.A.R.V.I.S. becomes a prompt agent on the **Microsoft Copilot harness**: Foundry runs the loop, a sandbox and a workspace per conversation. You publish the `stark-escalation` and `invoice-review` skills, switch off the shell (least privilege, as Ultron taught you), and watch him keep notes in his workspace. Then the same agent becomes a file: `src/jarvis-harness/azure.yaml` ships the skills and the agent with one `azd deploy --all`.
 
 ---
 
