@@ -120,16 +120,69 @@ flowchart LR
 
 ## 4 · Skills
 
-A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Markdown). In Foundry it is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get. Four ways to deliver it:
+A skill is a folder in the open [Agent Skills format](https://agentskills.io/specification). `SKILL.md` is required; scripts, reference docs, data files and any other files are optional and travel with it when you upload the whole folder. In Foundry a skill is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get.
+
+### What a skill folder holds
+
+[stark-escalation](../skills/stark-escalation/SKILL.md) is text only. [invoice-review](../skills/invoice-review/SKILL.md) uses two of the three optional folders the format names:
+
+```
+skills/invoice-review/
+├── SKILL.md      front matter, the checklist, the exact command for each check, the verdict rule
+├── scripts/      check_invoice.py, vendor_check.py, iban_check.py, ledger.py, approval_limit.py (+ _common.py)
+└── assets/       vendors.csv, approval-limits.csv, invoice-example.json
+```
+
+| Part | Holds | Used by |
+|---|---|---|
+| `SKILL.md` | front matter (see below), then Markdown instructions. The whole body is loaded when the skill is used, so the format recommends under 500 lines | every delivery mode below |
+| `scripts/` | prewritten commands for what a model gets wrong: arithmetic, checksums, lookups, duplicates. Each prints one JSON line and exits with `0` (pass) or `1` (fail), standard library only | the Copilot harness, with its shell tool. Direct injection and the toolbox pass on only the text. `SkillsProvider` offers `run_skill_script`, but `jarvis-skills` runs only the script of its code-defined skill, not scripts in a skill folder |
+| `assets/` | data the scripts read (vendor master, approval limits) and an example of the input shape | the scripts, and the model through the harness file tools |
+| `references/` | extra docs the agent reads only when it needs them (`REFERENCE.md`, form templates, domain notes), so `SKILL.md` stays short. Not used in this repo | agents that can read files: the harness file tools, `read_skill_resource` in `SkillsProvider` |
+| any other file | the format allows more files and folders; link them from `SKILL.md` with a relative path, one level deep | the same as `references/` |
+
+The front matter in `SKILL.md`:
+
+| Field | Required | Rule |
+|---|---|---|
+| `name` | ✅ | 1–64 characters: lowercase letters, digits and hyphens, no hyphen at the start or end, no `--`. Must match the folder name |
+| `description` | ✅ | up to 1,024 characters: what the skill does **and when to use it**. A model reads only this when it picks a skill |
+| `license` | ❌ | a license name or a bundled license file |
+| `compatibility` | ❌ | up to 500 characters of environment needs (product, packages, network) |
+| `metadata` | ❌ | free string key-value pairs, for example `author` or `version` |
+| `allowed-tools` | ❌ | 🧪 tools the skill may use without asking. Experimental in the format; ❓ not checked in Foundry |
+
+Two ways to upload a version:
+
+| Upload | Call | Carries |
+|---|---|---|
+| text | `skills.create(name=..., inline_content=SkillInlineContent(description=..., instructions=...))` ([chapter 07](../notebooks/07_agent_skills.ipynb)) | `SKILL.md` only |
+| folder 🧪 | a zip with `SKILL.md` at the root, `beta.skills.create_from_files(name, content=CreateSkillVersionFromFilesBody(files=[...]))` ([chapter 15](../notebooks/15_copilot_harness.ipynb), `publish_skill()` in [stark_harness.py](../notebooks/stark_harness.py)), or an `azure.ai.skill` service with `archive:` in [src/jarvis-harness/azure.yaml](../src/jarvis-harness/azure.yaml) | the whole folder |
+
+Writing a skill with scripts:
+
+- **List the exact command per check in `SKILL.md`.** The model only fills in the arguments.
+- **Put rules in the scripts, not in the model.** A live run read the Pym total at 0.44 confidence. `check_invoice.py` now treats an amount that the line items and tax add up to as checked (`confirmed_by_arithmetic`), so the skill no longer sends a clean invoice to a human.
+- **Say what to do without shell.** The same `SKILL.md` is injected as plain text in chapters 16 and 17 and in `jarvis-hosted`. There it tells the agent to do the arithmetic itself and to report the vendor, IBAN and duplicate checks as not run.
+- **Run the scripts on your machine first.** They are plain CLI tools, and chapter 15 section 4 calls them locally before the agent does.
+- **Keep `__pycache__` out of the upload.** `publish_skill()` and [sync_skills.py](../scripts/sync_skills.py) skip it.
+
+What each `invoice-review` script checks, and how the harness runs it: [copilot-harness.md](copilot-harness.md), section 3.
+
+> ⚠️ **A skill holds no agents.** The Agent Skills format covers instructions, code and files only. The Copilot harness has a built-in **Subagents** tool that "delegates work to additional agents", but Microsoft Learn shows no way to define your own subagents for it ❓, and chapter 15 switches it off. To combine your own agents, use a workflow ([chapter 16](../notebooks/16_workflows.ipynb)), the A2A tool ([chapter 17](../notebooks/17_vision_a2a_capstone.ipynb)) or agents as files ([chapter 08](../notebooks/08_agents_from_yaml.ipynb)). Custom agent files such as `.agent.md` belong to GitHub Copilot, not to Foundry skills.
+
+### How an agent gets the skill
+
+Four ways to deliver it:
 
 | Mode | How | Reads |
 |---|---|---|
-| Direct injection | your code adds the `SKILL.md` text to the instructions: `load_skills` in [main.py](../src/jarvis-hosted/main.py), [`skill_body()`](../notebooks/stark_helpers.py) in chapters 15 and 16 | local `skills/` files, or a version downloaded from Foundry |
+| Direct injection | your code adds the `SKILL.md` text to the instructions: `load_skills` in [main.py](../src/jarvis-hosted/main.py), [`skill_body()`](../notebooks/stark_helpers.py) in chapters 16 and 17 | local `skills/` files, or a version downloaded from Foundry |
 | Agent Framework `SkillsProvider` | the model sees only each skill's name and description, and calls `load_skill`, `read_skill_resource` or `run_skill_script` when a skill fits. The hosted agent [jarvis-skills](../src/jarvis-skills/main.py) does this with the file skills from `skills/` plus one code-defined skill. ❓ Tested only against a scripted model, not deployed yet | local `skills/` files (copied into the ZIP on deploy) |
 | Toolbox | attach with `ToolboxSkillReference`; MCP clients read `resources/list` and `resources/read`. The toolbox only **offers** the skill: it is used only when the client loads it and the model follows it | the Foundry version (default or pinned) |
-| Microsoft Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=MicrosoftCopilotHarness()` on a prompt agent ([chapter 07](../notebooks/07_agent_skills.ipynb) section 7, [chapter 17](../notebooks/17_copilot_harness.ipynb)), or `skills:` and `harness.type: microsoft_copilot_preview` in [src/jarvis-harness/azure.yaml](../src/jarvis-harness/azure.yaml). See [copilot-harness.md](copilot-harness.md) | the Foundry version the agent version pins |
+| Microsoft Copilot harness 🧪 | `skills=[SkillReference(...)]` plus `harness=MicrosoftCopilotHarness()` on a prompt agent ([chapter 15](../notebooks/15_copilot_harness.ipynb)), or `skills:` and `harness.type: microsoft_copilot_preview` in [src/jarvis-harness/azure.yaml](../src/jarvis-harness/azure.yaml). The harness also runs the skill's scripts with its shell tool. See [copilot-harness.md](copilot-harness.md) | the Foundry version the agent version pins, uploaded as a folder (zip) |
 
-> ⚠️ **Skills need the harness.** On a default prompt agent, `skills=[...]` is accepted but had no effect in a test: the agent did not follow the skill. The harness was a gated preview when chapter 07 was tested (`not enabled for this subscription`). It is now the **Microsoft Copilot harness**, a public preview in [supported regions](copilot-harness.md). ❓ **The harness path was not run successfully here yet.**
+> ⚠️ **Skills need the harness.** On a default prompt agent, `skills=[...]` is accepted but has no effect: the agent doesn't follow the skill. Only the **Microsoft Copilot harness**, a public preview in [supported regions](copilot-harness.md), uses it. ❓ **The harness path was not run on a live project here yet.**
 
 Direct injection is the simplest, but every run pays for every skill. `SkillsProvider` loads a skill only when the model picks it, so it scales to many skills. It is also the fast loop for writing one: edit `skills/<name>/SKILL.md`, run `python samples/skills_provider.py "<question>"` (the `jarvis-skills` agent as a plain script, no deploy), and check that the right `load_skill` call shows up. Deployed, the same calls appear as `function_call` items in the response output. All three skill tools need approval by default; `jarvis-skills` turns approval off because the skills are this repo's own. It reads `skills/` from disk, so a new Foundry version reaches it only when you copy that version into `skills/`.
 
@@ -147,7 +200,7 @@ Code in [chapter 07](../notebooks/07_agent_skills.ipynb) 🧪.
 
 **Step 4. Deliver it.** Attach it to a toolbox (`ToolboxSkillReference`, MCP clients read it with `resources/read`), or download it into an agent project for direct injection or `SkillsProvider`.
 
-**Step 5. Check it took effect.** Attaching a skill does not prove it is used, so test the behaviour. The `stark-escalation` skill makes an answer start with `Severity:`, and version 2 adds a floor for critical incidents. Chapter 07 section 6 reads the skill from the toolbox and compares an answer with and without it; section 7 runs the same check on a prompt agent.
+**Step 5. Check it took effect.** Attaching a skill does not prove it is used, so test the behaviour. The `stark-escalation` skill makes an answer start with `Severity:`, and version 2 adds a floor for critical incidents. Chapter 07 section 6 reads the skill from the toolbox (step 1) and compares an answer without it (step 2) and with it (step 3). Chapter 15 runs the same check on a prompt agent on the Copilot harness.
 
 ---
 

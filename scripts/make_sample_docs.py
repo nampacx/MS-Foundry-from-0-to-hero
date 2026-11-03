@@ -1,4 +1,4 @@
-"""Generate the sample documents for the Foundry Tools chapters (12, 13, 15): invoice PDFs, a receipt and a whiteboard photo.
+"""Generate the sample documents for the Foundry Tools chapters (12, 13, 15, 16): invoice PDFs, a receipt and a whiteboard photo.
 
 Usage: python scripts/make_sample_docs.py     (needs: pip install pillow reportlab; outputs are committed in data/docs/)
 All names, numbers and addresses are fictional.

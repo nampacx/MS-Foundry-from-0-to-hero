@@ -1,4 +1,4 @@
-"""invoice-workflow: the chapter 15 invoice pipeline as a Foundry *hosted agent* (Microsoft Agent Framework).
+"""invoice-workflow: the chapter 16 invoice pipeline as a Foundry *hosted agent* (Microsoft Agent Framework).
 
 Three agents run in order: extractor -> reviewer -> reporter. The workflow is hosted *natively* with
 `ResponsesHostServer(workflow=..., parse_response=...)`. Hosting `workflow.as_agent()` is deprecated, because a

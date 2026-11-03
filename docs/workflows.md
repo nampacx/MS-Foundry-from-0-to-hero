@@ -1,8 +1,8 @@
-# 🔀 14 · Workflows: from one agent to a plan
+# 🔀 15 · Workflows: from one agent to a plan
 
 > 💡 **TL;DR:** A workflow splits a job into steps and defines who acts next. Foundry's recommended way is **Microsoft Agent Framework**: **sequential**, **concurrent**, **handoff**, **group chat** and **magentic** orchestrations, in code or **declarative YAML**. They run in your process; host one natively with `ResponsesHostServer(workflow=...)` as a hosted agent (chapter 09) to run it in Foundry. The visual workflow designer in the portal is being retired (support ends after 2026-12-01); YAML workflows keep running as hosted agents.
 
-| Pattern | Shape | Builder | Example in chapter 15 |
+| Pattern | Shape | Builder | Example in chapter 16 |
 |---|---|---|---|
 | Sequential | A → B → C | `SequentialBuilder`, or `WorkflowBuilder` with `add_edge` (the notebook shows both, the hosted agent uses the second) | invoice pipeline |
 | Conditional | A → B or C, chosen by your code | `WorkflowBuilder` with `add_switch_case_edge_group` | invoice router with thresholds |
@@ -11,7 +11,7 @@
 | Handoff | agents route to each other, user in the loop | `HandoffBuilder` | workshop support (run with scripted turns) |
 | Declarative | the flow in YAML | `WorkflowFactory` | [invoice-pipeline.yaml](../workflows/invoice-pipeline.yaml) |
 
-Hands-on: [notebooks/15_workflows.ipynb](../notebooks/15_workflows.ipynb).
+Hands-on: [notebooks/16_workflows.ipynb](../notebooks/16_workflows.ipynb).
 
 ---
 
@@ -51,7 +51,7 @@ WorkflowBuilder(start_executor=extractor, output_from=[final_message])
 
 Inside each box a model decides what to **say** and which **tools** to call. It never decides which box runs next, so every request takes the same path, which is cheap, predictable and easy to test. `SequentialBuilder(participants=[a, b, c])` builds the same chain from the list order, and `WorkflowBuilder` with `add_edge` writes it out edge by edge. The notebook shows both, and the hosted project uses the second (section 1 compares the two).
 
-To make the path depend on the data, **your code** puts a condition on the edges. This replaces the condition nodes of the old portal designer: a model produces the output, and a plain Python function picks the branch. Chapter 15 section 1 routes an invoice by its total:
+To make the path depend on the data, **your code** puts a condition on the edges. This replaces the condition nodes of the old portal designer: a model produces the output, and a plain Python function picks the branch. Chapter 16 section 1 routes an invoice by its total:
 
 ```mermaid
 flowchart LR
@@ -86,13 +86,13 @@ There are **two ways to build the same chain**. Both give a fixed order, and in 
 | `SequentialBuilder(participants=[a, b, c])` | the **list order** is the run order (a shortcut) | notebook section 1, first runs |
 | `WorkflowBuilder(...).add_edge(a, b).add_edge(b, c)` | every **edge written out** (the order is hard-wired); the general builder that also does conditions, fan-out and custom code steps, and lets you set what each step sees (`AgentExecutor(..., context_mode=...)`) | notebook section 1 ("wired by hand"), and the hosted [invoice-workflow](../src/invoice-workflow/main.py) |
 
-Each agent consumes the previous agent's conversation (or only its response with `chain_only_agent_responses=True`). `intermediate_output_from=[...]` surfaces earlier steps. The reviewer gets the **invoice-review skill** as instructions, and the decision comes from a limit **tool**, not from the model's guess.
+Each agent consumes the previous agent's conversation (or only its response with `chain_only_agent_responses=True`). `intermediate_output_from=[...]` surfaces earlier steps. The reviewer gets the **invoice-review skill** as instructions, and the limit check comes from a **tool**, not from the model's guess.
 
 > ℹ️ A custom last step that returns plain text, needed for hosting (section 6), can be added to either: a `SequentialBuilder` chain whose last participant is such a step also hosted fine in a local test. The hosted project uses `WorkflowBuilder` to show the explicit wiring, not because `SequentialBuilder` cannot do it.
 
 ## 2 · Concurrent
 
-All participants get the **same input at the same time**, and an **aggregator** merges what they return. In [chapter 15](../notebooks/15_workflows.ipynb) three specialists (`suits`, `workshop`, `finance`) check the workshop in parallel, each through the `stark-mcp` tools, and J.A.R.V.I.S. writes the morning briefing.
+All participants get the **same input at the same time**, and an **aggregator** merges what they return. In [chapter 16](../notebooks/16_workflows.ipynb) three specialists (`suits`, `workshop`, `finance`) check the workshop in parallel, each through the `stark-mcp` tools, and J.A.R.V.I.S. writes the morning briefing.
 
 ```mermaid
 flowchart LR
@@ -120,7 +120,7 @@ All agents see one shared conversation. A `selection_func` (or an `orchestrator_
 
 ## 4 · Handoff
 
-Agents declare who they may hand over to (`add_handoff`). When an agent answers without handing off, control returns to the user, so a handoff run is interactive: the workflow emits a `request_info` event (`HandoffAgentUserRequest`) and waits for `create_response(text)` or `terminate()`. [Chapter 15](../notebooks/15_workflows.ipynb) plays a list of user messages through it. Use autonomous mode only with turn limits.
+Agents declare who they may hand over to (`add_handoff`). When an agent answers without handing off, control returns to the user, so a handoff run is interactive: the workflow emits a `request_info` event (`HandoffAgentUserRequest`) and waits for `create_response(text)` or `terminate()`. [Chapter 16](../notebooks/16_workflows.ipynb) plays a list of user messages through it. Use autonomous mode only with turn limits.
 
 | Setting | Why |
 |---|---|
@@ -132,11 +132,11 @@ Agents declare who they may hand over to (`add_handoff`). When an agent answers 
 
 `kind: Workflow`, a trigger, and `InvokeAzureAgent` actions that name agents. Python registers the agents (`factory.register_agent`), the YAML only holds the flow, so reviews and diffs are easy.
 
-> ⚠️ **Needs .NET.** Expressions such as `=System.ConversationId` are evaluated by PowerFx, which runs on .NET through `pythonnet`. The error `PowerFx is not available (dotnet runtime not installed)` also appears when `dotnet` **is** installed but its CPU architecture differs from Python's. Seen here: an **x64 Python on Windows-on-ARM** cannot load the **ARM64** .NET in `C:\Program Files\dotnet` (`error 0xc1`). Setting `DOTNET_ROOT` to the x64 install (`C:\Program Files\dotnet\x64`) fixes it. [`fix_dotnet_for_powerfx()`](../notebooks/stark_helpers.py) does that, and chapter 15 calls it before anything else. Restart the kernel after changing the environment.
+> ⚠️ **Needs .NET.** Expressions such as `=System.ConversationId` are evaluated by PowerFx, which runs on .NET through `pythonnet`. The error `PowerFx is not available (dotnet runtime not installed)` also appears when `dotnet` **is** installed but its CPU architecture differs from Python's. Seen here: an **x64 Python on Windows-on-ARM** cannot load the **ARM64** .NET in `C:\Program Files\dotnet` (`error 0xc1`). Setting `DOTNET_ROOT` to the x64 install (`C:\Program Files\dotnet\x64`) fixes it. [`fix_dotnet_for_powerfx()`](../notebooks/stark_helpers.py) does that, and chapter 16 calls it before anything else. Restart the kernel after changing the environment.
 
 ## 6 · Running in Foundry
 
-Foundry's own workflow designer and in-portal workflow execution end on **2026-12-01**, and its YAML (a different dialect from Agent Framework's) is rejected as an Agent Framework workflow. The replacement is to host an Agent Framework workflow as a **hosted agent**. Two projects do that for chapter 15: [src/invoice-workflow](../src/invoice-workflow/main.py) (sequential) and [src/morning-briefing](../src/morning-briefing/main.py) (concurrent).
+Foundry's own workflow designer and in-portal workflow execution end on **2026-12-01**, and its YAML (a different dialect from Agent Framework's) is rejected as an Agent Framework workflow. The replacement is to host an Agent Framework workflow as a **hosted agent**. Two projects do that for chapter 16: [src/invoice-workflow](../src/invoice-workflow/main.py) (sequential) and [src/morning-briefing](../src/morning-briefing/main.py) (concurrent).
 
 | Detail | Why |
 |---|---|
@@ -154,7 +154,7 @@ Both deployed agents were called through their Responses endpoints (about 30–4
 
 ## 🪜 Walkthrough: from one agent to a pipeline
 
-Code in [chapter 15](../notebooks/15_workflows.ipynb).
+Code in [chapter 16](../notebooks/16_workflows.ipynb).
 
 **Step 1. Start with the job on paper.** "Read invoice, review against a limit, write a report" is three roles, so three agents.
 

@@ -1,4 +1,4 @@
-# Declarative Agent Framework workflow (chapter 15): the same invoice pipeline as the Python version, as YAML.
+# Declarative Agent Framework workflow (chapter 16): the same invoice pipeline as the Python version, as YAML.
 # Agents are registered by name in Python (WorkflowFactory.register_agent); the YAML only describes the flow.
 name: invoice-pipeline
 description: Extract, review and report on a supplier invoice

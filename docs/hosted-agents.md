@@ -4,7 +4,7 @@
 
 | Way | What you ship | Docker? | Best for | In this repo |
 |---|---|---|---|---|
-| 1. `azd` + **code** mode | a ZIP of your source | no | most cases, fastest loop | yes (chapter 09, 15) |
+| 1. `azd` + **code** mode | a ZIP of your source | no | most cases, fastest loop | yes (chapter 09, 16) |
 | 2. `azd` + **container** mode | a container image in ACR | yes | own Dockerfile, system packages | no |
 | 3. **SDK** or **REST** | ZIP or image, sent by your own code | optional | deploy from an app or custom tooling | no |
 | 4. **CI/CD** (`azd pipeline config`) | the same as 1 or 2, run by a pipeline | no | repeatable releases | no |
@@ -17,7 +17,7 @@
 | Logic | the model + tools | anything your code does (Agent Framework, LangGraph, your own) |
 | Runs | inside Foundry's agent runtime | in a managed container with its own Entra identity |
 | Called with | `agent_reference` in a Responses call | the same |
-| Chapter | [04](../notebooks/04_jarvis_prompt_agent.ipynb)–[08](../notebooks/08_agents_from_yaml.ipynb) | [09](../notebooks/09_hosted_agent.ipynb), [15](../notebooks/15_workflows.ipynb) section 6 |
+| Chapter | [04](../notebooks/04_jarvis_prompt_agent.ipynb)–[08](../notebooks/08_agents_from_yaml.ipynb) | [09](../notebooks/09_hosted_agent.ipynb), [16](../notebooks/16_workflows.ipynb) section 6 |
 
 > ✅ **Deployed live:** `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project, with the `azure.ai.agent` services in [azure.yaml](../azure.yaml) as they are. `jarvis-hosted` and `jarvis-skills` use the same format; `jarvis-skills` was not deployed yet. If a newer `azd` rejects a field, run `azd ai agent init --deploy-mode code` in a scratch folder and compare.
 
@@ -296,8 +296,15 @@ Things that surprise people:
 | A platform app deploys agents for users | SDK or REST |
 | Releases should be automatic and reviewed | CI/CD on top of either `azd` mode |
 | Agent definition must live in IaC | Terraform + container image |
+| Skills, files and scripts, but no loop of your own | not a hosted agent: a prompt agent on the [Copilot harness](copilot-harness.md) 🧪 |
 
 > 💡 **Dependencies:** start with `remote_build`. Switch to `bundled` (prebuilt Linux packages in `packages/`) if a version stays in `creating` for more than ten minutes, or if a dependency is private. Wrong layouts are the usual failure: the ZIP must be flat (no wrapper folder), with extracted modules and Linux binaries only.
+
+---
+
+## 🔭 What if (not implemented)
+
+- **Long-running resilience** ✅ generally available since 2026-10-28. Foundry detects an interruption and restarts the work with its original input. Your code saves progress and intermediate results, so the agent resumes from the last checkpoint instead of starting over. Conversation history alone isn't enough to restore work in progress. If the agent changes another system (creates a report, sends a mail), check before you act again, so a restart doesn't duplicate it. None of this repo's hosted agents saves checkpoints. Source: [the announcement](https://devblogs.microsoft.com/foundry/microsoft-copilot-harness-in-foundry/).
 
 ---
 

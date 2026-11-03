@@ -43,7 +43,7 @@ flowchart LR
 | **Foundry resource** | the Azure resource (`Microsoft.CognitiveServices/accounts`, kind `AIServices`) that holds models and Foundry Tools | [concepts.md](concepts.md) |
 | **Foundry Tools** | prebuilt services on the same resource: Vision, Document Intelligence, Content Understanding | [foundry-tools.md](foundry-tools.md) |
 | **Guardrail (RAI policy)** | a set of content filters and Prompt Shields that Foundry applies to the input and output of a model or agent. RAI = Responsible AI | [guardrails.md](guardrails.md) |
-| **Harness (Microsoft Copilot harness)** 🧪 | an optional managed runtime for prompt agents, chosen at creation. It makes skill references work, brings its own tools and a workspace per conversation. Formerly *GitHub Copilot harness*. Public preview | [copilot-harness.md](copilot-harness.md) |
+| **Harness (Microsoft Copilot harness)** 🧪 | an optional managed runtime for prompt agents, chosen at creation. It makes skill references work, runs skill scripts in a sandbox, and brings its own tools and a workspace per conversation. Public preview | [copilot-harness.md](copilot-harness.md) |
 | **Hosted agent** 🧪 | your own code that Foundry runs in a managed container, called like any agent | [hosted-agents.md](hosted-agents.md) |
 | **Project** | a workspace inside the resource: agents, conversations, datasets, evaluations, connections | [concepts.md](concepts.md) |
 | **Project endpoint** | `https://<resource>.services.ai.azure.com/api/projects/<project>`. The one URL the SDK needs (`STARK_PROJECT_ENDPOINT`) | [concepts.md](concepts.md) |
@@ -75,6 +75,6 @@ flowchart LR
 | **OAuth identity passthrough** | each user signs in once through a consent link; Foundry then calls an MCP server or A2A agent with that user's token | [mcp-skills.md](mcp-skills.md) |
 | **OpenTelemetry (OTel)** | the open standard for traces and metrics. Foundry and the SDK emit OTel spans | [observability.md](observability.md) |
 | **OTLP** | the OpenTelemetry wire protocol. An optional local exporter can use it instead of Application Insights | [observability.md](observability.md) |
-| **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 15 section 5 needs a .NET runtime | [workflows.md](workflows.md) |
+| **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 16 section 5 needs a .NET runtime | [workflows.md](workflows.md) |
 | **Prompt injection** | text that tries to give the model new instructions. *Indirect* when it hides in a document or tool output | [guardrails.md](guardrails.md) |
 | **Token** | the unit a model reads and writes, about ¾ of an English word. You pay per token | [concepts.md](concepts.md) |

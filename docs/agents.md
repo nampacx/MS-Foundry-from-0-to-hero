@@ -1,19 +1,75 @@
-# 🤖 6 · Prompt agents: configuration that Foundry runs
+# 🤖 6 · What an agent is, and how a prompt agent runs
 
-> 💡 **TL;DR:** A Foundry **agent** has a name and numbered **versions**. A **prompt agent** is configuration (model, instructions, tools) that Foundry stores and runs for you. You call it with a Responses call plus an `agent_reference`, usually inside a **conversation**. Change its behaviour by publishing a new version, not by changing the caller.
+> 💡 **TL;DR:** A model only answers. An **agent** is a model plus everything it needs to **act** for you: a **persona and rules** (instructions), **capabilities** (tools, MCP servers, skills), **limits** (a guardrail), and an **identity** to act under. Foundry saves that as a named, **versioned definition**. Memory is not part of it: the caller brings a **conversation**. A **prompt agent** is such a definition that Foundry runs for you; you call it with a Responses call plus an `agent_reference`.
 
-| Part | What it is | In chapter 04 |
-|---|---|---|
-| **name** | the stable identity callers use | `jarvis-nb04` |
-| **version** | an immutable snapshot; every `create_version` adds one | 1, 2, 3 |
-| **definition** | `PromptAgentDefinition`: model + instructions + tools | `model("chat")` + "You are J.A.R.V.I.S. ..." |
-| **conversation** | the memory, owned by the caller ([conversations.md](conversations.md)) | `oai.conversations.create()` |
+| The agent decides | The caller decides |
+|---|---|
+| who it is and how it talks (instructions) | what to ask (input) |
+| what it can do (tools, MCP, skills) | which conversation, so what it remembers |
+| what it must never do (guardrail) | which version, if not the latest |
 
 Hands-on: [04](../notebooks/04_jarvis_prompt_agent.ipynb), then tools in [05](../notebooks/05_tools_function_and_builtin.ipynb) ([tools.md](tools.md)). Your own code as an agent: [hosted-agents.md](hosted-agents.md).
 
 ---
 
 ## 🗺️ The big picture
+
+```mermaid
+flowchart LR
+  I[Instructions<br/>persona + rules] --> A
+  M[Model<br/>the reasoning] --> A
+  T[Tools and MCP servers<br/>what it can do] --> A
+  S[Skills<br/>procedures] --> A
+  G[Guardrail<br/>what it must not do] --> A
+  A[Agent version<br/>name + number] --> R[Runtime<br/>default · harness · hosted]
+  C[Conversation<br/>the caller's memory] --> R
+  ID[Agent identity<br/>Entra] --> R
+```
+
+---
+
+## 1 · What an agent is
+
+A model answers one request and forgets ([concepts.md](concepts.md#2--model-response-agent)). It knows only what it was trained on and can only produce text. An agent wraps the model with the parts that let it act for you:
+
+| Part | Answers | In the definition | In this repo |
+|---|---|---|---|
+| **Model** | how well it reasons, how fast, at what cost | `model`, a deployment name | `model("chat")`, chapter 04 |
+| **Instructions** | who it is, how it talks, which rules it follows | `instructions`, optionally a template with `{{...}}` placeholders | J.A.R.V.I.S., chapter 04 |
+| **Tools** | what it can do or look up beyond its training | `tools`: `FunctionTool`, `CodeInterpreterTool`, `FileSearchTool`, `WebSearchPreviewTool` | chapter 05, [tools.md](tools.md) |
+| **MCP servers** | which tools it takes from a server someone else runs | `MCPTool` in `tools`, secrets in a project connection | chapter 06, [mcp-skills.md](mcp-skills.md) |
+| **Other agents** | which agents it can call | `A2ATool` in `tools` | chapter 17, [capstone.md](capstone.md) |
+| **Skills** | which procedure it follows for a kind of task | `skills` with `SkillReference` (only on the Copilot harness) | chapters 07 and 15, [mcp-skills.md](mcp-skills.md) |
+| **Guardrail** | what it must never do or say | `rai_config` with a guardrail policy | chapter 14, [guardrails.md](guardrails.md) |
+| **Name and version** | how callers find it, and how it changes | `agent_name`; every `create_version` adds a version | section 3 |
+
+Three things belong to an agent but sit **outside** its definition:
+
+| Part | Answers | Where it lives |
+|---|---|---|
+| **Memory** | what was said before | a **conversation** the caller creates and passes in. One agent serves many conversations ([conversations.md](conversations.md)) |
+| **Identity** | as whom it calls other services | `instance_identity`, an Entra identity Foundry creates for the agent. Chapter 17 grants it a role so the orchestrator may call F.R.I.D.A.Y. ([capstone.md](capstone.md)) |
+| **Runtime** | who runs the loop of model calls and tool calls | Foundry for a default prompt agent, the managed Copilot harness 🧪 ([copilot-harness.md](copilot-harness.md)), or your own code in a hosted agent ([hosted-agents.md](hosted-agents.md)) |
+
+### The persona is part of the instructions
+
+The **persona** is who the agent is and how it talks: a role, a tone, a form of address. Chapter 04 gives J.A.R.V.I.S. one line: "You are J.A.R.V.I.S., Tony Stark's assistant. Be concise and dry. Address the user as 'sir'." The rest of the instructions are **rules**: what to do, what to refuse, which format to answer in.
+
+- **A new persona is a new version.** Chapter 04's version 2 answers only in rhyming couplets, and every caller gets it without a code change.
+- **One persona, many people.** Structured inputs fill `{{person}}` and `{{title}}` per request, so one version greets everyone by name (section 4).
+- **A persona does not add abilities.** What an agent can do comes from its tools. Without tools it can only talk, however capable its persona sounds.
+- **A rule in the instructions is not a security boundary.** Chapter 14 shows that hardened instructions only lower the odds of an injected email moving money. The approval gate and least privilege (no transfer tool at all) stop it. Put "must never" into the tools you give and the guardrail, not only into the persona.
+
+### What an agent is not
+
+- **Not a running process.** A prompt agent is a stored definition; Foundry loads it when a request arrives. A hosted agent is the exception: there your container runs.
+- **Not its memory.** The conversation belongs to the caller. Delete it and the agent is unchanged.
+- **Not a trained model.** New instructions or tools make a new version in seconds. Nothing is retrained.
+- **Not able to do what its tools don't allow.** An agent can only call the tools in its definition, and only with the rights of its identity and connections.
+
+---
+
+## 2 · How a call runs
 
 ```mermaid
 sequenceDiagram
@@ -30,11 +86,11 @@ sequenceDiagram
 
 ---
 
-## 1 · Versions
+## 3 · Versions
 
 `create_version` with an existing name adds a version; old ones stay. A call without a version uses the latest. Treat a version like a release: review the definition, deploy, evaluate (chapter 10), then keep or delete.
 
-## 2 · Structured inputs and `extra_body`
+## 4 · Structured inputs and `extra_body`
 
 > 💡 One agent, many personalised behaviours: the **version** holds a template, each **request** brings the values. No new version per user.
 
@@ -62,7 +118,7 @@ flowchart LR
  "structured_inputs": {"person": "Pepper", "title": "CEO of Stark Industries"}}
 ```
 
-[`agent_ref()`](../notebooks/stark_helpers.py) builds the `agent_reference` part, and `{**agent_ref(AGENT), "structured_inputs": {...}}` merges both into one `extra_body`.
+[`agent_ref()`](../notebooks/stark_helpers.py) builds the `agent_reference` part, and `{**agent_ref(AGENT_NAME), "structured_inputs": {...}}` merges both into one `extra_body`.
 
 ### What Foundry checks
 
@@ -80,7 +136,7 @@ Checked against a real project (all answer `400 invalid_payload`):
 
 ---
 
-## 3 · Tools
+## 5 · Tools
 
 Tools are part of the definition, so they are versioned together with the instructions: `PromptAgentDefinition(..., tools=[...])`. Who runs each tool, the function-call loop and MCP approvals are all in [tools.md](tools.md).
 
