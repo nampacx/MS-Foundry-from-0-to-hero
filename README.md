@@ -2,7 +2,7 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
-> 🚧 **Version 0.1: a first release that still needs improvement.** Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example the Microsoft Copilot harness and web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
+> 🚧 **Version 0.2: a young tutorial that still needs improvement.** New since 0.1: chapter 15 on the Microsoft Copilot harness (tested on a live project), skills that run scripts, and a quality pass over every notebook (one experiment per cell, visible prompts, whole answers). Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
 
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
 
@@ -13,8 +13,8 @@ What you learn, chapter by chapter:
 - **Models and conversations**: Responses API, streaming, structured output, stored responses and conversations
 - **Monitoring**: OpenTelemetry traces, KQL, the Foundry portal
 - **Agents**: from code, from YAML, hosted agents, with built-in tools
-- **MCP, A2A and skills** attached to agents
-- **The Microsoft Copilot harness** 🧪: prompt agents with skills and a managed loop, deployed with `azd`
+- **MCP, A2A and skills** attached to agents. Skills four ways: injected into the instructions by your code, loaded on demand with `SkillsProvider`, served by a toolbox, or referenced by a prompt agent on the harness
+- **The Microsoft Copilot harness** 🧪: prompt agents with skills that run their own scripts in a sandbox, a workspace per conversation and a managed loop, deployed with `azd`
 - **Datasets and evaluations**: batch, conversation-level and on live traces
 - **Beyond LLMs**: OCR, Document Intelligence and Content Understanding through the Foundry resource
 - **Workflows** and multi-agent patterns
@@ -113,16 +113,16 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 06 | [MCP tools (public + our own server)](notebooks/06_mcp_tools.ipynb) | ✅ |
 | 07 | [Skills 🧪](notebooks/07_agent_skills.ipynb) | ✅ |
 | 08 | [Agents from YAML](notebooks/08_agents_from_yaml.ipynb) | ✅ |
-| 09 | [Hosted agent](notebooks/09_hosted_agent.ipynb) | ✅ |
+| 09 | [Hosted agent: skills in the instructions (`jarvis-hosted`) and on demand (`jarvis-skills`)](notebooks/09_hosted_agent.ipynb) | ✅ |
 | 10 | [Datasets and evaluations](notebooks/10_datasets_and_evals.ipynb) | ✅ |
 | 11 | [Conversation and trace evaluations 🧪](notebooks/11_conversation_and_trace_evals.ipynb) | ✅ |
 | 12 | [OCR and Read (Vision, Document Intelligence)](notebooks/12_senses_ocr_read.ipynb) | ✅ |
 | 13 | [Invoices, receipts and Content Understanding](notebooks/13_senses_document_intelligence.ipynb) | ✅ |
 | 14 | [Ultron: guardrails and red teaming 🧪](notebooks/14_ultron_guardrails_redteam.ipynb) | ✅ |
-| 15 | [The Microsoft Copilot harness 🧪](notebooks/15_copilot_harness.ipynb) | ❓ not run yet |
+| 15 | [The Microsoft Copilot harness: skills with scripts 🧪](notebooks/15_copilot_harness.ipynb) | ✅ |
 | 16 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/16_workflows.ipynb) | ✅ |
 | 17 | [Vision: A2A capstone 🧪](notebooks/17_vision_a2a_capstone.ipynb) | ✅ |
 
-> ⚠️ **Not verified against a live subscription:** preview features (skills, toolboxes, trace evaluation, guardrail APIs) are the least certain parts. Hosted agents work: `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. `jarvis-hosted` uses the same `azure.yaml` format.
+> ⚠️ **Not verified against a live subscription:** preview features (skills, toolboxes, trace evaluation, guardrail APIs) are the least certain parts. Hosted agents work: `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. `jarvis-hosted` uses the same `azure.yaml` format. Chapter 15, the Copilot harness with skill scripts, was tested on a live project.
 >
 > ⚠️ **General:** the notebooks and Bicep were written against the current Microsoft Learn documentation and validated statically (Bicep build, notebook syntax). Run them in order and open an issue if an SDK call has drifted.
