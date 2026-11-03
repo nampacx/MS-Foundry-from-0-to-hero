@@ -120,7 +120,45 @@ flowchart LR
 
 ## 4 · Skills
 
-A skill is a folder with `SKILL.md` (front matter `name`, `description`, then Markdown). In Foundry it is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get. Four ways to deliver it:
+A skill is a folder. `SKILL.md` is required; scripts and data files are optional and travel with it when you upload the whole folder. In Foundry a skill is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get.
+
+### What a skill folder holds
+
+[stark-escalation](../skills/stark-escalation/SKILL.md) is text only. [invoice-review](../skills/invoice-review/SKILL.md) uses every part:
+
+```
+skills/invoice-review/
+├── SKILL.md      front matter, the checklist, the exact command for each check, the verdict rule
+├── scripts/      check_invoice.py, vendor_check.py, iban_check.py, ledger.py, approval_limit.py (+ _common.py)
+└── assets/       vendors.csv, approval-limits.csv, invoice-example.json
+```
+
+| Part | Holds | Used by |
+|---|---|---|
+| `SKILL.md` | front matter `name` (lowercase letters, digits, hyphens) and `description` (what a model sees when it picks a skill), then Markdown instructions | every delivery mode below |
+| `scripts/` | prewritten commands for what a model gets wrong: arithmetic, checksums, lookups, duplicates. Each prints one JSON line and exits with `0` (pass) or `1` (fail), standard library only | the Copilot harness, with its shell tool. Direct injection and the toolbox pass on only the text. `SkillsProvider` offers `run_skill_script`, but `jarvis-skills` runs only the script of its code-defined skill, not scripts in a skill folder |
+| `assets/` | data the scripts read (vendor master, approval limits) and an example of the input shape | the scripts, and the model through the harness file tools |
+
+Two ways to upload a version:
+
+| Upload | Call | Carries |
+|---|---|---|
+| text | `skills.create(name=..., inline_content=SkillInlineContent(description=..., instructions=...))` ([chapter 07](../notebooks/07_agent_skills.ipynb)) | `SKILL.md` only |
+| folder 🧪 | a zip with `SKILL.md` at the root, `beta.skills.create_from_files(name, content=CreateSkillVersionFromFilesBody(files=[...]))` ([chapter 15](../notebooks/15_copilot_harness.ipynb), `publish_skill()` in [stark_harness.py](../notebooks/stark_harness.py)), or an `azure.ai.skill` service with `archive:` in [src/jarvis-harness/azure.yaml](../src/jarvis-harness/azure.yaml) | the whole folder |
+
+Writing a skill with scripts:
+
+- **List the exact command per check in `SKILL.md`.** The model only fills in the arguments.
+- **Put rules in the scripts, not in the model.** A live run read the Pym total at 0.44 confidence. `check_invoice.py` now treats an amount that the line items and tax add up to as checked (`confirmed_by_arithmetic`), so the skill no longer sends a clean invoice to a human.
+- **Say what to do without shell.** The same `SKILL.md` is injected as plain text in chapters 16 and 17 and in `jarvis-hosted`. There it tells the agent to do the arithmetic itself and to report the vendor, IBAN and duplicate checks as not run.
+- **Run the scripts on your machine first.** They are plain CLI tools, and chapter 15 section 4 calls them locally before the agent does.
+- **Keep `__pycache__` out of the upload.** `publish_skill()` and [sync_skills.py](../scripts/sync_skills.py) skip it.
+
+What each `invoice-review` script checks, and how the harness runs it: [copilot-harness.md](copilot-harness.md), section 3.
+
+### How an agent gets the skill
+
+Four ways to deliver it:
 
 | Mode | How | Reads |
 |---|---|---|

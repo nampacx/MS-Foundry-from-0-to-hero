@@ -21,6 +21,7 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 - [troubleshooting.md](docs/troubleshooting.md) section 3: what to do when a hosted agent returns `500 internal server error`: read its container log, and restore a deleted Entra agent identity.
 
 ### Changed
+- [mcp-skills.md](docs/mcp-skills.md) section 4: what a skill folder holds (`SKILL.md`, `scripts/`, `assets/`, with `invoice-review` as the example), the two ways to upload a version (text with `inline_content`, or the zipped folder with `create_from_files` / azd `archive:`), which delivery mode runs the scripts, and how to write a skill with scripts.
 - All chapters follow the notebook quality rules in `AGENTS.md`: names shared between cells say what they hold (`project_openai`, `CHAT_MODEL`, `suit_response`, ...), prompts sit in named variables, and every experiment has a **Goal:** and an **Expected:** that a live run can check. Expected outcomes are not checked on a live project yet.
 - Chapter 00: numbered sections that say what you should see (identity, the deployments from `stark.json`, `Workshop online`), plus Clean up and Recap.
 - Chapters 01–03: every call has a named prompt and an expected outcome; chapter 02 sends the same prompts in sections 1 and 2 so only `previous_response_id` changes, and no longer cuts conversation items; chapter 03 names its KQL queries and gives section 3 its own cell.
