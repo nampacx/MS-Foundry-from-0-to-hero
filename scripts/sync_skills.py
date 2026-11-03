@@ -15,7 +15,7 @@ def fresh_copy(src: Path, dst: Path, pattern: str | None = None) -> None:
     if dst.exists():
         shutil.rmtree(dst)
     if pattern is None:
-        shutil.copytree(src, dst)
+        shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__"))   # skill scripts: no bytecode in the archive
     else:
         dst.mkdir(parents=True)
         for f in src.glob(pattern):

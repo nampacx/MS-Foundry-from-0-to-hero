@@ -77,7 +77,8 @@ flowchart TD
 | agent version 2 appears instead of a replacement | `create_version` with an existing name **adds** a version | expected. Delete old versions with [`delete_agent()`](../notebooks/stark_helpers.py) |
 | agents from earlier runs clutter **Build → Agents** | a notebook was stopped before its clean-up cell | run the clean-up cell, or delete the agent in the portal |
 | skills have no effect on a prompt agent | `skills=[...]` is accepted but needs the Copilot harness | create a new agent with `harness=MicrosoftCopilotHarness()`. See [copilot-harness.md](copilot-harness.md) |
-| `cannot import name 'MicrosoftCopilotHarness'` | `azure-ai-projects` older than 2.9.0 | `pip install -r requirements.txt` |
+| `cannot import name 'MicrosoftCopilotHarness'` | `azure-ai-projects` older than 2.9.0, often a `.venv` created before chapter 17 | `pip install -U "azure-ai-projects>=2.9.0"`, then restart the notebook kernel |
+| pip warns `agent-framework-foundry ... requires azure-ai-projects<2.8.0` | `agent-framework-foundry` 1.10.2 and later pin the old SDK | expected. A fresh `pip install -r requirements.txt` picks 1.10.1, which allows both. The notebooks only use its `FoundryChatClient` |
 | harness request fails on `previous_response_id`, `store=False` or `temperature` | the harness manages these settings | pass a `conversation`, leave the fields out ([copilot-harness.md](copilot-harness.md)) |
 | `azd deploy` ignores or rejects `harness:` | `azure.ai.agents` older than 1.0.0-beta.22, or the opt-in is missing | `azd extension upgrade microsoft.foundry` and `AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true` in the same shell |
 | `not enabled for this subscription` | a gated preview feature | cannot be fixed in code. Skip that section |

@@ -121,7 +121,7 @@ The finale. `friday-finance` goes public over **A2A v1.0** with an agent card. `
 Field manual: [Copilot harness](docs/copilot-harness.md).
 
 ### 17 · `17_copilot_harness` (preview) – J.A.R.V.I.S. stops writing his own loop
-The skill that a plain prompt agent ignored in chapter 07 finally works. J.A.R.V.I.S. becomes a prompt agent on the **Microsoft Copilot harness**: Foundry runs the loop, a sandbox and a workspace per conversation. You publish the `stark-escalation` and `invoice-review` skills, switch off the shell (least privilege, as Ultron taught you), and watch him keep notes in his workspace. Then the same agent becomes a file: `src/jarvis-harness/azure.yaml` ships the skills and the agent with one `azd deploy --all`.
+The skill that a plain prompt agent ignored in chapter 07 finally works. J.A.R.V.I.S. becomes a prompt agent on the **Microsoft Copilot harness**: Foundry runs the loop, a sandbox and a workspace per conversation. You publish the `stark-escalation` and `invoice-review` skills as packages, scripts included. J.A.R.V.I.S. runs those prewritten checks in his sandbox: he catches a blocked Oscorp invoice, a "we changed banks" IBAN and a typo in a total, and his workspace remembers which invoices he has already seen. Subagents stay off (least privilege, as Ultron taught you). Then the same agent becomes a file: `src/jarvis-harness/azure.yaml` ships the skills and the agent with one `azd deploy --all`.
 
 ---
 

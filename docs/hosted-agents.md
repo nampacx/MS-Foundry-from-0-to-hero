@@ -296,8 +296,15 @@ Things that surprise people:
 | A platform app deploys agents for users | SDK or REST |
 | Releases should be automatic and reviewed | CI/CD on top of either `azd` mode |
 | Agent definition must live in IaC | Terraform + container image |
+| Skills, files and scripts, but no loop of your own | not a hosted agent: a prompt agent on the [Copilot harness](copilot-harness.md) 🧪 |
 
 > 💡 **Dependencies:** start with `remote_build`. Switch to `bundled` (prebuilt Linux packages in `packages/`) if a version stays in `creating` for more than ten minutes, or if a dependency is private. Wrong layouts are the usual failure: the ZIP must be flat (no wrapper folder), with extracted modules and Linux binaries only.
+
+---
+
+## 🔭 What if (not implemented)
+
+- **Long-running resilience** ✅ generally available since 2026-10-28. Foundry detects an interruption and restarts the work with its original input. Your code saves progress and intermediate results, so the agent resumes from the last checkpoint instead of starting over. Conversation history alone isn't enough to restore work in progress. If the agent changes another system (creates a report, sends a mail), check before you act again, so a restart doesn't duplicate it. None of this repo's hosted agents saves checkpoints. Source: [the announcement](https://devblogs.microsoft.com/foundry/microsoft-copilot-harness-in-foundry/).
 
 ---
 
