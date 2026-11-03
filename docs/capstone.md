@@ -13,7 +13,7 @@
 
 Hands-on: [notebooks/17_vision_a2a_capstone.ipynb](../notebooks/17_vision_a2a_capstone.ipynb).
 
-> 🧪 **Preview-adjacent.** Foundry supports A2A **v1.0** (GA) and **v0.3** (preview). The Python surface (`update_details`, `A2ATool`) needs `azure-ai-projects>=2.5.0`, and the connection is created through a preview ARM API version (`2025-04-01-preview`). Not verified against a live subscription.
+> 🧪 **Preview-adjacent.** Foundry supports A2A **v1.0** (GA) and **v0.3** (preview). The Python surface (`update_details`, `A2ATool`) needs `azure-ai-projects>=2.5.0`, and the connection is created through a preview ARM API version (`2025-04-01-preview`). Chapter 17 ran on a live project.
 
 ---
 

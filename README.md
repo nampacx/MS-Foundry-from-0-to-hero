@@ -2,7 +2,7 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
-> 🚧 **Version 0.2: a young tutorial that still needs improvement.** New since 0.1: chapter 15 on the Microsoft Copilot harness (tested on a live project), skills that run scripts, and a quality pass over every notebook (one experiment per cell, visible prompts, whole answers). Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Parts are marked 🧪 (preview) or ❓ (not checked), and some paths were not verified on every subscription (for example web search). Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
+> 🚧 **Version 0.2: a young tutorial that still needs improvement.** New since 0.1: chapter 15 on the Microsoft Copilot harness (tested on a live project), skills that run scripts, and a quality pass over every notebook (one experiment per cell, visible prompts, whole answers). Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Every notebook ran against a deployed environment. Parts are marked 🧪 (preview) or ❓ (a detail that can vary or was not checked), and regions, models and preview features differ per subscription. Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
 
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
 
@@ -83,16 +83,37 @@ flowchart LR
 ```bash
 python scripts/check_models.py swedencentral   # are my models available? edit stark.json if not
 azd auth login && az login
-azd extension install microsoft.foundry         # first: azure.yaml uses its azure.ai.* hosts (+ `azd ai agent`, chapters 08-09)
+azd extension install microsoft.foundry         # first: azure.yaml uses its azure.ai.* hosts (+ `azd ai agent`); already installed? `azd extension upgrade microsoft.foundry`
 azd up                                         # provisions Foundry + monitoring, writes .env
 python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 jupyter lab                                    # or open notebooks in VS Code, start with 00
 ```
 
+`azd up` also deploys every service in [azure.yaml](azure.yaml): the MCP function `stark-mcp` and the hosted agents `jarvis-hosted`, `jarvis-skills`, `invoice-workflow`, `morning-briefing`. The root `azure.yaml` needs `azure.ai.agents` 1.0.0-beta.22 or later.
+
+**azd commands in the chapters.** Run them from the repo root unless the table says otherwise. "Notebook" means a cell runs it for you with `sh(...)`.
+
+| Chapter | Command | What it does | Who runs it |
+|---|---|---|---|
+| 08 | `azd ai agent init jarvis-azd --kind prompt --agent-name jarvis-azd --project-id <project resource id> --model gpt-5-6-terra --instructions "You are J.A.R.V.I.S."` | scaffolds a prompt agent the azd way, in an **empty scratch folder** (optional) | you |
+| 08 | `azd deploy`, `azd ai agent show`, `azd ai agent invoke` | deploys, inspects and calls that scaffolded agent (same scratch folder) | you |
+| 09 | `azd ai agent run` | runs `jarvis-hosted` locally and opens the agent inspector (in `src/jarvis-hosted`, optional) | you |
+| 09 | `azd ai agent invoke --local "Status of the arc reactor?"` | calls the local agent | you |
+| 09 | `azd deploy jarvis-hosted --no-prompt` | a new version of the hosted agent, skills copied in by the `predeploy` hook | notebook |
+| 09 | `azd deploy jarvis-skills --no-prompt` | the same for the agent that loads skills on demand | notebook |
+| 09 | `azd ai agent monitor --follow`, `azd ai agent show` | container logs, versions, endpoint | you |
+| 13 | `azd env set STARK_ENABLE_CU true && azd provision` | deploys the Content Understanding models (optional, section 3) | you |
+| 15 | `azd extension upgrade microsoft.foundry` | `azure.ai.agents` 1.0.0-beta.22 or later for the Copilot harness | you |
+| 15 | `python scripts/harness_env.py` | creates the azd environment `stark-harness` in `src/jarvis-harness`, filled from `.env` | notebook |
+| 15 | `azd deploy --all --no-prompt` | publishes both skills, then the harness agent. In `src/jarvis-harness`, with `AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true` | notebook |
+| 15 | `azd ai agent invoke --new-conversation --no-prompt "A suit just started smoking in the hangar. What do I do?"` | calls the deployed harness agent (in `src/jarvis-harness`) | you |
+| 16 | `azd deploy invoice-workflow`, `azd deploy morning-briefing` | new versions of the two workflow agents | you |
+
 | When done | Command |
 |---|---|
-| Remove everything | `azd down --purge` (or `python scripts/teardown.py`) |
+| Remove everything | `azd down --purge` (or `python scripts/teardown.py`). Chapter 17 ends with it |
+| Remove the harness agent of chapter 15 only | `azd ai agent delete --force --no-prompt` in `src/jarvis-harness` (the notebook's clean-up deletes it with the SDK) |
 
 > ⚠️ Foundry model names, versions and regions change often. `check_models.py` tells you what your subscription can deploy.
 
@@ -123,6 +144,6 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 16 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/16_workflows.ipynb) | ✅ |
 | 17 | [Vision: A2A capstone 🧪](notebooks/17_vision_a2a_capstone.ipynb) | ✅ |
 
-> ⚠️ **Not verified against a live subscription:** preview features (skills, toolboxes, trace evaluation, guardrail APIs) are the least certain parts. Hosted agents work: `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. `jarvis-hosted` uses the same `azure.yaml` format. Chapter 15, the Copilot harness with skill scripts, was tested on a live project.
+> ✅ **Run on a live project:** every notebook, 00 to 17, ran in order against an environment deployed with `azd up`, including the hosted agents (`azd deploy`) and the Copilot harness project of chapter 15. The code follows the Microsoft Learn documentation as of 2026-11.
 >
-> ⚠️ **General:** the notebooks and Bicep were written against the current Microsoft Learn documentation and validated statically (Bicep build, notebook syntax). Run them in order and open an issue if an SDK call has drifted.
+> ⚠️ **What can still differ for you:** preview features (skills, toolboxes, trace evaluation, guardrail APIs, the Copilot harness) can change without notice, and regions and models differ per subscription. Model answers and judge scores vary between runs, so an **Expected:** marked ❓ is a likely outcome, not a promise. Open an issue if an SDK call has drifted.
