@@ -120,11 +120,11 @@ flowchart LR
 
 ## 4 · Skills
 
-A skill is a folder. `SKILL.md` is required; scripts and data files are optional and travel with it when you upload the whole folder. In Foundry a skill is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get.
+A skill is a folder in the open [Agent Skills format](https://agentskills.io/specification). `SKILL.md` is required; scripts, reference docs, data files and any other files are optional and travel with it when you upload the whole folder. In Foundry a skill is **versioned**: every upload is an immutable version, and `default_version` decides what unpinned consumers get.
 
 ### What a skill folder holds
 
-[stark-escalation](../skills/stark-escalation/SKILL.md) is text only. [invoice-review](../skills/invoice-review/SKILL.md) uses every part:
+[stark-escalation](../skills/stark-escalation/SKILL.md) is text only. [invoice-review](../skills/invoice-review/SKILL.md) uses two of the three optional folders the format names:
 
 ```
 skills/invoice-review/
@@ -135,9 +135,22 @@ skills/invoice-review/
 
 | Part | Holds | Used by |
 |---|---|---|
-| `SKILL.md` | front matter `name` (lowercase letters, digits, hyphens) and `description` (what a model sees when it picks a skill), then Markdown instructions | every delivery mode below |
+| `SKILL.md` | front matter (see below), then Markdown instructions. The whole body is loaded when the skill is used, so the format recommends under 500 lines | every delivery mode below |
 | `scripts/` | prewritten commands for what a model gets wrong: arithmetic, checksums, lookups, duplicates. Each prints one JSON line and exits with `0` (pass) or `1` (fail), standard library only | the Copilot harness, with its shell tool. Direct injection and the toolbox pass on only the text. `SkillsProvider` offers `run_skill_script`, but `jarvis-skills` runs only the script of its code-defined skill, not scripts in a skill folder |
 | `assets/` | data the scripts read (vendor master, approval limits) and an example of the input shape | the scripts, and the model through the harness file tools |
+| `references/` | extra docs the agent reads only when it needs them (`REFERENCE.md`, form templates, domain notes), so `SKILL.md` stays short. Not used in this repo | agents that can read files: the harness file tools, `read_skill_resource` in `SkillsProvider` |
+| any other file | the format allows more files and folders; link them from `SKILL.md` with a relative path, one level deep | the same as `references/` |
+
+The front matter in `SKILL.md`:
+
+| Field | Required | Rule |
+|---|---|---|
+| `name` | ✅ | 1–64 characters: lowercase letters, digits and hyphens, no hyphen at the start or end, no `--`. Must match the folder name |
+| `description` | ✅ | up to 1,024 characters: what the skill does **and when to use it**. A model reads only this when it picks a skill |
+| `license` | ❌ | a license name or a bundled license file |
+| `compatibility` | ❌ | up to 500 characters of environment needs (product, packages, network) |
+| `metadata` | ❌ | free string key-value pairs, for example `author` or `version` |
+| `allowed-tools` | ❌ | 🧪 tools the skill may use without asking. Experimental in the format; ❓ not checked in Foundry |
 
 Two ways to upload a version:
 
@@ -155,6 +168,8 @@ Writing a skill with scripts:
 - **Keep `__pycache__` out of the upload.** `publish_skill()` and [sync_skills.py](../scripts/sync_skills.py) skip it.
 
 What each `invoice-review` script checks, and how the harness runs it: [copilot-harness.md](copilot-harness.md), section 3.
+
+> ⚠️ **A skill holds no agents.** The Agent Skills format covers instructions, code and files only. The Copilot harness has a built-in **Subagents** tool that "delegates work to additional agents", but Microsoft Learn shows no way to define your own subagents for it ❓, and chapter 15 switches it off. To combine your own agents, use a workflow ([chapter 16](../notebooks/16_workflows.ipynb)), the A2A tool ([chapter 17](../notebooks/17_vision_a2a_capstone.ipynb)) or agents as files ([chapter 08](../notebooks/08_agents_from_yaml.ipynb)). Custom agent files such as `.agent.md` belong to GitHub Copilot, not to Foundry skills.
 
 ### How an agent gets the skill
 
