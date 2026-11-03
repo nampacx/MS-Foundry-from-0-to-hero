@@ -1,4 +1,4 @@
-# 🧰 16 · Prompt agents on the Microsoft Copilot harness
+# 🧰 14 · Prompt agents on the Microsoft Copilot harness
 
 > 💡 **TL;DR:** The **Microsoft Copilot harness** 🧪 is a managed runtime for **prompt agents**. Foundry runs the agent loop and a sandbox with a workspace per conversation. You only write configuration: model, instructions, tools and **skills**. Skills attached to a prompt agent only take effect on the harness, and a skill can ship **scripts** that the harness runs with its shell tool. You choose the harness when you create the agent, and every request needs a conversation.
 
@@ -10,9 +10,9 @@
 | Built-in tools | none | file read, file write, shell, web fetch, subagents | what you code |
 | Connected tools | Foundry tools, MCP, functions | function tools, `web_search`, toolbox tools (MCP, OpenAPI, ...) | what you code |
 | Files between turns | ❌ | ✅ workspace per conversation | sessions |
-| Chapter | 04 | 17 | 09 |
+| Chapter | 04 | 15 | 09 |
 
-Hands-on: [notebooks/17_copilot_harness.ipynb](../notebooks/17_copilot_harness.ipynb). Announcement: [Microsoft Copilot harness in Foundry](https://devblogs.microsoft.com/foundry/microsoft-copilot-harness-in-foundry/).
+Hands-on: [notebooks/15_copilot_harness.ipynb](../notebooks/15_copilot_harness.ipynb). Announcement: [Microsoft Copilot harness in Foundry](https://devblogs.microsoft.com/foundry/microsoft-copilot-harness-in-foundry/).
 
 ---
 
@@ -54,13 +54,13 @@ The announcement names four building blocks. This is where each one shows up her
 | Building block | What it is | In this repo |
 |---|---|---|
 | Reusable skills | instructions, scripts and resources in one versioned package | ✅ `stark-escalation`, `invoice-review` with five scripts (section 3) |
-| Connected tools | Foundry and MCP tools with explicit auth and approvals | ❌ not used in chapter 17 (see What if) |
+| Connected tools | Foundry and MCP tools with explicit auth and approvals | ❌ not used in chapter 15 (see What if) |
 | Execution and delegation | files and code in the sandbox, bounded tasks for built-in subagents | ✅ shell and workspace. Subagents switched off |
 | Source-controlled definitions | the agent and its skills as files next to your code | ✅ [src/jarvis-harness/azure.yaml](../src/jarvis-harness/azure.yaml) (section 5) |
 
-You can author the same agent in the Foundry portal (**Use the Microsoft Copilot harness** when you create the agent), with `azd`, with the SDK, in Foundry Toolkit for VS Code, or with the Microsoft Foundry plugin in the GitHub Copilot app. This repo uses the SDK (chapter 17) and `azd`.
+You can author the same agent in the Foundry portal (**Use the Microsoft Copilot harness** when you create the agent), with `azd`, with the SDK, in Foundry Toolkit for VS Code, or with the Microsoft Foundry plugin in the GitHub Copilot app. This repo uses the SDK (chapter 15) and `azd`.
 
-Chapter 17 zips the repo skill folders [stark-escalation](../skills/stark-escalation/SKILL.md) and [invoice-review](../skills/invoice-review/SKILL.md) and uploads them with `beta.skills.create_from_files` (`SKILL.md` at the root of the zip, scripts and assets included). Then it creates `jarvis-nb17` with both pinned, keeps `shell` on for the scripts and switches off `subagents`.
+Chapter 15 zips the repo skill folders [stark-escalation](../skills/stark-escalation/SKILL.md) and [invoice-review](../skills/invoice-review/SKILL.md) and uploads them with `beta.skills.create_from_files` (`SKILL.md` at the root of the zip, scripts and assets included). Then it creates `jarvis-nb15` with both pinned, keeps `shell` on for the scripts and switches off `subagents`.
 
 ---
 
@@ -80,7 +80,7 @@ Text, image and file input over HTTP work. Audio input and WebSocket do not.
 
 ## 3 · Skills that run scripts
 
-When a request matches a skill, the output contains a `skill` item, then the answer. Chapter 17 checks this with markers, as chapter 07 does: `Severity:` first for `stark-escalation`, a final `APPROVE` / `REJECT` / `NEEDS HUMAN REVIEW` for `invoice-review`.
+When a request matches a skill, the output contains a `skill` item, then the answer. Chapter 15 checks this with markers, as chapter 07 does: `Severity:` first for `stark-escalation`, a final `APPROVE` / `REJECT` / `NEEDS HUMAN REVIEW` for `invoice-review`.
 
 A skill is a folder, not only text. [invoice-review](../skills/invoice-review/SKILL.md) ships prewritten commands for the checks a model gets wrong. The agent runs them with the **shell** tool in the sandbox and only fills in the arguments:
 
@@ -92,19 +92,19 @@ A skill is a folder, not only text. [invoice-review](../skills/invoice-review/SK
 | [ledger.py](../skills/invoice-review/scripts/ledger.py) | vendor and invoice number not reviewed before | `ledger.csv` in the workspace |
 | [approval_limit.py](../skills/invoice-review/scripts/approval_limit.py) | total within the approver's limit | [approval-limits.csv](../skills/invoice-review/assets/approval-limits.csv) |
 
-Every script prints one JSON line and exits with `0` (pass) or `1` (fail). They use only the Python standard library, so nothing is installed in the sandbox. Chapter 17 sends four invoices, each built to trip a different script, and lists which `scripts/*.py` names appear in the output items.
+Every script prints one JSON line and exits with `0` (pass) or `1` (fail). They use only the Python standard library, so nothing is installed in the sandbox. Chapter 15 sends four invoices, each built to trip a different script, and lists which `scripts/*.py` names appear in the output items.
 
 Who does what: the notebook extracts the PDFs with Document Intelligence (`extract_invoice`, your identity) and sends the fields as JSON. The scripts only check. They need no credentials.
 
-> ⚠️ **Not documented: a script using the agent identity.** Foundry uses the agent identity for tools (toolbox, OpenAPI, returned files). Microsoft Learn shows no way for a sandbox script to get a token, so chapter 17 doesn't call Azure services from a script. Never put keys into a skill instead.
+> ⚠️ **Not documented: a script using the agent identity.** Foundry uses the agent identity for tools (toolbox, OpenAPI, returned files). Microsoft Learn shows no way for a sandbox script to get a token, so chapter 15 doesn't call Azure services from a script. Never put keys into a skill instead.
 
-The same `SKILL.md` is injected as plain instructions in chapters 15 and 16 and by `jarvis-hosted`. Without shell, it tells the agent to do the arithmetic itself and to say that the vendor, IBAN and duplicate checks were not run.
+The same `SKILL.md` is injected as plain instructions in chapters 16 and 17 and by `jarvis-hosted`. Without shell, it tells the agent to do the arithmetic itself and to say that the vendor, IBAN and duplicate checks were not run.
 
 ---
 
 ## 4 · The workspace
 
-The **workspace** holds files for one conversation, in a sandbox that Foundry manages. It survives idle and resume, but a new conversation starts empty. It is session state, not storage. Chapter 17 shows it with `ledger.csv`: invoice 4471 is a duplicate in the conversation that reviewed it before, and passes again in a new one.
+The **workspace** holds files for one conversation, in a sandbox that Foundry manages. It survives idle and resume, but a new conversation starts empty. It is session state, not storage. Chapter 15 shows it with `ledger.csv`: invoice 4471 is a duplicate in the conversation that reviewed it before, and passes again in a new one.
 
 | You want | Do |
 |---|---|
@@ -138,13 +138,13 @@ azd ai agent invoke --new-conversation --no-prompt "A suit just started smoking 
 
 It is a **separate azd project** for one reason: the harness needs `azd` 1.37.0+ and newer Foundry extensions, while the root [azure.yaml](../azure.yaml) pins `azure.ai.agents` `=1.0.0-beta.20` for the hosted agents. [harness_env.py](../scripts/harness_env.py) copies the project values from `.env` into the new azd environment.
 
-> ⚠️ After the upgrade, the root project may refuse the newer extension. Go back with `azd extension install azure.ai.agents --version 1.0.0-beta.20 --force` before chapters 08, 09 and 15.
+> ⚠️ After the upgrade, the root project may refuse the newer extension. Go back with `azd extension install azure.ai.agents --version 1.0.0-beta.20 --force` before chapters 08, 09 and 16.
 
 ---
 
 ## 6 · Security and limits
 
-- **Shell is the broadest tool.** It can read, write and reach the network by itself, so switching off `filesystem_*` or `web` while shell stays on is not a boundary. Chapter 17 needs shell for the skill scripts and switches off `subagents`. Treat skill scripts as code: review them and pin the skill version. A separately declared shell or `code_interpreter` tool doesn't follow the toolset settings.
+- **Shell is the broadest tool.** It can read, write and reach the network by itself, so switching off `filesystem_*` or `web` while shell stays on is not a boundary. Chapter 15 needs shell for the skill scripts and switches off `subagents`. Treat skill scripts as code: review them and pin the skill version. A separately declared shell or `code_interpreter` tool doesn't follow the toolset settings.
 - `require_approval` applies to your MCP tools, not to harness tools. The service sets their approval policy during the preview.
 - **Network egress controls** 🧪: attach an RAI policy with **Network** rules (`rai_config` in the SDK, `policies:` in `azure.yaml`) to limit where the sandbox may connect. With shell on, this is the real boundary. The invoice-review scripts need no network, so a deny-all policy would fit. Not used in this repo.
 - Regions: Australia East, Canada Central, Central US, Germany West Central, Japan East, Sweden Central, UK South, West Europe, West US. Models must support reasoning and tool calling. No bring-your-own model, no Foundry Memory.

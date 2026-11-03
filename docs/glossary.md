@@ -75,6 +75,6 @@ flowchart LR
 | **OAuth identity passthrough** | each user signs in once through a consent link; Foundry then calls an MCP server or A2A agent with that user's token | [mcp-skills.md](mcp-skills.md) |
 | **OpenTelemetry (OTel)** | the open standard for traces and metrics. Foundry and the SDK emit OTel spans | [observability.md](observability.md) |
 | **OTLP** | the OpenTelemetry wire protocol. An optional local exporter can use it instead of Application Insights | [observability.md](observability.md) |
-| **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 15 section 5 needs a .NET runtime | [workflows.md](workflows.md) |
+| **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 16 section 5 needs a .NET runtime | [workflows.md](workflows.md) |
 | **Prompt injection** | text that tries to give the model new instructions. *Indirect* when it hides in a document or tool output | [guardrails.md](guardrails.md) |
 | **Token** | the unit a model reads and writes, about ¾ of an English word. You pay per token | [concepts.md](concepts.md) |

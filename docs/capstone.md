@@ -1,6 +1,6 @@
-# 🦾 15 · Agents calling agents: the A2A capstone
+# 🦾 16 · Agents calling agents: the A2A capstone
 
-> 💡 **TL;DR:** **A2A** (*Agent2Agent*) is an open protocol for agents to discover and call each other. In chapter 16 a specialist agent, `friday-finance`, is exposed over A2A. An orchestrator, `jarvis-orchestrator`, calls it with an `A2ATool` through a project connection and its own identity. The system then has to pass an evaluation before you trust it.
+> 💡 **TL;DR:** **A2A** (*Agent2Agent*) is an open protocol for agents to discover and call each other. In chapter 17 a specialist agent, `friday-finance`, is exposed over A2A. An orchestrator, `jarvis-orchestrator`, calls it with an `A2ATool` through a project connection and its own identity. The system then has to pass an evaluation before you trust it.
 
 | Piece | What it is | Name here |
 |---|---|---|
@@ -11,7 +11,7 @@
 | Orchestrator | a prompt agent with an `A2ATool` and an `MCPTool` | `jarvis-orchestrator` |
 | 🧪 Quality gate | an evaluation of the orchestrator | `capstone` |
 
-Hands-on: [notebooks/16_vision_a2a_capstone.ipynb](../notebooks/16_vision_a2a_capstone.ipynb).
+Hands-on: [notebooks/17_vision_a2a_capstone.ipynb](../notebooks/17_vision_a2a_capstone.ipynb).
 
 > 🧪 **Preview-adjacent.** Foundry supports A2A **v1.0** (GA) and **v0.3** (preview). The Python surface (`update_details`, `A2ATool`) needs `azure-ai-projects>=2.5.0`, and the connection is created through a preview ARM API version (`2025-04-01-preview`). Not verified against a live subscription.
 
@@ -100,7 +100,7 @@ The `A2ATool` uses a project connection (`category: RemoteA2A`). Its auth type d
 | `oauth2` | each user, after a one-time consent (OAuth identity passthrough) | ❌ |
 | `custom-keys`, `none` | a shared key, or nobody (non-Foundry targets only) | ❌ |
 
-### The three calls in chapter 16
+### The three calls in chapter 17
 
 | Call | Signs in as | Allowed by |
 |---|---|---|

@@ -1,4 +1,4 @@
-"""Let a hosted agent use Foundry Tools (Document Intelligence, Content Understanding, Vision), chapter 15.
+"""Let a hosted agent use Foundry Tools (Document Intelligence, Content Understanding, Vision), chapter 16.
 
 A hosted agent does not run as you. Locally your user has the *Cognitive Services User* role on the Foundry resource
 (rbac.bicep assigns it); the deployed agent does not, so its Document Intelligence calls fail with `PermissionDenied`.

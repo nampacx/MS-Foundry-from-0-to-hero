@@ -41,13 +41,13 @@ Infrastructure is **Bicep + azd**, custom code is **Python only**.
 | 7 | [How agents use tools](docs/tools.md) | with chapter 05 | 05, 06 |
 | 8 | [MCP servers and skills](docs/mcp-skills.md) | with chapters 06, 07 | 06, 07 |
 | 9 | [Agents as files](docs/agents-yaml.md) | with chapter 08 | 08 |
-| 10 | [Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 15 |
+| 10 | [Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 16 |
 | 11 | [🧪 Datasets and evaluations](docs/datasets-evals.md) | with chapters 10, 11 | 10, 11 |
 | 12 | [Foundry Tools](docs/foundry-tools.md) | with chapters 12, 13 | 12, 13 |
 | 13 | [Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 14 | 14 |
-| 14 | [Workflows](docs/workflows.md) | with chapter 15 | 15 |
-| 15 | [Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 16 | 16 |
-| 16 | [🧪 Prompt agents on the Microsoft Copilot harness](docs/copilot-harness.md) | with chapter 17 | 07, 17 |
+| 14 | [🧪 Prompt agents on the Microsoft Copilot harness](docs/copilot-harness.md) | with chapter 15 | 07, 15 |
+| 15 | [Workflows](docs/workflows.md) | with chapter 16 | 16 |
+| 16 | [Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 17 | 17 |
 | – | [Glossary](docs/glossary.md) | when a word is new | any |
 | – | [Troubleshooting](docs/troubleshooting.md) | when something fails | any |
 | – | [Portal tour](docs/portal-tour.md) | to find your work in the portal | any |
@@ -119,9 +119,9 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 12 | [OCR and Read (Vision, Document Intelligence)](notebooks/12_senses_ocr_read.ipynb) | ✅ |
 | 13 | [Invoices, receipts and Content Understanding](notebooks/13_senses_document_intelligence.ipynb) | ✅ |
 | 14 | [Ultron: guardrails and red teaming 🧪](notebooks/14_ultron_guardrails_redteam.ipynb) | ✅ |
-| 15 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/15_workflows.ipynb) | ✅ |
-| 16 | [Vision: A2A capstone 🧪](notebooks/16_vision_a2a_capstone.ipynb) | ✅ |
-| 17 | [The Microsoft Copilot harness 🧪](notebooks/17_copilot_harness.ipynb) | ❓ not run yet |
+| 15 | [The Microsoft Copilot harness 🧪](notebooks/15_copilot_harness.ipynb) | ❓ not run yet |
+| 16 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/16_workflows.ipynb) | ✅ |
+| 17 | [Vision: A2A capstone 🧪](notebooks/17_vision_a2a_capstone.ipynb) | ✅ |
 
 > ⚠️ **Not verified against a live subscription:** preview features (skills, toolboxes, trace evaluation, guardrail APIs) are the least certain parts. Hosted agents work: `invoice-workflow` and `morning-briefing` were deployed with `azd deploy` and called on a live project. `jarvis-hosted` uses the same `azure.yaml` format.
 >

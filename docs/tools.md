@@ -9,7 +9,7 @@
 | File search | `FileSearchTool` | Foundry (vector store) | `file_search_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | Web search 🧪 | `WebSearchPreviewTool` | Foundry | web search call | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | MCP | `MCPTool` | remote MCP server | `mcp_list_tools`, `mcp_approval_request` | [06](../notebooks/06_mcp_tools.ipynb) |
-| A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [16](../notebooks/16_vision_a2a_capstone.ipynb) |
+| A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [17](../notebooks/17_vision_a2a_capstone.ipynb) |
 
 > ⚠️ The output items in this document were observed on a real project with throwaway agents. **Web search was not run here.** A2A is covered in [capstone.md](capstone.md), skills in [mcp-skills.md](mcp-skills.md).
 
@@ -165,7 +165,7 @@ What an MCP server offers besides tools, and our own server [src/stark-mcp](../s
 
 ## 7 · A2A and skills
 
-- **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. See [capstone.md](capstone.md) (chapter 16).
+- **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. See [capstone.md](capstone.md) (chapter 17).
 - **Skills** are not tools: they add procedures (a `SKILL.md`) 🧪. See [mcp-skills.md](mcp-skills.md) (chapter 07).
 
 ---

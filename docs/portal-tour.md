@@ -5,12 +5,12 @@
 | Portal page | Filled by chapter | What you see |
 |---|---|---|
 | **Build → Models** | `azd up` | the model deployments |
-| **Build → Agents** | 04, 05, 06, 08, 09, 13, 14, 16 | agents, their versions, the playground |
+| **Build → Agents** | 04, 05, 06, 08, 09, 13, 14, 15, 17 | agents, their versions, the playground |
 | **Application Insights** (Azure portal) → Transaction search | 03 | traces of direct model calls, custom spans |
 | **Build → Agents →** an agent **→ Traces** | 04 on (tracing set up in 03) | one row per call, with the conversation id |
-| **Evaluation** | 10, 11, 16 | evaluation runs, scores, row-level results |
+| **Evaluation** | 10, 11, 17 | evaluation runs, scores, row-level results |
 | **Build → Guardrails** | 14 | the guardrail you assign to an agent |
-| **Operate → Assets** | 16 | all agents in one inventory with their traces |
+| **Operate → Assets** | 17 | all agents in one inventory with their traces |
 
 > ⚠️ The page names come from the Microsoft Learn docs (linked below) and the repo's notebooks. They were not clicked through against this project, and the Foundry portal moves fast. Items marked 🧪 are preview.
 
@@ -47,12 +47,12 @@ flowchart LR
 - Every `agents.create_version` adds a **version** to the agent's page. Re-creating an agent with the same name adds version 2, it does not replace version 1.
 - Calls to an agent are traced **server-side**, with no code in the notebook. [Notebook 04](../notebooks/04_jarvis_prompt_agent.ipynb) section 6 finds one conversation by id in KQL (`invoke_agent` span with a nested `chat` span). Section 7 shows where the same trace is in Foundry and Application Insights.
 - The agent page has the **Playground** (chat with it), the version list, its tools and its **Traces** and **Monitor** tabs.
-- Names to look for: `jarvis-nb04`, `jarvis-nb05-fs` (vector store `stark-handbook-nb05`), `jarvis-nb06-learn`, `stark-toolbox` (chapter 07), `jarvis-hosted` and `jarvis-skills` (hosted, chapter 09), `friday-docs-nb13` (chapter 13), `invoice-workflow` and `morning-briefing` (hosted, chapter 15), `jarvis-orchestrator` and `friday-finance` (chapter 16), `jarvis-nb17` and `jarvis-harness` (Copilot harness 🧪, chapter 17).
-- Chapter 06 also creates the project connection `stark-mcp` (the `azd` hook [connect_mcp.py](../scripts/connect_mcp.py) writes it). Chapter 16 creates `friday-a2a` itself. ❓ Connections and toolboxes sit under the project's tool and connection settings. The exact menu name was not checked.
+- Names to look for: `jarvis-nb04`, `jarvis-nb05-fs` (vector store `stark-handbook-nb05`), `jarvis-nb06-learn`, `stark-toolbox` (chapter 07), `jarvis-hosted` and `jarvis-skills` (hosted, chapter 09), `friday-docs-nb13` (chapter 13), `invoice-workflow` and `morning-briefing` (hosted, chapter 16), `jarvis-orchestrator` and `friday-finance` (chapter 17), `jarvis-nb15` and `jarvis-harness` (Copilot harness 🧪, chapter 15).
+- Chapter 06 also creates the project connection `stark-mcp` (the `azd` hook [connect_mcp.py](../scripts/connect_mcp.py) writes it). Chapter 17 creates `friday-a2a` itself. ❓ Connections and toolboxes sit under the project's tool and connection settings. The exact menu name was not checked.
 - Chapter 07 skills and toolboxes are preview. ❓ Where the portal lists a skill was not checked.
 - Hosted agents (chapter 09) show up under **Agents** like prompt agents. Their container logs stay in `azd ai agent monitor`, not in the portal.
 
-## 4 · Evaluations (chapters 10, 11, 16)
+## 4 · Evaluations (chapters 10, 11, 17)
 
 - **Evaluation** lists every `evals.runs.create`: name, target agent and version, dataset, status, token use, and a score per evaluator.
 - Select a run for the row-level results: the query, the response and the score explanation. Select two runs and **Compare** to see v1 against v2 (chapter 10, section 6).
@@ -64,7 +64,7 @@ flowchart LR
 - **Build → Guardrails** holds the policy. If the SDK call fails, create it there and assign it to the agent (see [guardrails.md](guardrails.md)).
 - The red-team scan (named `stark-guarded`) runs from the SDK. Where its result appears in the portal was not checked.
 
-## 6 · The whole system (chapter 16)
+## 6 · The whole system (chapter 17)
 
 - **Operate → Assets** 🧪 lists agents in one inventory. Select an agent, then **Traces**, to see one row per call with a **Trace ID** and a **Conversation ID**.
 - The capstone question traces through `jarvis-orchestrator` into `friday-finance`, so look at the two traces together.

@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
-# J.A.R.V.I.S. as a prompt agent on the Microsoft Copilot harness (preview), chapter 17.
+# J.A.R.V.I.S. as a prompt agent on the Microsoft Copilot harness (preview), chapter 15.
 #
 # A separate azd project on purpose: the harness needs newer Foundry extensions than the root azure.yaml pins,
 # plus an opt-in flag. Nothing is provisioned here: the agent and its skills go into the project that the

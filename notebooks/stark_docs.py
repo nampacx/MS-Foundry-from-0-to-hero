@@ -1,4 +1,4 @@
-"""Document helpers for chapters 12, 13, 15 and 16: OCR with Azure AI Vision Read, Document Intelligence and Content Understanding.
+"""Document helpers for chapters 12, 13, 15, 16 and 17: OCR with Azure AI Vision Read, Document Intelligence and Content Understanding.
 
 All three are Foundry Tools on the SAME Foundry resource: one endpoint (STARK_ACCOUNT_ENDPOINT), Entra ID auth, no keys.
 Your identity needs the *Cognitive Services User* role on the resource (rbac.bicep assigns it).
@@ -64,7 +64,7 @@ def field_value(field):
 
 
 def extract_invoice(path: str | Path) -> dict:
-    """Invoice fields with confidences, normalised to plain Python (the tool the agents in chapters 13-16 call)."""
+    """Invoice fields with confidences, normalised to plain Python (the tool the agents in chapters 13-17 call)."""
     result = di_analyze("prebuilt-invoice", path)
     if not result.documents:
         return {"error": "no invoice found in the document"}
@@ -88,7 +88,7 @@ LIMITS = {"default": 5000, "pepper potts": 250000, "tony stark": 1000000}
 
 
 def check_approval_limit(amount: float, approver: str) -> dict:
-    """Is an amount in USD within an approver's limit? (chapters 13 and 15)"""
+    """Is an amount in USD within an approver's limit? (chapters 13 and 16)"""
     limit = LIMITS.get(approver.strip().lower(), LIMITS["default"])
     return {"approver": approver, "limit_usd": limit, "within_limit": amount <= limit}
 

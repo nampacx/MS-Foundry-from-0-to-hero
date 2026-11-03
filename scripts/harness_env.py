@@ -1,4 +1,4 @@
-"""Create or update the azd environment of src/jarvis-harness from .env (chapter 17).
+"""Create or update the azd environment of src/jarvis-harness from .env (chapter 15).
 
 src/jarvis-harness is its own azd project (the Copilot harness needs newer Foundry extensions than the root
 azure.yaml pins). It provisions nothing: its services deploy into the project that the root `azd up` created.

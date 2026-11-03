@@ -1,8 +1,8 @@
-"""azd predeploy hook: copy files the hosted agents need into their projects (chapters 07, 09, 15 and 17).
+"""azd predeploy hook: copy files the hosted agents need into their projects (chapters 07, 09, 15 and 16).
 
 - skills/            -> src/jarvis-hosted/skills and src/invoice-workflow/skills (direct skill injection),
                         src/jarvis-skills/skills (loaded on demand by SkillsProvider),
-                        src/jarvis-harness/skills (published as Foundry skills by azd, chapter 17)
+                        src/jarvis-harness/skills (published as Foundry skills by azd, chapter 15)
 - data/docs/*.pdf    -> src/invoice-workflow/data/docs (the sample invoices the workflow reads)
 """
 import shutil
