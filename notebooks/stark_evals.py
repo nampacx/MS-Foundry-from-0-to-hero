@@ -1,4 +1,4 @@
-"""Helpers for chapters 10 and 12: show evaluation results as Markdown.
+"""Helpers for chapters 10, 11 and 12: show evaluation results as Markdown.
 
 The notebooks keep the evaluation calls (`evals.create`, `evals.runs.create`); these helpers only read
 finished runs and render them: one row per dataset item, one column per evaluator, then the judge's reasons.

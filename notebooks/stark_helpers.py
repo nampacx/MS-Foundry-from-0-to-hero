@@ -249,6 +249,22 @@ def delete_agent(name: str) -> None:
         print(f"skip {name}: {type(exc).__name__}")
 
 
+def delete_vector_store(store_id: str, oai=None, files: bool = True) -> None:
+    """Delete a vector store and, with `files=True`, the uploaded files in it (ignore errors: it may not exist).
+
+    Deleting only the store leaves its files in the project's file list.
+    """
+    oai = oai or openai_client()
+    try:
+        file_ids = [f.id for f in oai.vector_stores.files.list(vector_store_id=store_id)] if files else []
+        oai.vector_stores.delete(store_id)
+        for file_id in file_ids:
+            oai.files.delete(file_id)
+        print(f"deleted vector store {store_id}" + (f" and {len(file_ids)} files" if files else ""))
+    except Exception as exc:  # noqa: BLE001
+        print(f"skip vector store {store_id}: {type(exc).__name__}")
+
+
 def delete_dataset(name: str, version: str = "1") -> None:
     """Delete one dataset version (ignore errors: it may not exist). A re-run of the notebook then creates it again."""
     try:

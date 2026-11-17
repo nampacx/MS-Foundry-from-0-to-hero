@@ -7,6 +7,7 @@
 | Function | `FunctionTool` | **your code** | `function_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | Code interpreter | `CodeInterpreterTool` | Foundry sandbox | `code_interpreter_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | File search | `FileSearchTool` | Foundry (vector store) | `file_search_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
+| Azure AI Search | `AzureAISearchTool` | Foundry, against your index | ❓ not seen yet | [11](../notebooks/11_rag_three_ways.ipynb), optional |
 | Web search 🧪 | `WebSearchPreviewTool` | Foundry | web search call | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | MCP | `MCPTool` | remote MCP server | `mcp_list_tools`, `mcp_approval_request` | [06](../notebooks/06_mcp_tools.ipynb) |
 | A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [18](../notebooks/18_vision_a2a_capstone.ipynb) |
@@ -101,6 +102,8 @@ No code from you. The model writes Python, Foundry runs it in a sandbox, and the
 2. Give the agent `FileSearchTool(vector_store_ids=[...])`.
 
 Observed: the response has a `file_search_call` item with the `queries` the model searched for, and the message carries a `file_citation` annotation with the file name (`workshop-handbook.md`). With the instruction "Answer only from the handbook", a question the file cannot answer gets "The handbook does not list a Wi-Fi password."
+
+To see **which chunks** file search retrieved, and to build the same retrieval by hand, go to [chapter 11](../notebooks/11_rag_three_ways.ipynb) and [rag.md](rag.md).
 
 The vector store is a **project resource** that outlives the agent. [Chapter 05](../notebooks/05_tools_function_and_builtin.ipynb) deletes it in its clean-up cell.
 

@@ -7,6 +7,7 @@
     "principalId": { "value": "${AZURE_PRINCIPAL_ID}" },
     "principalType": { "value": "${AZURE_PRINCIPAL_TYPE=User}" },
     "enableMcp": { "value": "${STARK_ENABLE_MCP=true}" },
-    "enableContentUnderstanding": { "value": "${STARK_ENABLE_CU=false}" }
+    "enableContentUnderstanding": { "value": "${STARK_ENABLE_CU=false}" },
+    "enableSearch": { "value": "${STARK_ENABLE_SEARCH=false}" }
   }
 }

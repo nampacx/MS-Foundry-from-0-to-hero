@@ -9,7 +9,7 @@
 | Run | one execution | `openai.evals.runs.create(eval_id, data_source=...)` |
 | Output items | scores, labels, reasons | `openai.evals.runs.output_items.list(...)` |
 
-Hands-on: [10 · datasets and evals](../notebooks/10_datasets_and_evals.ipynb) · [12 · conversation and trace evals](../notebooks/12_conversation_and_trace_evals.ipynb).
+Hands-on: [10 · datasets and evals](../notebooks/10_datasets_and_evals.ipynb) · [11 · RAG three ways](../notebooks/11_rag_three_ways.ipynb), section 5 · [12 · conversation and trace evals](../notebooks/12_conversation_and_trace_evals.ipynb).
 
 ---
 
@@ -41,6 +41,7 @@ flowchart LR
 | Family | Examples (`builtin.*`) | Needs a judge model |
 |---|---|---|
 | Quality | `coherence`, `fluency` | ✅ |
+| RAG | `groundedness`, `relevance`, `retrieval` (they read the retrieved `context`; [rag.md](rag.md)) | ✅ |
 | Agent | `task_adherence`, `intent_resolution`, `tool_call_accuracy`, `task_completion` | ✅ |
 | Conversation level | `customer_satisfaction`, `output_quality`, `tool_use_quality` | ✅ |
 | Safety | `violence`, `hate_unfairness`, `sexual`, `self_harm` | ❌ (service model) |

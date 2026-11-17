@@ -4,10 +4,18 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+- Chapter 11 `11_rag_three_ways.ipynb`: RAG built three times over a small archive. By hand (chunk, embed, cosine top-k, sources in the prompt, the same question with and without retrieval, `k` and chunking changed one at a time), with file search (the retrieved chunks through `include=["file_search_call.results"]` and the `file_citation` annotations), and optionally with Azure AI Search (keyword, vector and hybrid queries, then an agent with `AzureAISearchTool`). Section 5 scores each variant with `builtin.groundedness`, `builtin.relevance` and `builtin.retrieval`. ❓ Not run on a live project yet: the notebook marks every outcome that still needs a run.
+- [docs/rag.md](docs/rag.md), doc 12: how RAG works step by step, the three variants side by side, the optional search deployment, common mistakes.
+- `data/archive/`: five short documents (maintenance manual, suit registry, procurement policy, safety rules, incident log) that chapter 11 searches.
+- `notebooks/stark_rag.py`: chapter 11's helpers (chunking, top-k, the grounded prompt, reading file search results and citations, the Markdown view of a turn, the search index definition, evaluation rows).
+- `delete_vector_store()` in `stark_helpers.py`: deletes a vector store and the files uploaded to it. Chapter 11 uses it.
+- Optional Azure AI Search for chapter 11: `azd env set STARK_ENABLE_SEARCH true && azd provision` deploys a Basic search service without keys, the project connection `stark-search` and the search roles ([search.bicep](infra/modules/search.bicep)), and writes `STARK_ENABLE_SEARCH`, `STARK_SEARCH_ENDPOINT` and `STARK_SEARCH_CONNECTION` to `.env`. Off by default, billed while the service exists. `requirements.txt` adds `azure-search-documents`. ❓ The Bicep compiles but was not deployed yet.
+
 ### Changed
 - Chapter order: a new chapter 11 on RAG moves the later chapters up by one. Conversation and trace evaluations are now chapter 12 (`12_conversation_and_trace_evals.ipynb`), OCR and Read 13 (`13_senses_ocr_read.ipynb`), invoices and Content Understanding 14 (`14_senses_document_intelligence.ipynb`), Ultron 15 (`15_ultron_guardrails_redteam.ipynb`), the Copilot harness 16 (`16_copilot_harness.ipynb`), workflows 17 (`17_workflows.ipynb`) and the A2A capstone 18 (`18_vision_a2a_capstone.ipynb`). The agents named after a chapter follow: `jarvis-nb12`, `friday-docs-nb14`, `ultron-nb15-*`, `jarvis-nb16`. Docs 12 to 16 are now 13 to 17 (`foundry-tools.md`, `guardrails.md`, `copilot-harness.md`, `workflows.md`, `capstone.md`). README, `story.md`, the docs, helper docstrings and `azure.yaml` comments use the new numbers.
-- README, Deploy with azd: every azd command the chapters use (08, 09, 14, 16, 17), what it does, where to run it, and whether a notebook cell runs it for you; `azd up` also deploys the MCP function and the four hosted agents. The extension line mentions `azd extension upgrade microsoft.foundry`.
-- Every notebook, 00 to 17, ran against an environment deployed with `azd up`. The README verification note, `capstone.md`, `datasets-evals.md`, `guardrails.md`, `workflows.md` and chapters 17 and 18 no longer say a chapter was not run live; ❓ now marks only outcomes that can vary between runs.
+- README, Deploy with azd: every azd command the chapters use (08, 09, 11, 14, 16, 17), what it does, where to run it, and whether a notebook cell runs it for you; `azd up` also deploys the MCP function and the four hosted agents. The extension line mentions `azd extension upgrade microsoft.foundry`.
+- Every notebook that existed before chapter 11 ran against an environment deployed with `azd up` (under the old numbers, 00 to 17). The README note now says that chapter 11 was not run, and that the agents renamed with their chapters were not run again. The README verification note, `capstone.md`, `datasets-evals.md`, `guardrails.md`, `workflows.md` and chapters 17 and 18 no longer say a chapter was not run live; ❓ now marks only outcomes that can vary between runs.
 
 ## [0.2] – 2026-11-03
 

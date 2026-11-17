@@ -37,6 +37,7 @@ flowchart LR
 | Python 3.11+ | notebooks and scripts | `python --version` |
 | Jupyter or VS Code | opens the notebooks | `jupyter lab` |
 | *optional:* .NET runtime | only chapter 17 section 5 (declarative YAML workflows use PowerFx) | `dotnet --list-runtimes` |
+| *optional:* Azure AI Search | only chapter 11 section 4 (`STARK_ENABLE_SEARCH=true`, billed while it exists) | `azd env set STARK_ENABLE_SEARCH true && azd provision` |
 | *optional:* quota for the Content Understanding models | only chapter 14 section 3 (`STARK_ENABLE_CU=true`) | step 2 |
 
 > 💡 **No Docker needed.** Hosted agents are built by Foundry from a code ZIP ([hosted-agents.md](hosted-agents.md)).
@@ -86,6 +87,7 @@ flowchart LR
 | Log Analytics + Application Insights | [monitoring.bicep](../infra/modules/monitoring.bicep) | 03 |
 | Roles for you | [rbac.bicep](../infra/modules/rbac.bicep) | all |
 | MCP server (Azure Function) | [mcp-function.bicep](../infra/modules/mcp-function.bicep), [src/stark-mcp](../src/stark-mcp/function_app.py) | 06, 18 |
+| Azure AI Search and the connection `stark-search` (optional) | [search.bicep](../infra/modules/search.bicep) | 11 |
 | `.env` file | [write_env.py](../scripts/write_env.py), template [.env.example](../.env.example) | all |
 | Project connection `stark-mcp` | [connect_mcp.py](../scripts/connect_mcp.py) | 06 |
 
@@ -103,6 +105,7 @@ The model list is data, not code: [stark.json](../infra/config/stark.json). Agen
 | Application Insights | GB of data ingested |
 | Azure Function (MCP) | executions (Flex Consumption) |
 | Content Understanding models | only if you set `STARK_ENABLE_CU=true` ([foundry-tools.md](foundry-tools.md)) |
+| Azure AI Search (Basic tier) | by the hour while the service exists, only if you set `STARK_ENABLE_SEARCH=true` ([rag.md](rag.md)) |
 
 No price list is kept here because prices change. **Remove everything when you are done:** `azd down --purge`.
 
@@ -142,6 +145,7 @@ If a cell fails, look up the message in [troubleshooting.md](troubleshooting.md)
 | brand new to Foundry | `00` → `01` → `02` → `04` → `05`, then the rest in order |
 | here for agents | `04` → `05` → `06` → `08` → `09`. Read [agents.md](agents.md) first |
 | here for quality | `04` → `10` → `12`. Read [datasets-evals.md](datasets-evals.md) |
+| here for RAG | `01` → `05` → `10` → `11`. Read [rag.md](rag.md) |
 | here for documents | `13` → `14`. Read [foundry-tools.md](foundry-tools.md). No agent needed |
 | here for safety | `04` → `05` → `15`. Read [guardrails.md](guardrails.md) |
 

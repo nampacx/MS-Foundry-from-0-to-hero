@@ -16,7 +16,7 @@ Tony Stark did not build J.A.R.V.I.S. in one night. He built it the hard way: a 
 |---|---|---|---|
 | I · The Workshop | wake the first machine and give it a memory | 00–03 | [concepts](docs/concepts.md) · [getting started](docs/getting-started.md) · [models](docs/models.md) · [conversations](docs/conversations.md) · [observability](docs/observability.md) |
 | II · The Suit | turn a talker into a doer | 04–09 | [agents](docs/agents.md) · [tools](docs/tools.md) · [MCP and skills](docs/mcp-skills.md) · [agents as files](docs/agents-yaml.md) · [hosted agents](docs/hosted-agents.md) |
-| III · The Lab | prove it works before it flies | 10–12 | [datasets and evals](docs/datasets-evals.md) |
+| III · The Lab | prove it works before it flies | 10–12 | [datasets and evals](docs/datasets-evals.md) · [RAG](docs/rag.md) |
 | IV · The Senses | learn to see the world | 13–14 | [Foundry Tools](docs/foundry-tools.md) |
 | V · The Warning | meet the enemy you built | 15 | [guardrails](docs/guardrails.md) |
 | VI · The Suit Assembles Itself | let Foundry run the loop | 16 | [Copilot harness](docs/copilot-harness.md) |
@@ -69,10 +69,13 @@ Time to bring your own engine. Build a hosted agent with Microsoft Agent Framewo
 ## 🧪 Act III · The Lab – F.R.I.D.A.Y.
 *"Does it actually work?" A hero who cannot prove it is just a rumour.*
 
-Field manual: [datasets and evals](docs/datasets-evals.md).
+Field manuals: [datasets and evals](docs/datasets-evals.md) · [RAG](docs/rag.md).
 
 ### 10 · `10_datasets_and_evals` – Prove it
 Upload a versioned dataset. Define an evaluation. Run it against your agent, read why each answer passed or failed, fix the instructions, run again and compare. Add a CI-style **quality gate** so a weaker version never ships. Bonus: score saved responses against ground truth with F1.
+
+### 11 · `11_rag_three_ways` – Open the archive
+J.A.R.V.I.S. names a bolt torque he never read. F.R.I.D.A.Y. makes him look it up. Build **RAG** three times over the workshop archive: by hand (chunk, embed, rank, put the sources into the prompt), with **file search** (and see which chunks it retrieved), and optionally with your own **Azure AI Search** index (keyword, vector, hybrid). Then let a judge score whether each answer is **grounded** in what was retrieved. Not run on a live project yet. See [RAG](docs/rag.md).
 
 ### 12 · `12_conversation_and_trace_evals` (preview) – Judge the whole conversation
 One good answer proves little. Judge **whole conversations** (the frustrating one fails), then evaluate **real traced conversations** from Application Insights, by id and by agent filter. This is where continuous evaluation begins.

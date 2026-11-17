@@ -113,6 +113,10 @@ flowchart TD
 | trace evaluation fails | it is **preview** and needs a recent `azure-ai-projects` | `pip install -U azure-ai-projects` |
 | `400 content_filter` | a guardrail blocked the request | expected in chapter 15. See [guardrails.md](guardrails.md) |
 | guardrail creation via ARM fails | control names or API versions changed | create it in **Build → Guardrails** and assign it there |
+| chapter 11, section 4 prints "Azure AI Search is not deployed" | the search service is optional and off by default | `azd env set STARK_ENABLE_SEARCH true && azd provision`, then restart the kernel ([rag.md](rag.md)) |
+| `403` when chapter 11 creates the index or uploads documents 🔎 | your search roles are missing or not yet applied | check [search.bicep](../infra/modules/search.bicep), wait a few minutes after `azd provision` |
+| the Azure AI Search agent tool cannot reach the index (401/403) ❓ | the Foundry identity lacks the search roles, or the tool needs keys enabled on the service | check the role assignments in [search.bicep](../infra/modules/search.bicep). Microsoft Learn's walkthrough enables **Both** (keys and roles) under the search service's **Keys** settings |
+| file search shows no retrieved chunks in chapter 11 ❓ | `include=["file_search_call.results"]` may not apply to agent calls | the answer and its `file_citation` still work; the evaluation's context is then empty |
 | Content Understanding fails | it needs **your** model deployments | `azd env set STARK_ENABLE_CU true && azd provision` ([foundry-tools.md](foundry-tools.md)) |
 | invoice fields have low confidence | the scan is poor or the layout is unusual | route to a human and check arithmetic in code ([foundry-tools.md](foundry-tools.md)) |
 
