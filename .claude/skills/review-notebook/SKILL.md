@@ -1,6 +1,6 @@
 ---
 name: review-notebook
-description: Review or improve a chapter notebook in this repo (notebooks/NN_*.ipynb) for learners - chapter placement, one experiment per cell with goal and expected outcome, visible prompts and readable model output, clear names, helpers out of cells. Use when the user asks to review, refactor, clean up or improve a notebook, or to apply the chapter 15 improvements to another chapter.
+description: Review or improve a chapter notebook in this repo (notebooks/NN_*.ipynb) for learners - chapter placement, one experiment per cell with goal and expected outcome, visible prompts and readable model output, clear names, helpers out of cells. Use when the user asks to review, refactor, clean up or improve a notebook, or to apply the chapter 16 improvements to another chapter.
 ---
 
 # Review a notebook
@@ -9,7 +9,7 @@ The rules live in "Notebook quality (the learner's view)" in [AGENTS.md](../../.
 
 ## Steps
 
-1. Read "Code and notebooks" and "Notebook quality" in `AGENTS.md`, then the reference example: sections 4 and 5 of `notebooks/15_copilot_harness.ipynb` and its helpers in `notebooks/stark_harness.py`.
+1. Read "Code and notebooks" and "Notebook quality" in `AGENTS.md`, then the reference example: sections 4 and 5 of `notebooks/16_copilot_harness.ipynb` and its helpers in `notebooks/stark_harness.py`.
 2. Map the notebook before you change it. Print every cell with its index and type, and list:
    - what it builds on (imports, files, agents, data from other chapters) and which chapters refer to it;
    - every name used in more than one cell (parse the code cells with `ast`);
@@ -23,9 +23,9 @@ The rules live in "Notebook quality (the learner's view)" in [AGENTS.md](../../.
 8. Update `CHANGELOG.md` (edit the chapter's existing `[Unreleased]` line when there is one), the chapter's doc and `story.md` if what the reader sees changed.
 9. Before a commit, strip outputs and local kernel metadata, and remove files your test runs created.
 
-## Worked example: chapter 15
+## Worked example: the Copilot harness chapter
 
-What changed from the first version, and which rule it illustrates:
+What changed from the first version, and which rule it illustrates. The chapter is `16_copilot_harness.ipynb` today; the rows keep the chapter numbers and names of the time (it was chapter 15, agent `jarvis-nb15`).
 
 | Before | After | Rule |
 |---|---|---|

@@ -53,12 +53,12 @@ Reference example: [docs/conversations.md](docs/conversations.md). Match its sty
 
 ### Notebook quality (the learner's view)
 
-Read this before you create or change a notebook. If your tool supports skills, use the `review-notebook` skill ([.claude/skills/review-notebook/SKILL.md](.claude/skills/review-notebook/SKILL.md)); it runs these rules as a checklist. Reference example: [15_copilot_harness.ipynb](notebooks/15_copilot_harness.ipynb), sections 4 and 5.
+Read this before you create or change a notebook. If your tool supports skills, use the `review-notebook` skill ([.claude/skills/review-notebook/SKILL.md](.claude/skills/review-notebook/SKILL.md)); it runs these rules as a checklist. Reference example: [16_copilot_harness.ipynb](notebooks/16_copilot_harness.ipynb), sections 4 and 5.
 
 **Place and story**
 - A chapter sits after every chapter it builds on and before the ones that build on it. List what it imports, reuses and refers to before you pick its number.
 - Never say an earlier chapter "showed" something unless it still does. After a move or a removed section, grep for every chapter number and file name.
-- Chapters get whole numbers. To insert one, renumber the chapters after it instead of using `14.5` or `14b`: file names would sort wrong (`14_5_…` lists before `14_ultron…`) and break the `NN_name.ipynb` convention. Then update the README tables, `story.md` acts, the docs reading order, every "chapter NN" mention and the open pull request's title and text.
+- Chapters get whole numbers. To insert one, renumber the chapters after it instead of using `14.5` or `14b`: file names would sort wrong (`14_5_…` lists before `14_senses…`) and break the `NN_name.ipynb` convention. Then update the README tables, `story.md` acts, the docs reading order, every "chapter NN" mention and the open pull request's title and text.
 
 **One experiment per cell**
 - Each experiment (a case, a step) gets a markdown cell with `### Case X · Title` or `### Step N · Title`, then **Goal:** (what it proves), an input table and **Expected:** (the concrete outcome), then one short code cell.

@@ -9,7 +9,7 @@
 | File search | `FileSearchTool` | Foundry (vector store) | `file_search_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | Web search 🧪 | `WebSearchPreviewTool` | Foundry | web search call | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | MCP | `MCPTool` | remote MCP server | `mcp_list_tools`, `mcp_approval_request` | [06](../notebooks/06_mcp_tools.ipynb) |
-| A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [17](../notebooks/17_vision_a2a_capstone.ipynb) |
+| A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [18](../notebooks/18_vision_a2a_capstone.ipynb) |
 
 > ⚠️ The output items in this document were observed on a real project with throwaway agents. **Web search was not run here.** A2A is covered in [capstone.md](capstone.md), skills in [mcp-skills.md](mcp-skills.md).
 
@@ -81,9 +81,9 @@ You answer with one item per call, tied to the `call_id`:
 | loop until no `function_call` is left, and cap the rounds | assume exactly one call |
 | `strict=True` and `additionalProperties: False` in the schema | accept extra fields silently |
 | return `output` as a **string** (JSON is fine) | return a Python object |
-| keep side effects behind your own checks (`transfer_funds` in [chapter 14](../notebooks/14_ultron_guardrails_redteam.ipynb)) | let the model move money |
+| keep side effects behind your own checks (`transfer_funds` in [chapter 15](../notebooks/15_ultron_guardrails_redteam.ipynb)) | let the model move money |
 
-Code: [chapter 05 section 1](../notebooks/05_tools_function_and_builtin.ipynb) writes the loop out. From [chapter 13](../notebooks/13_senses_document_intelligence.ipynb) on, [`run_functions()`](../notebooks/stark_helpers.py) runs the same loop.
+Code: [chapter 05 section 1](../notebooks/05_tools_function_and_builtin.ipynb) writes the loop out. From [chapter 14](../notebooks/14_senses_document_intelligence.ipynb) on, [`run_functions()`](../notebooks/stark_helpers.py) runs the same loop.
 
 ---
 
@@ -165,7 +165,7 @@ What an MCP server offers besides tools, and our own server [src/stark-mcp](../s
 
 ## 7 · A2A and skills
 
-- **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. See [capstone.md](capstone.md) (chapter 17).
+- **A2A** makes another agent a tool: `A2ATool(a2a_version=V1_0, project_connection_id=...)`. See [capstone.md](capstone.md) (chapter 18).
 - **Skills** are not tools: they add procedures (a `SKILL.md`) 🧪. See [mcp-skills.md](mcp-skills.md) (chapter 07).
 
 ---
@@ -181,7 +181,7 @@ What an MCP server offers besides tools, and our own server [src/stark-mcp](../s
 | tools shared by many agents | MCP | untrusted descriptions and results |
 | another team's agent | A2A | identity and role assignment |
 
-> 🚫 **Tool output is untrusted input.** Text from a file, a web page or an MCP server flows into the model's context, so it can carry instructions (indirect prompt injection). Give each agent the **fewest tools** it needs, approve risky calls, and test the attack on purpose in [chapter 14](../notebooks/14_ultron_guardrails_redteam.ipynb). Background: [guardrails.md](guardrails.md).
+> 🚫 **Tool output is untrusted input.** Text from a file, a web page or an MCP server flows into the model's context, so it can carry instructions (indirect prompt injection). Give each agent the **fewest tools** it needs, approve risky calls, and test the attack on purpose in [chapter 15](../notebooks/15_ultron_guardrails_redteam.ipynb). Background: [guardrails.md](guardrails.md).
 
 ---
 

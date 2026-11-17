@@ -70,7 +70,7 @@ services:
         cpu: "0.25"
         memory: 0.5Gi
 
-  invoice-workflow:      # the chapter 16 invoice pipeline as a hosted agent (native Agent Framework workflow), chapter 16
+  invoice-workflow:      # the chapter 17 invoice pipeline as a hosted agent (native Agent Framework workflow), chapter 17
     host: azure.ai.agent
     project: src/invoice-workflow
     uses:
@@ -93,7 +93,7 @@ services:
         cpu: "0.5"
         memory: 1Gi
 
-  morning-briefing:      # J.A.R.V.I.S.'s morning briefing: a concurrent Agent Framework workflow as a hosted agent, chapter 16
+  morning-briefing:      # J.A.R.V.I.S.'s morning briefing: a concurrent Agent Framework workflow as a hosted agent, chapter 17
     host: azure.ai.agent
     project: src/morning-briefing
     uses:

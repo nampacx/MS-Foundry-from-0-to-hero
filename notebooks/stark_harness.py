@@ -1,4 +1,4 @@
-"""Helpers for chapter 15: the Microsoft Copilot harness (preview).
+"""Helpers for chapter 16: the Microsoft Copilot harness (preview).
 
 Publish a skill folder as a package, talk to a harness agent, and show each turn as Markdown:
 the prompt, the agent's answer and the checks. The notebook calls these; read them here.

@@ -18,7 +18,7 @@ param principalType string = 'User'
 @description('"true" to deploy the stark-mcp Function (chapter 06).')
 param enableMcp string = 'true'
 
-@description('"true" to also deploy the models Content Understanding needs (chapter 13).')
+@description('"true" to also deploy the models Content Understanding needs (chapter 14).')
 param enableContentUnderstanding string = 'false'
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {

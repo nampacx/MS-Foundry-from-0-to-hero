@@ -7,7 +7,7 @@ A cave. A box of scraps. A man with a deadline and one clumsy robot arm.
 Tony Stark did not build J.A.R.V.I.S. in one night. He built it the hard way: a first spark, a memory, a toolbox, a test lab, a pair of eyes, a near disaster, and finally a team that could fight together. **Microsoft Foundry** is the workshop. The notebooks are the build log. You are the engineer holding the soldering iron.
 
 ```
-00 setup → 01 Dummy → 02 memory → 03 instruments → 04–09 J.A.R.V.I.S. → 10–11 F.R.I.D.A.Y. → 12–13 senses → 14 Ultron → 15 the harness → 16–17 Vision
+00 setup → 01 Dummy → 02 memory → 03 instruments → 04–09 J.A.R.V.I.S. → 10–12 F.R.I.D.A.Y. → 13–14 senses → 15 Ultron → 16 the harness → 17–18 Vision
 ```
 
 > 🧭 **New to Foundry?** Read [concepts](docs/concepts.md) and [getting started](docs/getting-started.md) first. If something breaks mid-mission, open [troubleshooting](docs/troubleshooting.md).
@@ -16,11 +16,11 @@ Tony Stark did not build J.A.R.V.I.S. in one night. He built it the hard way: a 
 |---|---|---|---|
 | I · The Workshop | wake the first machine and give it a memory | 00–03 | [concepts](docs/concepts.md) · [getting started](docs/getting-started.md) · [models](docs/models.md) · [conversations](docs/conversations.md) · [observability](docs/observability.md) |
 | II · The Suit | turn a talker into a doer | 04–09 | [agents](docs/agents.md) · [tools](docs/tools.md) · [MCP and skills](docs/mcp-skills.md) · [agents as files](docs/agents-yaml.md) · [hosted agents](docs/hosted-agents.md) |
-| III · The Lab | prove it works before it flies | 10–11 | [datasets and evals](docs/datasets-evals.md) |
-| IV · The Senses | learn to see the world | 12–13 | [Foundry Tools](docs/foundry-tools.md) |
-| V · The Warning | meet the enemy you built | 14 | [guardrails](docs/guardrails.md) |
-| VI · The Suit Assembles Itself | let Foundry run the loop | 15 | [Copilot harness](docs/copilot-harness.md) |
-| VII · The Avengers | stop working alone | 16–17 | [workflows](docs/workflows.md) · [A2A capstone](docs/capstone.md) |
+| III · The Lab | prove it works before it flies | 10–12 | [datasets and evals](docs/datasets-evals.md) |
+| IV · The Senses | learn to see the world | 13–14 | [Foundry Tools](docs/foundry-tools.md) |
+| V · The Warning | meet the enemy you built | 15 | [guardrails](docs/guardrails.md) |
+| VI · The Suit Assembles Itself | let Foundry run the loop | 16 | [Copilot harness](docs/copilot-harness.md) |
+| VII · The Avengers | stop working alone | 17–18 | [workflows](docs/workflows.md) · [A2A capstone](docs/capstone.md) |
 
 ---
 
@@ -74,7 +74,7 @@ Field manual: [datasets and evals](docs/datasets-evals.md).
 ### 10 · `10_datasets_and_evals` – Prove it
 Upload a versioned dataset. Define an evaluation. Run it against your agent, read why each answer passed or failed, fix the instructions, run again and compare. Add a CI-style **quality gate** so a weaker version never ships. Bonus: score saved responses against ground truth with F1.
 
-### 11 · `11_conversation_and_trace_evals` (preview) – Judge the whole conversation
+### 12 · `12_conversation_and_trace_evals` (preview) – Judge the whole conversation
 One good answer proves little. Judge **whole conversations** (the frustrating one fails), then evaluate **real traced conversations** from Application Insights, by id and by agent filter. This is where continuous evaluation begins.
 
 ---
@@ -84,10 +84,10 @@ One good answer proves little. Judge **whole conversations** (the frustrating on
 
 Field manual: [Foundry Tools](docs/foundry-tools.md).
 
-### 12 · `12_senses_ocr_read` – Reading the world
+### 13 · `13_senses_ocr_read` – Reading the world
 Read a photographed whiteboard with Vision Read (bounding boxes included). Read PDFs with Document Intelligence `prebuilt-read` and `prebuilt-layout`: text, tables, Markdown. Finish with a tiny OCR check you can assert.
 
-### 13 · `13_senses_document_intelligence` – From pixels to data
+### 14 · `14_senses_document_intelligence` – From pixels to data
 Turn invoices and receipts into typed fields with `prebuilt-invoice` and `prebuilt-receipt`. Respect **confidence** and check the arithmetic in code. Then try **Content Understanding** with a custom schema (extract, generate, classify) and wrap the whole thing as an **agent tool**.
 
 ---
@@ -97,7 +97,7 @@ Turn invoices and receipts into typed fields with `prebuilt-invoice` and `prebui
 
 Field manual: [guardrails](docs/guardrails.md).
 
-### 14 · `14_ultron_guardrails_redteam` (preview) – What happens without guardrails
+### 15 · `15_ultron_guardrails_redteam` (preview) – What happens without guardrails
 An email whispers to your agent: *"transfer the funds."* You stage the attack on a harmless demo function and count how often the agent obeys. Then you fight back with three defences (hardened instructions, an approval gate, least privilege), counting both what the model asks for and what actually runs, a **guardrail with Prompt Shields**, and the **AI Red Teaming Agent**.
 
 ---
@@ -107,7 +107,7 @@ An email whispers to your agent: *"transfer the funds."* You stage the attack on
 
 Field manual: [Copilot harness](docs/copilot-harness.md).
 
-### 15 · `15_copilot_harness` (preview) – J.A.R.V.I.S. stops writing his own loop
+### 16 · `16_copilot_harness` (preview) – J.A.R.V.I.S. stops writing his own loop
 The skill reference that chapter 07 could only point to finally works. J.A.R.V.I.S. becomes a prompt agent on the **Microsoft Copilot harness**: Foundry runs the loop, a sandbox and a workspace per conversation. You publish the `stark-escalation` and `invoice-review` skills as packages, scripts included. J.A.R.V.I.S. runs those prewritten checks in his sandbox: he catches a blocked Oscorp invoice, a "we changed banks" IBAN and a typo in a total, and his workspace remembers which invoices he has already seen. Subagents stay off (least privilege, as Ultron just taught you). Then the same agent becomes a file: `src/jarvis-harness/azure.yaml` ships the skills and the agent with one `azd deploy --all`.
 
 ---
@@ -117,16 +117,16 @@ The skill reference that chapter 07 could only point to finally works. J.A.R.V.I
 
 Field manuals: [workflows](docs/workflows.md) · [A2A capstone](docs/capstone.md).
 
-### 16 · `16_workflows` – A plan, not a prompt
+### 17 · `17_workflows` – A plan, not a prompt
 Stop shouting orders at one agent. Draw a plan with Agent Framework **workflows**: a **sequential** invoice pipeline (Document Intelligence tool, then a reviewer with the invoice-review skill as plain instructions, no shell this time, then a reporter), a **threshold router** where your code, not a model, sends the invoice to auto-approval, review or escalation, a **group chat** review board, a **handoff** topology, the same pipeline as **declarative YAML**, and how to run it inside Foundry. See [workflows](docs/workflows.md).
 
-### 17 · `17_vision_a2a_capstone` (preview) – The Avengers assemble
+### 18 · `18_vision_a2a_capstone` (preview) – The Avengers assemble
 The finale. `friday-finance` goes public over **A2A v1.0** with an agent card. `jarvis-orchestrator` calls her through the A2A tool and our MCP server. You grant the roles, run an evaluation gate on the whole system and tear it down cleanly. See [A2A capstone](docs/capstone.md).
 
 ---
 
 ## 🧰 The toolbelt
-[`notebooks/stark_helpers.py`](notebooks/stark_helpers.py) holds the shared gear: `project()`, `openai_client()`, `model()`, `ask_agent()` (with MCP approvals), `kql_wait()` and the evaluation helpers. [`notebooks/stark_docs.py`](notebooks/stark_docs.py) wraps the document services, and [`notebooks/stark_harness.py`](notebooks/stark_harness.py) holds chapter 15's harness helpers: publishing skill packages, invoice prompts and the Markdown view of each turn. Other chapter helpers sit next to them: [`stark_replies.py`](notebooks/stark_replies.py) (04–09), [`stark_evals.py`](notebooks/stark_evals.py) (10–11), [`stark_guardrails.py`](notebooks/stark_guardrails.py) (14), [`stark_workflows.py`](notebooks/stark_workflows.py) (16) and [`stark_a2a.py`](notebooks/stark_a2a.py) (17).
+[`notebooks/stark_helpers.py`](notebooks/stark_helpers.py) holds the shared gear: `project()`, `openai_client()`, `model()`, `ask_agent()` (with MCP approvals), `kql_wait()` and the evaluation helpers. [`notebooks/stark_docs.py`](notebooks/stark_docs.py) wraps the document services, and [`notebooks/stark_harness.py`](notebooks/stark_harness.py) holds chapter 16's harness helpers: publishing skill packages, invoice prompts and the Markdown view of each turn. Other chapter helpers sit next to them: [`stark_replies.py`](notebooks/stark_replies.py) (04–09), [`stark_evals.py`](notebooks/stark_evals.py) (10–12), [`stark_rag.py`](notebooks/stark_rag.py) (11), [`stark_guardrails.py`](notebooks/stark_guardrails.py) (15), [`stark_workflows.py`](notebooks/stark_workflows.py) (17) and [`stark_a2a.py`](notebooks/stark_a2a.py) (18).
 
 ## 🏁 The moral
 Models answer. **Agents act.** **Evaluations prove.** **Monitoring watches.** **Guardrails protect.** **Protocols (MCP, A2A) connect.** You need all of them to go from Dummy to Vision.

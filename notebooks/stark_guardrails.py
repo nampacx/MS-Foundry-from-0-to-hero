@@ -1,4 +1,4 @@
-"""Helpers for chapter 14: Ultron, an injected email against four agent variants, then a guardrail (preview).
+"""Helpers for chapter 15: Ultron, an injected email against four agent variants, then a guardrail (preview).
 
 The notebook keeps the demo tools, the defences and the guardrail calls. These helpers deploy the agents, repeat the
 attack, count what the model asked for and what ran, and show each run as Markdown. Read them here.

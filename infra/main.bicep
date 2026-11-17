@@ -8,7 +8,7 @@ param principalId string = ''
 param principalType string = 'User'
 @description('Deploy the stark-mcp Function (chapter 06).')
 param enableMcp bool = true
-@description('Also deploy the models Content Understanding needs (chapter 13). Off by default: they need extra quota.')
+@description('Also deploy the models Content Understanding needs (chapter 14). Off by default: they need extra quota.')
 param enableContentUnderstanding bool = false
 
 var cfg = loadJsonContent('config/stark.json')

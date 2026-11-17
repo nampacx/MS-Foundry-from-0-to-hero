@@ -21,7 +21,7 @@ flowchart LR
   C -->|postprovision hook| D[.env written]
   D --> E[4 venv + pip]
   E --> F[5 notebook 00]
-  F --> G[notebooks 01 … 17]
+  F --> G[notebooks 01 … 18]
 ```
 
 ---
@@ -36,8 +36,8 @@ flowchart LR
 | [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) `>= 1.36.0` | runs the deployment ([azure.yaml](../azure.yaml) pins this) | `azd version` |
 | Python 3.11+ | notebooks and scripts | `python --version` |
 | Jupyter or VS Code | opens the notebooks | `jupyter lab` |
-| *optional:* .NET runtime | only chapter 16 section 5 (declarative YAML workflows use PowerFx) | `dotnet --list-runtimes` |
-| *optional:* quota for the Content Understanding models | only chapter 13 section 3 (`STARK_ENABLE_CU=true`) | step 2 |
+| *optional:* .NET runtime | only chapter 17 section 5 (declarative YAML workflows use PowerFx) | `dotnet --list-runtimes` |
+| *optional:* quota for the Content Understanding models | only chapter 14 section 3 (`STARK_ENABLE_CU=true`) | step 2 |
 
 > 💡 **No Docker needed.** Hosted agents are built by Foundry from a code ZIP ([hosted-agents.md](hosted-agents.md)).
 
@@ -85,7 +85,7 @@ flowchart LR
 | Foundry resource, project, model deployments | [foundry.bicep](../infra/modules/foundry.bicep) | 00 |
 | Log Analytics + Application Insights | [monitoring.bicep](../infra/modules/monitoring.bicep) | 03 |
 | Roles for you | [rbac.bicep](../infra/modules/rbac.bicep) | all |
-| MCP server (Azure Function) | [mcp-function.bicep](../infra/modules/mcp-function.bicep), [src/stark-mcp](../src/stark-mcp/function_app.py) | 06, 17 |
+| MCP server (Azure Function) | [mcp-function.bicep](../infra/modules/mcp-function.bicep), [src/stark-mcp](../src/stark-mcp/function_app.py) | 06, 18 |
 | `.env` file | [write_env.py](../scripts/write_env.py), template [.env.example](../.env.example) | all |
 | Project connection `stark-mcp` | [connect_mcp.py](../scripts/connect_mcp.py) | 06 |
 
@@ -141,9 +141,9 @@ If a cell fails, look up the message in [troubleshooting.md](troubleshooting.md)
 |---|---|
 | brand new to Foundry | `00` → `01` → `02` → `04` → `05`, then the rest in order |
 | here for agents | `04` → `05` → `06` → `08` → `09`. Read [agents.md](agents.md) first |
-| here for quality | `04` → `10` → `11`. Read [datasets-evals.md](datasets-evals.md) |
-| here for documents | `12` → `13`. Read [foundry-tools.md](foundry-tools.md). No agent needed |
-| here for safety | `04` → `05` → `14`. Read [guardrails.md](guardrails.md) |
+| here for quality | `04` → `10` → `12`. Read [datasets-evals.md](datasets-evals.md) |
+| here for documents | `13` → `14`. Read [foundry-tools.md](foundry-tools.md). No agent needed |
+| here for safety | `04` → `05` → `15`. Read [guardrails.md](guardrails.md) |
 
 > 💡 Chapters build on each other only a little, but the agent chapters (04 on) reuse the helpers and settings from 00. Each notebook deletes what it created (agent versions, conversations, datasets) unless the next chapter needs it.
 

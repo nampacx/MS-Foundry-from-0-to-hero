@@ -5,8 +5,9 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 ## [Unreleased]
 
 ### Changed
-- README, Deploy with azd: every azd command the chapters use (08, 09, 13, 15, 16), what it does, where to run it, and whether a notebook cell runs it for you; `azd up` also deploys the MCP function and the four hosted agents. The extension line mentions `azd extension upgrade microsoft.foundry`.
-- Every notebook, 00 to 17, ran against an environment deployed with `azd up`. The README verification note, `capstone.md`, `datasets-evals.md`, `guardrails.md`, `workflows.md` and chapters 16 and 17 no longer say a chapter was not run live; ❓ now marks only outcomes that can vary between runs.
+- Chapter order: a new chapter 11 on RAG moves the later chapters up by one. Conversation and trace evaluations are now chapter 12 (`12_conversation_and_trace_evals.ipynb`), OCR and Read 13 (`13_senses_ocr_read.ipynb`), invoices and Content Understanding 14 (`14_senses_document_intelligence.ipynb`), Ultron 15 (`15_ultron_guardrails_redteam.ipynb`), the Copilot harness 16 (`16_copilot_harness.ipynb`), workflows 17 (`17_workflows.ipynb`) and the A2A capstone 18 (`18_vision_a2a_capstone.ipynb`). The agents named after a chapter follow: `jarvis-nb12`, `friday-docs-nb14`, `ultron-nb15-*`, `jarvis-nb16`. Docs 12 to 16 are now 13 to 17 (`foundry-tools.md`, `guardrails.md`, `copilot-harness.md`, `workflows.md`, `capstone.md`). README, `story.md`, the docs, helper docstrings and `azure.yaml` comments use the new numbers.
+- README, Deploy with azd: every azd command the chapters use (08, 09, 14, 16, 17), what it does, where to run it, and whether a notebook cell runs it for you; `azd up` also deploys the MCP function and the four hosted agents. The extension line mentions `azd extension upgrade microsoft.foundry`.
+- Every notebook, 00 to 17, ran against an environment deployed with `azd up`. The README verification note, `capstone.md`, `datasets-evals.md`, `guardrails.md`, `workflows.md` and chapters 17 and 18 no longer say a chapter was not run live; ❓ now marks only outcomes that can vary between runs.
 
 ## [0.2] – 2026-11-03
 

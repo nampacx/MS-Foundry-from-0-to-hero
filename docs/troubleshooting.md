@@ -77,7 +77,7 @@ flowchart TD
 | agent version 2 appears instead of a replacement | `create_version` with an existing name **adds** a version | expected. Delete old versions with [`delete_agent()`](../notebooks/stark_helpers.py) |
 | agents from earlier runs clutter **Build → Agents** | a notebook was stopped before its clean-up cell | run the clean-up cell, or delete the agent in the portal |
 | skills have no effect on a prompt agent | `skills=[...]` is accepted but needs the Copilot harness | create a new agent with `harness=MicrosoftCopilotHarness()`. See [copilot-harness.md](copilot-harness.md) |
-| `cannot import name 'MicrosoftCopilotHarness'` | `azure-ai-projects` older than 2.9.0, often a `.venv` created before chapter 15 | `pip install -U "azure-ai-projects>=2.9.0"`, then restart the notebook kernel |
+| `cannot import name 'MicrosoftCopilotHarness'` | `azure-ai-projects` older than 2.9.0, often a `.venv` created before chapter 16 | `pip install -U "azure-ai-projects>=2.9.0"`, then restart the notebook kernel |
 | pip warns `agent-framework-foundry ... requires azure-ai-projects<2.8.0` | `agent-framework-foundry` 1.10.2 and later pin the old SDK | expected. A fresh `pip install -r requirements.txt` picks 1.10.1, which allows both. The notebooks only use its `FoundryChatClient` |
 | harness request fails on `previous_response_id`, `store=False` or `temperature` | the harness manages these settings | pass a `conversation`, leave the fields out ([copilot-harness.md](copilot-harness.md)) |
 | `azd deploy` ignores or rejects `harness:` | `azure.ai.agents` older than 1.0.0-beta.22, or the opt-in is missing | `azd extension upgrade microsoft.foundry` and `AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true` in the same shell |
@@ -111,7 +111,7 @@ flowchart TD
 | evaluation run seems stuck | runs are asynchronous and judge calls take time | [`wait_eval_run()`](../notebooks/stark_helpers.py) polls (30 minute default limit) |
 | `assert_pass_rate` raises | the pass rate is below the threshold | open the item **reasons** ([`eval_scores()`](../notebooks/stark_helpers.py)). Fix the agent, run again ([datasets-evals.md](datasets-evals.md)) |
 | trace evaluation fails | it is **preview** and needs a recent `azure-ai-projects` | `pip install -U azure-ai-projects` |
-| `400 content_filter` | a guardrail blocked the request | expected in chapter 14. See [guardrails.md](guardrails.md) |
+| `400 content_filter` | a guardrail blocked the request | expected in chapter 15. See [guardrails.md](guardrails.md) |
 | guardrail creation via ARM fails | control names or API versions changed | create it in **Build → Guardrails** and assign it there |
 | Content Understanding fails | it needs **your** model deployments | `azd env set STARK_ENABLE_CU true && azd provision` ([foundry-tools.md](foundry-tools.md)) |
 | invoice fields have low confidence | the scan is poor or the layout is unusual | route to a human and check arithmetic in code ([foundry-tools.md](foundry-tools.md)) |

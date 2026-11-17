@@ -38,9 +38,9 @@ A model answers one request and forgets ([concepts.md](concepts.md#2--model-resp
 | **Instructions** | who it is, how it talks, which rules it follows | `instructions`, optionally a template with `{{...}}` placeholders | J.A.R.V.I.S., chapter 04 |
 | **Tools** | what it can do or look up beyond its training | `tools`: `FunctionTool`, `CodeInterpreterTool`, `FileSearchTool`, `WebSearchPreviewTool` | chapter 05, [tools.md](tools.md) |
 | **MCP servers** | which tools it takes from a server someone else runs | `MCPTool` in `tools`, secrets in a project connection | chapter 06, [mcp-skills.md](mcp-skills.md) |
-| **Other agents** | which agents it can call | `A2ATool` in `tools` | chapter 17, [capstone.md](capstone.md) |
-| **Skills** | which procedure it follows for a kind of task | `skills` with `SkillReference` (only on the Copilot harness) | chapters 07 and 15, [mcp-skills.md](mcp-skills.md) |
-| **Guardrail** | what it must never do or say | `rai_config` with a guardrail policy | chapter 14, [guardrails.md](guardrails.md) |
+| **Other agents** | which agents it can call | `A2ATool` in `tools` | chapter 18, [capstone.md](capstone.md) |
+| **Skills** | which procedure it follows for a kind of task | `skills` with `SkillReference` (only on the Copilot harness) | chapters 07 and 16, [mcp-skills.md](mcp-skills.md) |
+| **Guardrail** | what it must never do or say | `rai_config` with a guardrail policy | chapter 15, [guardrails.md](guardrails.md) |
 | **Name and version** | how callers find it, and how it changes | `agent_name`; every `create_version` adds a version | section 3 |
 
 Three things belong to an agent but sit **outside** its definition:
@@ -48,7 +48,7 @@ Three things belong to an agent but sit **outside** its definition:
 | Part | Answers | Where it lives |
 |---|---|---|
 | **Memory** | what was said before | a **conversation** the caller creates and passes in. One agent serves many conversations ([conversations.md](conversations.md)) |
-| **Identity** | as whom it calls other services | `instance_identity`, an Entra identity Foundry creates for the agent. Chapter 17 grants it a role so the orchestrator may call F.R.I.D.A.Y. ([capstone.md](capstone.md)) |
+| **Identity** | as whom it calls other services | `instance_identity`, an Entra identity Foundry creates for the agent. Chapter 18 grants it a role so the orchestrator may call F.R.I.D.A.Y. ([capstone.md](capstone.md)) |
 | **Runtime** | who runs the loop of model calls and tool calls | Foundry for a default prompt agent, the managed Copilot harness 🧪 ([copilot-harness.md](copilot-harness.md)), or your own code in a hosted agent ([hosted-agents.md](hosted-agents.md)) |
 
 ### The persona is part of the instructions
@@ -58,7 +58,7 @@ The **persona** is who the agent is and how it talks: a role, a tone, a form of 
 - **A new persona is a new version.** Chapter 04's version 2 answers only in rhyming couplets, and every caller gets it without a code change.
 - **One persona, many people.** Structured inputs fill `{{person}}` and `{{title}}` per request, so one version greets everyone by name (section 4).
 - **A persona does not add abilities.** What an agent can do comes from its tools. Without tools it can only talk, however capable its persona sounds.
-- **A rule in the instructions is not a security boundary.** Chapter 14 shows that hardened instructions only lower the odds of an injected email moving money. The approval gate and least privilege (no transfer tool at all) stop it. Put "must never" into the tools you give and the guardrail, not only into the persona.
+- **A rule in the instructions is not a security boundary.** Chapter 15 shows that hardened instructions only lower the odds of an injected email moving money. The approval gate and least privilege (no transfer tool at all) stop it. Put "must never" into the tools you give and the guardrail, not only into the persona.
 
 ### What an agent is not
 
