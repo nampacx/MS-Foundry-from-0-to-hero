@@ -59,7 +59,7 @@ Turn-level scores miss repeated failures and unresolved problems. With `extra_bo
 
 > ⚠️ **Judge cost and bias:** every AI-judged score is a model call. Use a stable judge deployment (`STARK_JUDGE_MODEL`) so scores stay comparable between runs, and read the `reason` field instead of trusting the number blindly.
 
-> ⚠️ **Preview / unverified:** trace evaluation is preview and needs a recent `azure-ai-projects`. The code follows the Microsoft Learn samples and ran on a live project. Preview APIs can still change.
+> ⚠️ **Preview / unverified:** trace evaluation is preview and needs a recent `azure-ai-projects`. The code follows the Microsoft Learn samples and ran on a live project. Preview APIs can still change. A trace run reads Application Insights as the project's managed identity, which needs **Reader** on that resource ([rbac.bicep](../infra/modules/rbac.bicep)).
 
 ---
 

@@ -74,6 +74,8 @@ module rbac 'modules/rbac.bicep' = {
   params: {
     foundryAccountName: foundry.outputs.accountName
     workspaceName: monitoring.outputs.workspaceName
+    appInsightsName: monitoring.outputs.appInsightsName
+    projectPrincipalId: foundry.outputs.projectPrincipalId
     principalId: principalId
     principalType: principalType
   }

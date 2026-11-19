@@ -99,5 +99,6 @@ output accountName string = account.name
 output accountId string = account.id
 output projectName string = project.name
 output projectId string = project.id
+output projectPrincipalId string = project.identity.principalId
 output projectEndpoint string = 'https://${account.name}.services.ai.azure.com/api/projects/${project.name}'
 output accountEndpoint string = 'https://${account.name}.cognitiveservices.azure.com'

@@ -101,6 +101,7 @@ flowchart TD
 | KQL returns no rows | table or attribute names differ between SDK versions | run `AppDependencies \| take 5` and read `Properties` ([observability.md](observability.md)) |
 | chapter 03 calls are missing in the Foundry **Traces** tab | they are model calls, **no agent** | look in Application Insights → Transaction search. Foundry shows traces per agent from chapter 04 on ([portal-tour.md](portal-tour.md)) |
 | KQL says access denied 🔎 | *Log Analytics Reader* missing or not yet applied | check [rbac.bicep](../infra/modules/rbac.bicep), wait a minute |
+| trace evaluation ends as `failed` with `ApplicationInsightsAccessDenied` (chapter 12) | the service reads the traces as the **project's managed identity**, and that identity has no read role on Application Insights | run `azd provision --no-state`: [rbac.bicep](../infra/modules/rbac.bicep) assigns **Reader** on Application Insights to the project identity. Plain `azd provision` can report "no changes" and skip it. Wait up to 10 minutes, then run the cell again |
 | prompts and answers show in traces | content recording is on | intended for the workshop only. Turn off `AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED` for real data |
 
 ---
@@ -110,6 +111,7 @@ flowchart TD
 | Symptom | Why | Fix |
 |---|---|---|
 | evaluation run seems stuck | runs are asynchronous and judge calls take time | [`wait_eval_run()`](../notebooks/stark_helpers.py) polls (30 minute default limit) |
+| `ResourceExistsError`: asset `.../data/<name>/versions/1` already exists | `datasets.upload_file` cannot upload a name and version twice | upload with [`upload_dataset()`](../notebooks/stark_helpers.py), which reuses an existing version. For a changed file run the chapter's clean-up cell first, or pass a new `version` |
 | `assert_pass_rate` raises | the pass rate is below the threshold | open the item **reasons** ([`eval_scores()`](../notebooks/stark_helpers.py)). Fix the agent, run again ([datasets-evals.md](datasets-evals.md)) |
 | trace evaluation fails | it is **preview** and needs a recent `azure-ai-projects` | `pip install -U azure-ai-projects` |
 | `400 content_filter` | a guardrail blocked the request | expected in chapter 15. See [guardrails.md](guardrails.md) |

@@ -120,6 +120,8 @@ flowchart LR
 | Cognitive Services User | call Foundry Tools | [rbac.bicep](../infra/modules/rbac.bicep) |
 | Log Analytics Reader | run KQL on the workspace | [rbac.bicep](../infra/modules/rbac.bicep) |
 
+One role goes to the **project's managed identity**, not to you: **Reader** on Application Insights ([rbac.bicep](../infra/modules/rbac.bicep)). Trace evaluations 🧪 read the spans as that identity ([datasets-evals.md](datasets-evals.md)).
+
 > ⚠️ A role assignment can take a minute or more to work. A `403` right after `azd up` is often just that. See [troubleshooting.md](troubleshooting.md).
 
 Secrets for **other** systems (an MCP key, a remote agent) go into a **project connection**, never into an agent definition or a notebook ([mcp-skills.md](mcp-skills.md)).
