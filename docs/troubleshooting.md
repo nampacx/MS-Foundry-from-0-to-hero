@@ -56,6 +56,7 @@ flowchart TD
 | Symptom | Why | Fix |
 |---|---|---|
 | `DefaultAzureCredential failed to retrieve a token` | no valid login for the credential chain | `az login` and `azd auth login`, restart the kernel |
+| the same error with `Azure CLI not found on path` | the kernel runs without your shell's `PATH` (the editor was started from the Dock or Start menu). `credential()` in [stark_helpers.py](../notebooks/stark_helpers.py) adds the usual install folders of `az` and `azd` itself | restart the kernel; if it stays, the CLI sits in another folder: start the editor from a terminal (`code .`) |
 | right after `azd up`: `401` or `403` (`PermissionDenied`) | role assignments take a minute or more to apply | wait, restart the kernel, retry |
 | `403` that stays | your user lacks *Azure AI User* on the resource | check [rbac.bicep](../infra/modules/rbac.bicep); in the portal open the resource → Access control (IAM) |
 | document calls fail with `403` 🔎 | *Cognitive Services User* is missing | same place. [foundry-tools.md](foundry-tools.md) |
@@ -115,8 +116,9 @@ flowchart TD
 | guardrail creation via ARM fails | control names or API versions changed | create it in **Build → Guardrails** and assign it there |
 | chapter 11, section 4 prints "Azure AI Search is not deployed" | the search service is optional and off by default | `azd env set STARK_ENABLE_SEARCH true && azd provision`, then restart the kernel ([rag.md](rag.md)) |
 | `403` when chapter 11 creates the index or uploads documents 🔎 | your search roles are missing or not yet applied | check [search.bicep](../infra/modules/search.bicep), wait a few minutes after `azd provision` |
-| the Azure AI Search agent tool cannot reach the index (401/403) ❓ | the Foundry identity lacks the search roles, or the tool needs keys enabled on the service | check the role assignments in [search.bicep](../infra/modules/search.bicep). Microsoft Learn's walkthrough enables **Both** (keys and roles) under the search service's **Keys** settings |
-| file search shows no retrieved chunks in chapter 11 ❓ | `include=["file_search_call.results"]` may not apply to agent calls | the answer and its `file_citation` still work; the evaluation's context is then empty |
+| the Azure AI Search agent tool cannot reach the index (401/403) 🔎 | the Foundry identity lacks the search roles | check the role assignments in [search.bicep](../infra/modules/search.bicep). The tool works without keys on the service |
+| the Azure AI Search agent's citation links to the search service, not to your document | the tool reads only the key and the searchable fields of the index | make the `url` field searchable, as `archive_index()` in [stark_rag.py](../notebooks/stark_rag.py) does ([rag.md](rag.md)) |
+| chapter 11, section 4, step 1 fails with `CannotChangeExistingField` (`Existing field 'url' cannot be changed`) | the index `stark-archive` exists with an older definition | run the chapter's clean-up cell, or delete the index in the Azure portal, then run step 1 again |
 | Content Understanding fails | it needs **your** model deployments | `azd env set STARK_ENABLE_CU true && azd provision` ([foundry-tools.md](foundry-tools.md)) |
 | invoice fields have low confidence | the scan is poor or the layout is unusual | route to a human and check arithmetic in code ([foundry-tools.md](foundry-tools.md)) |
 

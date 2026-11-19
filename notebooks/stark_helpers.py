@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import time
 from datetime import timedelta
 from pathlib import Path
@@ -33,10 +34,40 @@ _credential = None
 _projects: dict[bool, object] = {}
 
 
+def cli_dirs() -> list[str]:
+    """The folders where `az` and `azd` are usually installed, on macOS, Linux and Windows."""
+    env, home = os.environ, Path.home()
+    dirs = [
+        "/opt/homebrew/bin",                      # macOS, Homebrew on Apple silicon
+        "/usr/local/bin",                         # macOS on Intel, Linux, the azd install script
+        "/usr/bin",                               # Linux packages
+        "/home/linuxbrew/.linuxbrew/bin",         # Homebrew on Linux
+        str(home / ".local" / "bin"),
+    ]
+    for root in (env.get("ProgramFiles"), env.get("ProgramFiles(x86)")):  # Windows installers
+        if root:
+            dirs += [str(Path(root) / "Microsoft SDKs" / "Azure" / "CLI2" / "wbin"), str(Path(root) / "Azure Dev CLI")]
+    if env.get("LOCALAPPDATA"):
+        dirs.append(str(Path(env["LOCALAPPDATA"]) / "Programs" / "Azure Dev CLI"))
+    return dirs
+
+
+def find_azure_clis() -> None:
+    """Add the install folder to PATH when `az` / `azd` are not on it (an editor started without the shell's PATH)."""
+    for cli in ("az", "azd"):
+        if shutil.which(cli):
+            continue
+        found = shutil.which(cli, path=os.pathsep.join(cli_dirs()))  # `which` knows `.cmd` / `.exe` on Windows
+        if found:
+            os.environ["PATH"] = os.pathsep.join(filter(None, [os.environ.get("PATH"), str(Path(found).parent)]))
+
+
 def credential():
+    """The shared `DefaultAzureCredential`; it signs in through `az login` / `azd auth login`."""
     global _credential
     if _credential is None:
         from azure.identity import DefaultAzureCredential
+        find_azure_clis()
         _credential = DefaultAzureCredential()
     return _credential
 

@@ -95,7 +95,7 @@ def _quote(text: str) -> list[str]:
 
 def _table(checks: dict[str, str]) -> list[str]:
     """A two-column check table."""
-    return ["", "**Check**", "", "| | |", "|---|---|"] + [f"| {k} | {v} |" for k, v in checks.items()]
+    return ["", "**Check**", "", "| check | result |", "|---|---|"] + [f"| {k} | {v} |" for k, v in checks.items()]
 
 
 def _expected(got, expected) -> str:

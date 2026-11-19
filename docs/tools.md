@@ -7,7 +7,7 @@
 | Function | `FunctionTool` | **your code** | `function_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | Code interpreter | `CodeInterpreterTool` | Foundry sandbox | `code_interpreter_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | File search | `FileSearchTool` | Foundry (vector store) | `file_search_call` | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
-| Azure AI Search | `AzureAISearchTool` | Foundry, against your index | ❓ not seen yet | [11](../notebooks/11_rag_three_ways.ipynb), optional |
+| Azure AI Search | `AzureAISearchTool` | Foundry, against your index | `azure_ai_search_call`, `azure_ai_search_call_output` | [11](../notebooks/11_rag_three_ways.ipynb), optional |
 | Web search 🧪 | `WebSearchPreviewTool` | Foundry | web search call | [05](../notebooks/05_tools_function_and_builtin.ipynb) |
 | MCP | `MCPTool` | remote MCP server | `mcp_list_tools`, `mcp_approval_request` | [06](../notebooks/06_mcp_tools.ipynb) |
 | A2A | `A2ATool` | remote agent | see [capstone.md](capstone.md) | [18](../notebooks/18_vision_a2a_capstone.ipynb) |

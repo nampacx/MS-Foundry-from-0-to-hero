@@ -10,7 +10,7 @@
 
 Hands-on: [11 · RAG three ways](../notebooks/11_rag_three_ways.ipynb). Helpers: [stark_rag.py](../notebooks/stark_rag.py). The documents: [data/archive](../data/archive).
 
-> ❓ **Not run on a live project yet.** The chapter and the Bicep module follow Microsoft Learn as of 2026-11. The Bicep compiles; nothing was deployed or called. ❓ marks what a live run still has to confirm.
+> ✅ **Run on a live project** (2026-11-19): the chapter, with the search service deployed by the Bicep module. Both follow Microsoft Learn as of 2026-11.
 
 ---
 
@@ -45,7 +45,7 @@ A chunk is the unit you retrieve and quote. It should hold one topic and make se
 
 The chapter uses [`split_by_heading()`](../notebooks/stark_rag.py): one chunk per `## ` section, 25 chunks for five files. Case E cuts every 200 characters instead and splits "Housing bolts ar" from "e tightened to 42 Nm".
 
-File search chunks for you: 800 tokens with 400 overlap by default. A `chunking_strategy` can change that when you add a file ❓ (in the REST reference, not tried here).
+File search chunks for you: 800 tokens with 400 overlap by default. A `chunking_strategy` changes that when you add a file: `upload_and_poll(..., chunking_strategy={"type": "static", "static": {"max_chunk_size_tokens": 100, "chunk_overlap_tokens": 20}})` split the reactor manual into four chunks in a live test. The chapter keeps the default, so each small file is one chunk.
 
 ## 2 · Embed and index
 
@@ -102,11 +102,14 @@ With a managed tool you write no such prompt. The agent's instructions carry the
 |---|---|---|
 | Tool | `FileSearchTool(vector_store_ids=[...])` | `AzureAISearchTool(azure_ai_search=AzureAISearchToolResource(indexes=[AISearchIndexResource(...)]))` |
 | Points at | a vector store | a project connection and one index |
-| See what was retrieved | `include=["file_search_call.results"]` on `responses.create` ❓ with an agent | ❓ the output item was not seen yet |
-| Citation | `file_citation` with `filename` | `url_citation` with the index's URL field |
+| See what was retrieved | `include=["file_search_call.results"]` on `responses.create`, also with an agent | the `azure_ai_search_call_output` item: the documents with `title`, `url`, `content` and `score` |
+| See the query | `queries` of the `file_search_call` item | `arguments` of the `azure_ai_search_call` item |
+| Citation | `file_citation` with `filename` | `url_citation` with the document's `title` and `url` fields |
 | Query | the model writes it | `query_type`: `simple`, `vector`, `semantic`, `vector_simple_hybrid`, `vector_semantic_hybrid` (default) |
 
 The chapter sets `query_type=AzureAISearchQueryType.SIMPLE`. The default needs the semantic ranker, which the chapter's index does not configure.
+
+> ⚠️ The Azure AI Search tool reads the key and the searchable string fields of an index, nothing else. A `url` field that is not searchable is ignored, and the citation then links to the search service instead of your document. [`archive_index()`](../notebooks/stark_rag.py) makes `url` searchable for that reason, and the chapter's own keyword queries pass `search_fields=["content", "title"]` so the words of the link do not count.
 
 ## 5 · Score it
 
@@ -141,7 +144,7 @@ azd provision
 
 > ⚠️ **It costs while it exists.** The Basic tier is billed by the hour, used or not; see [pricing](https://azure.microsoft.com/pricing/details/search/). Setting `STARK_ENABLE_SEARCH` back to `false` does not delete the service. Use `azd down`, or delete the search service in the Azure portal.
 
-> ❓ **Not deployed yet.** Unchecked: the shape of the connection resource, the role ids, and whether the agent tool accepts a service without keys. Microsoft Learn's walkthrough enables both keys and roles on the service. If the tool cannot reach the index, try that first ([troubleshooting.md](troubleshooting.md)).
+> ✅ **Deployed and used** (2026-11-19): the connection, the roles and the agent tool work against the service without keys. Microsoft Learn's walkthrough enables both keys and roles; this deployment did not need the keys.
 
 This is a connected tool resource. It is not the **standard agent setup** from [concepts.md](concepts.md), where Foundry stores agent state in your own Azure AI Search: that stays not deployed.
 

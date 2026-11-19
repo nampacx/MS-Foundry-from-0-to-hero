@@ -4,6 +4,16 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Changed
+- Chapter 11 ran on a live project, including the optional Azure AI Search section and the evaluations. Every ❓ in the chapter, in [docs/rag.md](docs/rag.md), in the README and in the chapter's troubleshooting rows is now a fact: the **Expected:** lines state the ranks, scores, citations and judge scores of the run. What the run showed: `include=["file_search_call.results"]` returns results through an agent, `vector_stores.search` and `chunking_strategy` work on a Foundry project, Azure AI Search reports a vector score of 1 / (2 − cosine), the search agent's output items are `azure_ai_search_call` and `azure_ai_search_call_output`, and the agent tool works against a search service without keys.
+- Chapter 11, case I: all three steps check their result against an expected value (✅ / ❌). The keyword step no longer shows only "not in the top 3", which read like a failure although it is the point of the step. The keyword and hybrid queries pass `search_fields=TEXT_FIELDS` (`content`, `title`).
+- Chapter 11, case K: the check table shows where the citation links to, and the markdown lists the output items of the search agent.
+- Check tables have a header (`check | result`) instead of a blank header row, in every chapter that shows one (`stark_replies.py`, `stark_rag.py`, `stark_guardrails.py`, `stark_harness.py`, `stark_workflows.py`) and in the sample tables of chapters 07, 08, 09 and 11.
+
+### Fixed
+- Chapter 11, case K: the search agent's `url_citation` links to the archive file on GitHub. Before, it linked to the search service, because the agent tool reads only the key and the searchable fields of an index and `url` was not searchable. `archive_index()` in `stark_rag.py` now makes `url` searchable. If the index `stark-archive` already exists, delete it (the clean-up cell does) before you run section 4 again.
+- `credential()` in `stark_helpers.py` finds `az` and `azd` when the notebook kernel runs without your shell's `PATH` (an editor started from the Dock or Start menu): it adds their usual install folder on macOS, Linux and Windows before it signs in. This ends `DefaultAzureCredential failed to retrieve a token` with `Azure CLI not found on path`. [troubleshooting.md](docs/troubleshooting.md) has a row for it.
+
 ## [0.3] – 2026-11-17
 
 Third release: a chapter on RAG (by hand, with file search and with an optional Azure AI Search index), scored for groundedness. It is chapter 11, so the chapters after it move up by one. ❓ Chapter 11 and the search deployment were not run on a live project yet.

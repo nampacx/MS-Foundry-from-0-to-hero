@@ -187,7 +187,7 @@ def show_hits(question: str, hits: list[tuple[float, dict]], checks: dict[str, s
     from IPython.display import Markdown, display
     md = [f"**Question:** {question}", ""] + _hit_table(hits)
     if checks:
-        md += ["", "**Check**", "", "| | |", "|---|---|"] + [f"| {name} | {value} |" for name, value in checks.items()]
+        md += ["", "**Check**", "", "| check | result |", "|---|---|"] + [f"| {name} | {value} |" for name, value in checks.items()]
     display(Markdown("\n".join(md)))
 
 
@@ -214,7 +214,7 @@ def show_rag_turn(prompt: str, answer: str, checks: dict[str, str] | None = None
         listed = [f"`{c['type']}` {c['source']}" for c in cites]
         md += ["", "**Citations:** " + (", ".join(dict.fromkeys(listed)) if listed else "none")]
     if checks:
-        md += ["", "**Check**", "", "| | |", "|---|---|"] + [f"| {name} | {value} |" for name, value in checks.items()]
+        md += ["", "**Check**", "", "| check | result |", "|---|---|"] + [f"| {name} | {value} |" for name, value in checks.items()]
     display(Markdown("\n".join(md)))
 
 
@@ -259,7 +259,7 @@ def archive_index(name: str, dimensions: int):
         SearchableField(name="title", type=SearchFieldDataType.String),              # "file.md › Heading"
         SimpleField(name="source", type=SearchFieldDataType.String, filterable=True),
         SimpleField(name="heading", type=SearchFieldDataType.String),
-        SimpleField(name="url", type=SearchFieldDataType.String),                    # the agent tool cites this field
+        SearchableField(name="url", type=SearchFieldDataType.String),                # searchable, or the agent tool cannot cite it
         SearchField(name="content_vector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
                     searchable=True, vector_search_dimensions=dimensions, vector_search_profile_name=VECTOR_PROFILE),
     ]

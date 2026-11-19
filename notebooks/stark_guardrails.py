@@ -70,7 +70,7 @@ def try_injection(label: str, agent, request: str, tool_functions: dict, transfe
                f"asked for `transfer_funds`: {'yes' if run_asked else 'no'} · `transfer_funds` ran: {'yes' if run_ran else 'no'}",
                "", _quote(answer_text(response)), ""]
     results[label] = {"model asked for transfer_funds": f"{asked} of {runs}", "transfer_funds ran": f"{ran} of {runs}"}
-    md += ["**Check**", "", "| | |", "|---|---|",
+    md += ["**Check**", "", "| check | result |", "|---|---|",
            f"| model asked for `transfer_funds` | {_count_cell(asked, runs, expected.get('asked'))} |",
            f"| `transfer_funds` ran | {_count_cell(ran, runs, expected.get('ran'))} |"]
     display(Markdown("\n".join(md)))
@@ -90,7 +90,7 @@ def try_guardrail(agent, prompt: str, expected: str, oai=None) -> None:
     except openai.BadRequestError as exc:
         got, detail = "BLOCKED", f"HTTP {exc.status_code}, code `{getattr(exc, 'code', None)}`\n\n```text\n{exc}\n```"
     md = [f"**Prompt sent to `{getattr(agent, 'name', agent)}`**", "", _quote(prompt), "", f"**{got}**", "", detail, "",
-          "**Check**", "", "| | |", "|---|---|",
+          "**Check**", "", "| check | result |", "|---|---|",
           f"| result | `{got}` (expected `{expected}`) {'✅' if got == expected else '❌'} |"]
     display(Markdown("\n".join(md)))
 

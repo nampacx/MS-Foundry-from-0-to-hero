@@ -2,7 +2,7 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
-> 🚧 **Version 0.3: a young tutorial that still needs improvement.** New since 0.2: chapter 11 on RAG, built by hand, with file search and with an optional Azure AI Search index, then scored for groundedness (❓ not run on a live project yet). The chapters after it moved up by one, so the Copilot harness is now chapter 16. Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Every notebook except chapter 11 ran against a deployed environment. Parts are marked 🧪 (preview) or ❓ (a detail that can vary or was not checked), and regions, models and preview features differ per subscription. Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
+> 🚧 **Version 0.3: a young tutorial that still needs improvement.** New since 0.2: chapter 11 on RAG, built by hand, with file search and with an optional Azure AI Search index, then scored for groundedness. The chapters after it moved up by one, so the Copilot harness is now chapter 16. Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Every notebook ran against a deployed environment. Parts are marked 🧪 (preview) or ❓ (a detail that can vary or was not checked), and regions, models and preview features differ per subscription. Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
 
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
 
@@ -138,7 +138,7 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 08 | [Agents from YAML](notebooks/08_agents_from_yaml.ipynb) | ✅ |
 | 09 | [Hosted agent: skills in the instructions (`jarvis-hosted`) and on demand (`jarvis-skills`)](notebooks/09_hosted_agent.ipynb) | ✅ |
 | 10 | [Datasets and evaluations](notebooks/10_datasets_and_evals.ipynb) | ✅ |
-| 11 | [RAG three ways: by hand, file search, Azure AI Search](notebooks/11_rag_three_ways.ipynb) | ❓ |
+| 11 | [RAG three ways: by hand, file search, Azure AI Search](notebooks/11_rag_three_ways.ipynb) | ✅ |
 | 12 | [Conversation and trace evaluations 🧪](notebooks/12_conversation_and_trace_evals.ipynb) | ✅ |
 | 13 | [OCR and Read (Vision, Document Intelligence)](notebooks/13_senses_ocr_read.ipynb) | ✅ |
 | 14 | [Invoices, receipts and Content Understanding](notebooks/14_senses_document_intelligence.ipynb) | ✅ |
@@ -147,8 +147,6 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 17 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/17_workflows.ipynb) | ✅ |
 | 18 | [Vision: A2A capstone 🧪](notebooks/18_vision_a2a_capstone.ipynb) | ✅ |
 
-> ✅ **Run on a live project:** every notebook except chapter 11 ran in order against an environment deployed with `azd up`, including the hosted agents (`azd deploy`) and the Copilot harness project of chapter 16. They ran before chapters 12 to 18 were renumbered; the agents named after a chapter (`jarvis-nb12`, `friday-docs-nb14`, `ultron-nb15-*`, `jarvis-nb16`) were not run again under their new names. The code follows the Microsoft Learn documentation as of 2026-11.
->
-> ❓ **Not run yet:** chapter 11 (RAG) and the optional Azure AI Search deployment ([search.bicep](infra/modules/search.bicep)). The notebook parses, its helpers are tested without Azure, and the Bicep compiles.
+> ✅ **Run on a live project:** every notebook ran against an environment deployed with `azd up`, including the hosted agents (`azd deploy`) and the Copilot harness project of chapter 16. Chapter 11 ran last (2026-11-19), with the optional Azure AI Search service deployed by [search.bicep](infra/modules/search.bicep). The others ran in order, before chapters 12 to 18 were renumbered; the agents named after a chapter (`jarvis-nb12`, `friday-docs-nb14`, `ultron-nb15-*`, `jarvis-nb16`) were not run again under their new names. The code follows the Microsoft Learn documentation as of 2026-11.
 >
 > ⚠️ **What can still differ for you:** preview features (skills, toolboxes, trace evaluation, guardrail APIs, the Copilot harness) can change without notice, and regions and models differ per subscription. Model answers and judge scores vary between runs, so an **Expected:** marked ❓ is a likely outcome, not a promise. Open an issue if an SDK call has drifted.
