@@ -123,6 +123,16 @@ A RAG answer can fail in two places: retrieval brought the wrong context, or the
 
 Each is judged on a scale of 1 to 5 and passes from 3. The chapter stores one row per case (`query`, `context`, `response`), runs one evaluation per variant, and first scores an answer it knows is wrong (90 Nm against a context that says 42 Nm).
 
+Those runs score saved rows, so they belong to no agent. To see scores on an agent's own page in the portal, let the run ask the agent with [`agent_target()`](../notebooks/stark_helpers.py); the chapter's last step does that for both agents.
+
+| Run over | Shows in the portal | `groundedness` gets its context from |
+|---|---|---|
+| saved rows (`jsonl` data source) | **Evaluation** only | the row's `context` field |
+| the file search agent (`agent_target()`) | **Evaluation** and the agent's page | the file search results in the answer's tool calls |
+| the Azure AI Search agent (`agent_target()`) | **Evaluation** and the agent's page | nothing: the judge sees the tool call, not the documents, and skips or fails the row |
+
+> ⚠️ Score the Azure AI Search agent's groundedness with saved rows. `relevance` works either way.
+
 ---
 
 ## 🔌 The optional Azure AI Search deployment

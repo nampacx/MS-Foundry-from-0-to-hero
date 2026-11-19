@@ -4,6 +4,9 @@ All notable changes to this repo. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+- Chapter 11, section 5, step 5: an evaluation `stark-rag-agents` that asks `friday-archive-files` and `friday-archive-search` directly with `agent_target()`, so the runs show on each agent's own page in the portal. The saved-row runs of steps 2 to 4 show under **Evaluation** only. `groundedness` cannot score the Azure AI Search agent this way (the judge gets the tool call, not the documents); the step and [docs/rag.md](docs/rag.md) say so.
+
 ### Changed
 - Chapter 11 ran on a live project, including the optional Azure AI Search section and the evaluations. Every ❓ in the chapter, in [docs/rag.md](docs/rag.md), in the README and in the chapter's troubleshooting rows is now a fact: the **Expected:** lines state the ranks, scores, citations and judge scores of the run. What the run showed: `include=["file_search_call.results"]` returns results through an agent, `vector_stores.search` and `chunking_strategy` work on a Foundry project, Azure AI Search reports a vector score of 1 / (2 − cosine), the search agent's output items are `azure_ai_search_call` and `azure_ai_search_call_output`, and the agent tool works against a search service without keys.
 - Chapter 11, case I: all three steps check their result against an expected value (✅ / ❌). The keyword step no longer shows only "not in the top 3", which read like a failure although it is the point of the step. The keyword and hybrid queries pass `search_fields=TEXT_FIELDS` (`content`, `title`).
