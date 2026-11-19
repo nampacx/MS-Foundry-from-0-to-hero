@@ -122,7 +122,7 @@ e = embeddings_client().embeddings.create(model=model("embedding"), input=["arc 
 
 > 💡 **Why a second client?** The project route has no `/embeddings`. [`embeddings_client()`](../notebooks/stark_helpers.py) calls the **account** endpoint (`STARK_ACCOUNT_ENDPOINT`) instead, still with your Entra login.
 
-You rarely call embeddings yourself in Foundry: **file search** (chapter 05) embeds your documents for you.
+You rarely call embeddings yourself in Foundry: **file search** (chapter 05) embeds your documents for you. [Chapter 11](../notebooks/11_rag_three_ways.ipynb) does it by hand once, to show what retrieval is ([rag.md](rag.md)).
 
 ---
 

@@ -1,4 +1,4 @@
-"""Helpers for chapter 17: the A2A capstone (preview).
+"""Helpers for chapter 18: the A2A capstone (preview).
 
 Show what came back over A2A, and ask the orchestrator while its new role assignment propagates. Each turn is shown
 as Markdown: the prompt, the whole answer and a check table. The notebook calls these; read them here.

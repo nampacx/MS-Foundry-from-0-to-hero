@@ -1,4 +1,4 @@
-"""Helpers for chapter 15: the Microsoft Copilot harness (preview).
+"""Helpers for chapter 16: the Microsoft Copilot harness (preview).
 
 Publish a skill folder as a package, talk to a harness agent, and show each turn as Markdown:
 the prompt, the agent's answer and the checks. The notebook calls these; read them here.
@@ -81,7 +81,7 @@ def show_turn(agent_name: str, prompt: str, answer: str, checks: dict[str, str])
     if fields:
         md += [f"> {FIELDS_LINE} see below", "", "<details><summary>Extracted fields (JSON)</summary>", "",
                "```json", fields.strip(), "```", "", "</details>"]
-    md += ["", "**Answer**", "", answer, "", "**Check**", "", "| | |", "|---|---|"]
+    md += ["", "**Answer**", "", answer, "", "**Check**", "", "| check | result |", "|---|---|"]
     md += [f"| {name} | {value} |" for name, value in checks.items()]
     display(Markdown("\n".join(md)))
 

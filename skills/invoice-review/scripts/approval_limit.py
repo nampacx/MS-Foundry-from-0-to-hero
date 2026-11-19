@@ -2,7 +2,7 @@
 
 Usage:  python scripts/approval_limit.py --approver "Pepper Potts" --total 3332.34
 Output: {"ok": ..., "approver": ..., "limit_usd": ..., "total_usd": ...}, exit code 0 when within the limit.
-Unknown approvers get the `default` limit, as in chapter 13's check_approval_limit and the stark-mcp tool.
+Unknown approvers get the `default` limit, as in chapter 14's check_approval_limit and the stark-mcp tool.
 """
 from __future__ import annotations
 

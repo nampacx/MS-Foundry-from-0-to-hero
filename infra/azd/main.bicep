@@ -18,8 +18,11 @@ param principalType string = 'User'
 @description('"true" to deploy the stark-mcp Function (chapter 06).')
 param enableMcp string = 'true'
 
-@description('"true" to also deploy the models Content Understanding needs (chapter 13).')
+@description('"true" to also deploy the models Content Understanding needs (chapter 14).')
 param enableContentUnderstanding string = 'false'
+
+@description('"true" to also deploy Azure AI Search for chapter 11 (billed while it exists).')
+param enableSearch string = 'false'
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: 'rg-stark-${environmentName}'
@@ -40,6 +43,7 @@ module stark '../main.bicep' = {
     principalType: principalType
     enableMcp: toLower(enableMcp) == 'true'
     enableContentUnderstanding: toLower(enableContentUnderstanding) == 'true'
+    enableSearch: toLower(enableSearch) == 'true'
   }
 }
 
@@ -62,3 +66,6 @@ output STARK_EMBEDDING_MODEL string = stark.outputs.embeddingModel
 output STARK_MCP_FUNCTION string = stark.outputs.mcpFunctionName
 output STARK_MCP_URL string = stark.outputs.mcpUrl
 output STARK_ENABLE_CU bool = stark.outputs.contentUnderstandingEnabled
+output STARK_ENABLE_SEARCH bool = stark.outputs.searchEnabled
+output STARK_SEARCH_ENDPOINT string = stark.outputs.searchEndpoint
+output STARK_SEARCH_CONNECTION string = stark.outputs.searchConnectionName

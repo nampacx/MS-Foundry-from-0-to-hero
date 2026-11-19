@@ -8,8 +8,10 @@ param principalId string = ''
 param principalType string = 'User'
 @description('Deploy the stark-mcp Function (chapter 06).')
 param enableMcp bool = true
-@description('Also deploy the models Content Understanding needs (chapter 13). Off by default: they need extra quota.')
+@description('Also deploy the models Content Understanding needs (chapter 14). Off by default: they need extra quota.')
 param enableContentUnderstanding bool = false
+@description('Also deploy Azure AI Search and connect it to the project (chapter 11). Off by default: the service is billed while it exists.')
+param enableSearch bool = false
 
 var cfg = loadJsonContent('config/stark.json')
 var deployedModels = enableContentUnderstanding ? concat(cfg.models, cfg.contentUnderstandingModels) : cfg.models
@@ -54,6 +56,19 @@ module mcp 'modules/mcp-function.bicep' = if (enableMcp) {
   }
 }
 
+module search 'modules/search.bicep' = if (enableSearch) {
+  name: 'search'
+  params: {
+    location: location
+    searchName: 'srch-stark-${take(suffix, 8)}'
+    foundryAccountName: foundry.outputs.accountName
+    projectName: foundry.outputs.projectName
+    principalId: principalId
+    principalType: principalType
+    tags: tags
+  }
+}
+
 module rbac 'modules/rbac.bicep' = {
   name: 'rbac'
   params: {
@@ -78,3 +93,6 @@ output embeddingModel string = cfg.embeddingModel
 output mcpFunctionName string = enableMcp ? mcp!.outputs.name : ''
 output mcpUrl string = enableMcp ? 'https://${mcp!.outputs.defaultHostName}/runtime/webhooks/mcp' : ''
 output contentUnderstandingEnabled bool = enableContentUnderstanding
+output searchEnabled bool = enableSearch
+output searchEndpoint string = enableSearch ? search!.outputs.endpoint : ''
+output searchConnectionName string = enableSearch ? search!.outputs.connectionName : ''

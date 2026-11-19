@@ -9,7 +9,7 @@
 | Run | one execution | `openai.evals.runs.create(eval_id, data_source=...)` |
 | Output items | scores, labels, reasons | `openai.evals.runs.output_items.list(...)` |
 
-Hands-on: [10 · datasets and evals](../notebooks/10_datasets_and_evals.ipynb) · [11 · conversation and trace evals](../notebooks/11_conversation_and_trace_evals.ipynb).
+Hands-on: [10 · datasets and evals](../notebooks/10_datasets_and_evals.ipynb) · [11 · RAG three ways](../notebooks/11_rag_three_ways.ipynb), section 5 · [12 · conversation and trace evals](../notebooks/12_conversation_and_trace_evals.ipynb).
 
 ---
 
@@ -41,6 +41,7 @@ flowchart LR
 | Family | Examples (`builtin.*`) | Needs a judge model |
 |---|---|---|
 | Quality | `coherence`, `fluency` | ✅ |
+| RAG | `groundedness`, `relevance`, `retrieval` (they read the retrieved `context`; [rag.md](rag.md)) | ✅ |
 | Agent | `task_adherence`, `intent_resolution`, `tool_call_accuracy`, `task_completion` | ✅ |
 | Conversation level | `customer_satisfaction`, `output_quality`, `tool_use_quality` | ✅ |
 | Safety | `violence`, `hate_unfairness`, `sexual`, `self_harm` | ❌ (service model) |
@@ -103,4 +104,4 @@ TestingCriterionAzureAIEvaluator(type="azure_ai_evaluator", name="coherence", ev
 | changing the judge between runs | scores are not comparable | keep one judge deployment |
 | trusting the pass rate alone | a pass can hide a bad answer | read the `reason` field |
 | a handful of test rows and a "100 %" claim | too small to mean much | grow the dataset, include hard cases |
-| evaluating only single turns | repeated failures stay hidden | add conversation-level runs ([chapter 11](../notebooks/11_conversation_and_trace_evals.ipynb)) |
+| evaluating only single turns | repeated failures stay hidden | add conversation-level runs ([chapter 12](../notebooks/12_conversation_and_trace_evals.ipynb)) |

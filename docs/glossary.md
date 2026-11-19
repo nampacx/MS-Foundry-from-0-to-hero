@@ -34,6 +34,7 @@ flowchart LR
 | **Agent identity / instance identity** | the Entra identities a hosted or prompt agent uses to call other services. Unpublished agents use the shared **project agent identity**, published ones their own **instance identity**. Your roles never carry over | [hosted-agents.md](hosted-agents.md) |
 | **`agent_reference`** | the field in a Responses call that says which agent answers. [`agent_ref()`](../notebooks/stark_helpers.py) builds it | [agents.md](agents.md) |
 | **Basic vs standard setup** | where Foundry stores agent data. **Basic** (used here): Microsoft-managed storage. **Standard**: your own Storage, Cosmos DB and AI Search. Not deployed here | [concepts.md](concepts.md) |
+| **Chunk** | a piece of a document small enough to retrieve and quote. RAG retrieves chunks, not files | [rag.md](rag.md) |
 | **Connection** | a project-level place for the credentials or address of an external service (`stark-mcp`, `friday-a2a`) | [concepts.md](concepts.md) |
 | **Conversation** | a durable, ordered list of items that Foundry stores for you | [conversations.md](conversations.md) |
 | **Data mapping** | tells an evaluator where its inputs come from: `{{item.query}}`, `{{sample.output_text}}` | [datasets-evals.md](datasets-evals.md) |
@@ -42,18 +43,22 @@ flowchart LR
 | **Evaluator** | a scorer: AI-judged (`builtin.coherence`), safety (`builtin.violence`) or a classic metric (`builtin.f1_score`) | [datasets-evals.md](datasets-evals.md) |
 | **Foundry resource** | the Azure resource (`Microsoft.CognitiveServices/accounts`, kind `AIServices`) that holds models and Foundry Tools | [concepts.md](concepts.md) |
 | **Foundry Tools** | prebuilt services on the same resource: Vision, Document Intelligence, Content Understanding | [foundry-tools.md](foundry-tools.md) |
+| **Groundedness** | whether an answer says only what the retrieved context supports. Scored by `builtin.groundedness` | [rag.md](rag.md) |
 | **Guardrail (RAI policy)** | a set of content filters and Prompt Shields that Foundry applies to the input and output of a model or agent. RAI = Responsible AI | [guardrails.md](guardrails.md) |
 | **Harness (Microsoft Copilot harness)** 🧪 | an optional managed runtime for prompt agents, chosen at creation. It makes skill references work, runs skill scripts in a sandbox, and brings its own tools and a workspace per conversation. Public preview | [copilot-harness.md](copilot-harness.md) |
+| **Hybrid search** | keyword and vector search in one query, merged by rank. Azure AI Search offers it | [rag.md](rag.md) |
 | **Hosted agent** 🧪 | your own code that Foundry runs in a managed container, called like any agent | [hosted-agents.md](hosted-agents.md) |
 | **Project** | a workspace inside the resource: agents, conversations, datasets, evaluations, connections | [concepts.md](concepts.md) |
 | **Project endpoint** | `https://<resource>.services.ai.azure.com/api/projects/<project>`. The one URL the SDK needs (`STARK_PROJECT_ENDPOINT`) | [concepts.md](concepts.md) |
 | **Prompt agent** | an agent that is only configuration: model, instructions, tools | [agents.md](agents.md) |
+| **RAG** | retrieval-augmented generation: find the passages that fit a question, put them into the prompt, answer from them | [rag.md](rag.md) |
 | **Response** | what one `responses.create` call returns: `output_text`, `output` items, `usage` | [models.md](models.md) |
 | **Skill** 🧪 | a versioned `SKILL.md` with a procedure an agent should follow | [mcp-skills.md](mcp-skills.md) |
 | **SkillsProvider** | the Agent Framework context provider that lists skills by name and description and loads one with `load_skill` only when the model picks it | [mcp-skills.md](mcp-skills.md) |
 | **Structured inputs** | `{{placeholders}}` in an agent's instructions, filled per request | [agents.md](agents.md) |
+| **Top-k** | the `k` best-ranked chunks a retrieval returns. It always returns `k`, also when none fits | [rag.md](rag.md) |
 | **Toolbox** 🧪 | a named, versioned bundle of tools and skills behind one MCP endpoint | [mcp-skills.md](mcp-skills.md) |
-| **Vector store** | an index of your files that file search reads from. It outlives the agent | [tools.md](tools.md) |
+| **Vector store** | an index of your files that file search reads from: Foundry chunks and embeds each file. It outlives the agent | [tools.md](tools.md), [rag.md](rag.md) |
 | **Version** | an immutable snapshot of an agent (or skill) definition | [agents.md](agents.md) |
 
 ---
@@ -75,6 +80,6 @@ flowchart LR
 | **OAuth identity passthrough** | each user signs in once through a consent link; Foundry then calls an MCP server or A2A agent with that user's token | [mcp-skills.md](mcp-skills.md) |
 | **OpenTelemetry (OTel)** | the open standard for traces and metrics. Foundry and the SDK emit OTel spans | [observability.md](observability.md) |
 | **OTLP** | the OpenTelemetry wire protocol. An optional local exporter can use it instead of Application Insights | [observability.md](observability.md) |
-| **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 16 section 5 needs a .NET runtime | [workflows.md](workflows.md) |
+| **PowerFx** | the expression language inside declarative YAML workflows (`=System.ConversationId`). Runs on .NET, so chapter 17 section 5 needs a .NET runtime | [workflows.md](workflows.md) |
 | **Prompt injection** | text that tries to give the model new instructions. *Indirect* when it hides in a document or tool output | [guardrails.md](guardrails.md) |
 | **Token** | the unit a model reads and writes, about ¾ of an English word. You pay per token | [concepts.md](concepts.md) |

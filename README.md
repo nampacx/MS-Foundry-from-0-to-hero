@@ -2,11 +2,11 @@
 
 > 🛠️ *"I am Iron Man."* – and every Iron Man started in a garage with one clumsy robot.
 
-> 🚧 **Version 0.2: a young tutorial that still needs improvement.** New since 0.1: chapter 15 on the Microsoft Copilot harness (tested on a live project), skills that run scripts, and a quality pass over every notebook (one experiment per cell, visible prompts, whole answers). Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Every notebook ran against a deployed environment. Parts are marked 🧪 (preview) or ❓ (a detail that can vary or was not checked), and regions, models and preview features differ per subscription. Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
+> 🚧 **Version 0.3: a young tutorial that still needs improvement.** New since 0.2: chapter 11 on RAG, built by hand, with file search and with an optional Azure AI Search index, then scored for groundedness. The chapters after it moved up by one, so the Copilot harness is now chapter 16. Foundry and Microsoft Agent Framework change fast, and several features used here are preview. Every notebook ran against a deployed environment. Parts are marked 🧪 (preview) or ❓ (a detail that can vary or was not checked), and regions, models and preview features differ per subscription. Expect rough edges, and please open an issue or a pull request when something breaks or reads badly. What changed since: [CHANGELOG.md](CHANGELOG.md).
 
 > 💡 **TL;DR:** A **hands-on, story-driven tutorial** for **Microsoft Foundry**. One `azd up` deploys a Foundry project with models, monitoring and role assignments. Numbered notebooks then walk you from a first model call to a team of agents, one concept per chapter, told as the evolution of Tony Stark's AI: **Dummy → J.A.R.V.I.S. → F.R.I.D.A.Y. → Ultron (the warning) → Vision**. **It is a learning repo, not a production template.**
 
-> 📖 **Prefer a story?** Read [The Story of STARK](story.md) first: all 18 chapters as one build log, from Dummy to Vision, with a link to the matching doc in each act.
+> 📖 **Prefer a story?** Read [The Story of STARK](story.md) first: all 19 chapters as one build log, from Dummy to Vision, with a link to the matching doc in each act.
 
 What you learn, chapter by chapter:
 
@@ -41,13 +41,14 @@ Infrastructure is **Bicep + azd**, custom code is **Python only**.
 | 7 | [How agents use tools](docs/tools.md) | with chapter 05 | 05, 06 |
 | 8 | [MCP servers and skills](docs/mcp-skills.md) | with chapters 06, 07 | 06, 07 |
 | 9 | [Agents as files](docs/agents-yaml.md) | with chapter 08 | 08 |
-| 10 | [Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 16 |
-| 11 | [🧪 Datasets and evaluations](docs/datasets-evals.md) | with chapters 10, 11 | 10, 11 |
-| 12 | [Foundry Tools](docs/foundry-tools.md) | with chapters 12, 13 | 12, 13 |
-| 13 | [Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 14 | 14 |
-| 14 | [🧪 Prompt agents on the Microsoft Copilot harness](docs/copilot-harness.md) | with chapter 15 | 07, 15 |
-| 15 | [Workflows](docs/workflows.md) | with chapter 16 | 16 |
-| 16 | [Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 17 | 17 |
+| 10 | [Hosted agents](docs/hosted-agents.md) | with chapter 09 | 09, 17 |
+| 11 | [🧪 Datasets and evaluations](docs/datasets-evals.md) | with chapters 10, 12 | 10, 12 |
+| 12 | [RAG: answers from your own documents](docs/rag.md) | with chapter 11 | 11 |
+| 13 | [Foundry Tools](docs/foundry-tools.md) | with chapters 13, 14 | 13, 14 |
+| 14 | [Guardrails, Prompt Shields and red teaming](docs/guardrails.md) | with chapter 15 | 15 |
+| 15 | [🧪 Prompt agents on the Microsoft Copilot harness](docs/copilot-harness.md) | with chapter 16 | 07, 16 |
+| 16 | [Workflows](docs/workflows.md) | with chapter 17 | 17 |
+| 17 | [Agents calling agents: the A2A capstone](docs/capstone.md) | with chapter 18 | 18 |
 | – | [Glossary](docs/glossary.md) | when a word is new | any |
 | – | [Troubleshooting](docs/troubleshooting.md) | when something fails | any |
 | – | [Portal tour](docs/portal-tour.md) | to find your work in the portal | any |
@@ -59,7 +60,7 @@ Infrastructure is **Bicep + azd**, custom code is **Python only**.
 
 ```mermaid
 flowchart LR
-  NB[Notebooks<br/>00 … 17] -->|project endpoint · Entra ID| P
+  NB[Notebooks<br/>00 … 18] -->|project endpoint · Entra ID| P
   subgraph F[Foundry resource · Sweden Central]
     M[Models]
     T[Foundry Tools<br/>OCR · Document Intelligence]
@@ -103,17 +104,18 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 09 | `azd deploy jarvis-hosted --no-prompt` | a new version of the hosted agent, skills copied in by the `predeploy` hook | notebook |
 | 09 | `azd deploy jarvis-skills --no-prompt` | the same for the agent that loads skills on demand | notebook |
 | 09 | `azd ai agent monitor --follow`, `azd ai agent show` | container logs, versions, endpoint | you |
-| 13 | `azd env set STARK_ENABLE_CU true && azd provision` | deploys the Content Understanding models (optional, section 3) | you |
-| 15 | `azd extension upgrade microsoft.foundry` | `azure.ai.agents` 1.0.0-beta.22 or later for the Copilot harness | you |
-| 15 | `python scripts/harness_env.py` | creates the azd environment `stark-harness` in `src/jarvis-harness`, filled from `.env` | notebook |
-| 15 | `azd deploy --all --no-prompt` | publishes both skills, then the harness agent. In `src/jarvis-harness`, with `AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true` | notebook |
-| 15 | `azd ai agent invoke --new-conversation --no-prompt "A suit just started smoking in the hangar. What do I do?"` | calls the deployed harness agent (in `src/jarvis-harness`) | you |
-| 16 | `azd deploy invoice-workflow`, `azd deploy morning-briefing` | new versions of the two workflow agents | you |
+| 11 | `azd env set STARK_ENABLE_SEARCH true && azd provision` | deploys Azure AI Search and connects it to the project (optional, section 4; billed while it exists) | you |
+| 14 | `azd env set STARK_ENABLE_CU true && azd provision` | deploys the Content Understanding models (optional, section 3) | you |
+| 16 | `azd extension upgrade microsoft.foundry` | `azure.ai.agents` 1.0.0-beta.22 or later for the Copilot harness | you |
+| 16 | `python scripts/harness_env.py` | creates the azd environment `stark-harness` in `src/jarvis-harness`, filled from `.env` | notebook |
+| 16 | `azd deploy --all --no-prompt` | publishes both skills, then the harness agent. In `src/jarvis-harness`, with `AZD_ALPHA_ENABLE_AGENTS_MANAGED_HARNESS=true` | notebook |
+| 16 | `azd ai agent invoke --new-conversation --no-prompt "A suit just started smoking in the hangar. What do I do?"` | calls the deployed harness agent (in `src/jarvis-harness`) | you |
+| 17 | `azd deploy invoice-workflow`, `azd deploy morning-briefing` | new versions of the two workflow agents | you |
 
 | When done | Command |
 |---|---|
-| Remove everything | `azd down --purge` (or `python scripts/teardown.py`). Chapter 17 ends with it |
-| Remove the harness agent of chapter 15 only | `azd ai agent delete --force --no-prompt` in `src/jarvis-harness` (the notebook's clean-up deletes it with the SDK) |
+| Remove everything | `azd down --purge` (or `python scripts/teardown.py`). Chapter 18 ends with it |
+| Remove the harness agent of chapter 16 only | `azd ai agent delete --force --no-prompt` in `src/jarvis-harness` (the notebook's clean-up deletes it with the SDK) |
 
 > ⚠️ Foundry model names, versions and regions change often. `check_models.py` tells you what your subscription can deploy.
 
@@ -136,14 +138,15 @@ jupyter lab                                    # or open notebooks in VS Code, s
 | 08 | [Agents from YAML](notebooks/08_agents_from_yaml.ipynb) | ✅ |
 | 09 | [Hosted agent: skills in the instructions (`jarvis-hosted`) and on demand (`jarvis-skills`)](notebooks/09_hosted_agent.ipynb) | ✅ |
 | 10 | [Datasets and evaluations](notebooks/10_datasets_and_evals.ipynb) | ✅ |
-| 11 | [Conversation and trace evaluations 🧪](notebooks/11_conversation_and_trace_evals.ipynb) | ✅ |
-| 12 | [OCR and Read (Vision, Document Intelligence)](notebooks/12_senses_ocr_read.ipynb) | ✅ |
-| 13 | [Invoices, receipts and Content Understanding](notebooks/13_senses_document_intelligence.ipynb) | ✅ |
-| 14 | [Ultron: guardrails and red teaming 🧪](notebooks/14_ultron_guardrails_redteam.ipynb) | ✅ |
-| 15 | [The Microsoft Copilot harness: skills with scripts 🧪](notebooks/15_copilot_harness.ipynb) | ✅ |
-| 16 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/16_workflows.ipynb) | ✅ |
-| 17 | [Vision: A2A capstone 🧪](notebooks/17_vision_a2a_capstone.ipynb) | ✅ |
+| 11 | [RAG three ways: by hand, file search, Azure AI Search](notebooks/11_rag_three_ways.ipynb) | ✅ |
+| 12 | [Conversation and trace evaluations 🧪](notebooks/12_conversation_and_trace_evals.ipynb) | ✅ |
+| 13 | [OCR and Read (Vision, Document Intelligence)](notebooks/13_senses_ocr_read.ipynb) | ✅ |
+| 14 | [Invoices, receipts and Content Understanding](notebooks/14_senses_document_intelligence.ipynb) | ✅ |
+| 15 | [Ultron: guardrails and red teaming 🧪](notebooks/15_ultron_guardrails_redteam.ipynb) | ✅ |
+| 16 | [The Microsoft Copilot harness: skills with scripts 🧪](notebooks/16_copilot_harness.ipynb) | ✅ |
+| 17 | [Workflows (sequential, group chat, handoff, YAML)](notebooks/17_workflows.ipynb) | ✅ |
+| 18 | [Vision: A2A capstone 🧪](notebooks/18_vision_a2a_capstone.ipynb) | ✅ |
 
-> ✅ **Run on a live project:** every notebook, 00 to 17, ran in order against an environment deployed with `azd up`, including the hosted agents (`azd deploy`) and the Copilot harness project of chapter 15. The code follows the Microsoft Learn documentation as of 2026-11.
+> ✅ **Run on a live project:** every notebook ran against an environment deployed with `azd up`, including the hosted agents (`azd deploy`) and the Copilot harness project of chapter 16. Chapter 11 ran last (2026-11-19), with the optional Azure AI Search service deployed by [search.bicep](infra/modules/search.bicep). The others ran in order, before chapters 12 to 18 were renumbered; the agents named after a chapter (`jarvis-nb12`, `friday-docs-nb14`, `ultron-nb15-*`, `jarvis-nb16`) were not run again under their new names. The code follows the Microsoft Learn documentation as of 2026-11.
 >
 > ⚠️ **What can still differ for you:** preview features (skills, toolboxes, trace evaluation, guardrail APIs, the Copilot harness) can change without notice, and regions and models differ per subscription. Model answers and judge scores vary between runs, so an **Expected:** marked ❓ is a likely outcome, not a promise. Open an issue if an SDK call has drifted.

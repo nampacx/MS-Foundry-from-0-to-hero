@@ -94,6 +94,8 @@ Foundry Agent Service is **stateful**. Conversations, responses, files, vector s
 | **Basic** | a Microsoft-managed store | ✅ used by this repo |
 | **Standard** | your own Storage, Cosmos DB and AI Search | ❌ not deployed |
 
+The optional Azure AI Search of chapter 11 (`STARK_ENABLE_SEARCH=true`) is a different thing: an index an agent tool queries, connected to the project. It does not store agent data ([rag.md](rag.md)).
+
 > ⚠️ **Demo-grade:** public endpoints, one project, no private networking, no customer-managed keys. This is a learning setup, not a landing zone.
 
 ---
@@ -133,7 +135,8 @@ Secrets for **other** systems (an MCP key, a remote agent) go into a **project c
 | `azure-identity` | `DefaultAzureCredential` |
 | `azure-monitor-opentelemetry`, `azure-monitor-query` | send traces, query logs |
 | `azure-ai-documentintelligence`, `azure-ai-vision-imageanalysis`, `azure-ai-contentunderstanding` | the Foundry Tools |
-| `agent-framework*` | workflows and hosted agents (chapters 09, 16) |
+| `azure-search-documents` | create and query an Azure AI Search index (chapter 11, optional) |
+| `agent-framework*` | workflows and hosted agents (chapters 09, 17) |
 | `mcp`, `a2a-sdk` | talk to MCP servers and A2A agents |
 
 The full list is [requirements.txt](../requirements.txt). The notebooks reach everything through [stark_helpers.py](../notebooks/stark_helpers.py): `project()`, `openai_client()`, `model()`.

@@ -47,7 +47,7 @@ def show_reply(prompt: str, response, checks: dict[str, str] | None = None, *, t
     md += ["", "**Tool calls:** " + (", ".join(calls) if calls else "none")]
     md += ["", "**Answer**", "", answer_text(response) or "_(no message)_"]
     if checks:
-        md += ["", "**Check**", "", "| | |", "|---|---|"] + [f"| {name} | {value} |" for name, value in checks.items()]
+        md += ["", "**Check**", "", "| check | result |", "|---|---|"] + [f"| {name} | {value} |" for name, value in checks.items()]
     display(Markdown("\n".join(md)))
 
 

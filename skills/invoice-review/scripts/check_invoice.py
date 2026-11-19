@@ -1,7 +1,7 @@
 """Check an extracted invoice: required fields, arithmetic and dates.
 
 Usage:  python scripts/check_invoice.py invoice.json
-Input:  the shape of chapter 13's extract_invoice (see assets/invoice-example.json).
+Input:  the shape of chapter 14's extract_invoice (see assets/invoice-example.json).
 Output: {"ok": ..., "problems": [...], "warnings": [...], "confirmed_by_arithmetic": [...], "computed": {...}}, exit code 0 or 1.
         A low-confidence amount that the arithmetic confirms is listed in confirmed_by_arithmetic, not in warnings.
 """

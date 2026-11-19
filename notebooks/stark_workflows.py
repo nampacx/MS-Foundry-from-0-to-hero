@@ -1,4 +1,4 @@
-"""Helpers for chapter 16: workflows with Microsoft Agent Framework.
+"""Helpers for chapter 17: workflows with Microsoft Agent Framework.
 
 Run a workflow, collect its streamed events and show the run as Markdown: the task, what each step said, the answer
 and a small check table. The notebook keeps the agents, executors and builders (the topology); the plumbing is here.
@@ -95,7 +95,7 @@ def _quote(text: str) -> list[str]:
 
 def _table(checks: dict[str, str]) -> list[str]:
     """A two-column check table."""
-    return ["", "**Check**", "", "| | |", "|---|---|"] + [f"| {k} | {v} |" for k, v in checks.items()]
+    return ["", "**Check**", "", "| check | result |", "|---|---|"] + [f"| {k} | {v} |" for k, v in checks.items()]
 
 
 def _expected(got, expected) -> str:

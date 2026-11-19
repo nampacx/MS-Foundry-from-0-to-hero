@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import time
 from datetime import timedelta
 from pathlib import Path
@@ -33,10 +34,40 @@ _credential = None
 _projects: dict[bool, object] = {}
 
 
+def cli_dirs() -> list[str]:
+    """The folders where `az` and `azd` are usually installed, on macOS, Linux and Windows."""
+    env, home = os.environ, Path.home()
+    dirs = [
+        "/opt/homebrew/bin",                      # macOS, Homebrew on Apple silicon
+        "/usr/local/bin",                         # macOS on Intel, Linux, the azd install script
+        "/usr/bin",                               # Linux packages
+        "/home/linuxbrew/.linuxbrew/bin",         # Homebrew on Linux
+        str(home / ".local" / "bin"),
+    ]
+    for root in (env.get("ProgramFiles"), env.get("ProgramFiles(x86)")):  # Windows installers
+        if root:
+            dirs += [str(Path(root) / "Microsoft SDKs" / "Azure" / "CLI2" / "wbin"), str(Path(root) / "Azure Dev CLI")]
+    if env.get("LOCALAPPDATA"):
+        dirs.append(str(Path(env["LOCALAPPDATA"]) / "Programs" / "Azure Dev CLI"))
+    return dirs
+
+
+def find_azure_clis() -> None:
+    """Add the install folder to PATH when `az` / `azd` are not on it (an editor started without the shell's PATH)."""
+    for cli in ("az", "azd"):
+        if shutil.which(cli):
+            continue
+        found = shutil.which(cli, path=os.pathsep.join(cli_dirs()))  # `which` knows `.cmd` / `.exe` on Windows
+        if found:
+            os.environ["PATH"] = os.pathsep.join(filter(None, [os.environ.get("PATH"), str(Path(found).parent)]))
+
+
 def credential():
+    """The shared `DefaultAzureCredential`; it signs in through `az login` / `azd auth login`."""
     global _credential
     if _credential is None:
         from azure.identity import DefaultAzureCredential
+        find_azure_clis()
         _credential = DefaultAzureCredential()
     return _credential
 
@@ -130,7 +161,7 @@ def sh(command: str) -> str:
 
 
 def fix_dotnet_for_powerfx() -> None:
-    """Let PowerFx (declarative workflows, chapter 16) find a .NET runtime that matches this Python.
+    """Let PowerFx (declarative workflows, chapter 17) find a .NET runtime that matches this Python.
 
     An x64 Python on Windows-on-ARM cannot load the ARM64 .NET that `dotnet` finds first (error 0xc1), and
     agent-framework-declarative then reports "dotnet runtime not installed". Point DOTNET_ROOT at the x64 .NET.
@@ -247,6 +278,22 @@ def delete_agent(name: str) -> None:
         print(f"deleted agent {name}")
     except Exception as exc:  # noqa: BLE001
         print(f"skip {name}: {type(exc).__name__}")
+
+
+def delete_vector_store(store_id: str, oai=None, files: bool = True) -> None:
+    """Delete a vector store and, with `files=True`, the uploaded files in it (ignore errors: it may not exist).
+
+    Deleting only the store leaves its files in the project's file list.
+    """
+    oai = oai or openai_client()
+    try:
+        file_ids = [f.id for f in oai.vector_stores.files.list(vector_store_id=store_id)] if files else []
+        oai.vector_stores.delete(store_id)
+        for file_id in file_ids:
+            oai.files.delete(file_id)
+        print(f"deleted vector store {store_id}" + (f" and {len(file_ids)} files" if files else ""))
+    except Exception as exc:  # noqa: BLE001
+        print(f"skip vector store {store_id}: {type(exc).__name__}")
 
 
 def delete_dataset(name: str, version: str = "1") -> None:
