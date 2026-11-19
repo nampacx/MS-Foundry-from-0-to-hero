@@ -296,6 +296,18 @@ def delete_vector_store(store_id: str, oai=None, files: bool = True) -> None:
         print(f"skip vector store {store_id}: {type(exc).__name__}")
 
 
+def upload_dataset(name: str, file_path, version: str = "1"):
+    """Upload a file as dataset `name` in `version`, or return that version when it already exists (a re-run)."""
+    from azure.core.exceptions import ResourceNotFoundError
+    try:
+        dataset = project().datasets.get(name=name, version=version)
+        print(f"dataset {name} v{version} already exists: reusing it")
+    except ResourceNotFoundError:
+        dataset = project().datasets.upload_file(name=name, version=version, file_path=str(file_path))
+        print(f"uploaded dataset {name} v{version}")
+    return dataset
+
+
 def delete_dataset(name: str, version: str = "1") -> None:
     """Delete one dataset version (ignore errors: it may not exist). A re-run of the notebook then creates it again."""
     try:
@@ -380,7 +392,12 @@ def _d(obj):
         return {}
     if isinstance(obj, dict):
         return obj
-    return obj.to_dict() if hasattr(obj, "to_dict") else dict(obj)
+    if not hasattr(obj, "to_dict"):
+        return dict(obj)
+    import warnings
+    with warnings.catch_warnings():   # the openai models do not know Foundry's preview types (a trace data source)
+        warnings.filterwarnings("ignore", message="Pydantic serializer warnings")
+        return obj.to_dict()
 
 
 def eval_scores(eval_id: str, run_id: str, oai=None):

@@ -55,6 +55,22 @@ def _mark(result: dict) -> str:
     return ("✅" if passed else "❌" if passed is False else "–") + score
 
 
+def _split_results(raw: list) -> tuple[dict, dict]:
+    """Results of one item as ({criterion: verdict}, {criterion: [part, ...]}).
+
+    A composite evaluator (`builtin.output_quality`) returns several results under one name:
+    first its overall verdict, then one per part (`metric` is fluency, coherence, groundedness, ...).
+    """
+    verdicts, parts = {}, {}
+    for result in map(_d, raw):
+        name = result.get("name")
+        if name in verdicts:
+            parts.setdefault(name, []).append(result)
+        else:
+            verdicts[name] = result
+    return verdicts, parts
+
+
 # ---------------------------------------------------------------- results of one run
 def show_scores(eval_id: str, run_id: str, oai=None, reasons: str = "failed") -> None:
     """Show a run as a table (item x evaluator: ✅/❌ and score), then the judge's reasons in full.
@@ -72,7 +88,7 @@ def show_scores(eval_id: str, run_id: str, oai=None, reasons: str = "failed") ->
     details = []
     for n, item in enumerate(items, 1):
         source = _d(item.get("datasource_item"))
-        results = {_d(r).get("name"): _d(r) for r in item.get("results") or []}
+        results, parts = _split_results(item.get("results") or [])
         md.append(f"| {n} | {_cell(_input_label(source))} | "
                   + " | ".join(_mark(results[c]) if c in results else "" for c in criteria) + " |")
         block = []
@@ -82,8 +98,11 @@ def show_scores(eval_id: str, run_id: str, oai=None, reasons: str = "failed") ->
         answer = _answer(_d(item.get("sample")))
         if answer:
             block.append(f"<details><summary>The agent's answer</summary>\n\n{answer}\n\n</details>")
-        block += [f"- **{name}** {_mark(res)}: {res.get('reason') or '(no reason given)'}"
-                  for name, res in results.items() if reasons == "all" or res.get("passed") is False]
+        for name, res in results.items():
+            if reasons == "all" or res.get("passed") is False:
+                block.append(f"- **{name}** {_mark(res)}: {res.get('reason') or '(no reason given)'}")
+            block += [f"  - {name} · `{part.get('metric')}` {_mark(part)}: {part.get('reason') or '(no reason given)'}"
+                      for part in parts.get(name, []) if reasons == "all" or part.get("passed") is False]
         if block:
             details += [f"**Item {n}**", ""] + [b + "\n" for b in block]
     note = "reasons of failed results only" if reasons == "failed" else "all reasons"
